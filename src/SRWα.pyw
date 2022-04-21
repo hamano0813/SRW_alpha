@@ -4,7 +4,7 @@
 import sys
 import qdarktheme
 from PySide6.QtWidgets import QApplication
-from editors.main_window import MainWindow
+from interface.main_window import MainWindow
 
 
 def main():
