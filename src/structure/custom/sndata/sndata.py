@@ -38,9 +38,9 @@ class SNDATA(ROM):
         self.parse()
         return True
 
-    def __getitem__(self, s_idx: int):
-        if len(self.scenario) > s_idx:
-            return self.scenario[s_idx]
+    def __getitem__(self, idx: int):
+        if len(self.scenario) > idx:
+            return self.scenario[idx]
         return None
 
     def __repr__(self):

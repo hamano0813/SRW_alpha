@@ -34,8 +34,8 @@ class Command:
     def length(self):
         return len(self.buffer)
 
-    def __getitem__(self, column_idx: int):
-        if column_idx == 0:
+    def __getitem__(self, idx: int):
+        if idx == 0:
             return f'<0x{self.pos:04X}>'
         return ' '.join(map(lambda x: f'{x:04X}', self.argv))
 

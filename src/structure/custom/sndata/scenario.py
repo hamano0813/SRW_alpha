@@ -67,8 +67,8 @@ class Scenario:
     def count(self):
         return len(self.command)
 
-    def __getitem__(self, row_idx: int):
-        return self.command[row_idx]
+    def __getitem__(self, idx: int):
+        return self.command[idx]
 
     def __len__(self):
         return len(self.buffer)
