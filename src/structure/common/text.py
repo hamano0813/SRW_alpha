@@ -12,11 +12,11 @@ class Text:
         self.additional: dict = additional
         self.dummy: bytearray = dummy
 
-    def get(self, buffer: bytearray) -> str:
+    def get_data(self, buffer: bytearray) -> str:
         data = unpack_from(f'{self.length}s', buffer, self.offset)[0]
         return self._decode_text(data)
 
-    def set(self, text: str, buffer: bytearray) -> str:
+    def set_data(self, text: str, buffer: bytearray) -> str:
         data = self._encode_text(text) + b'\00'
         data += self.dummy[len(data):]
         pack_into(f'{self.length}s', buffer, self.offset, data)

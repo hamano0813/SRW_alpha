@@ -10,16 +10,17 @@ class Value:
 
     def __init__(self, offset, length, bit=None):
         self.offset: int = offset
+        self.length = abs(length)
         self.fmt = self.length_format[length]
         self.bit: Union[int, tuple] = bit
 
-    def get(self, buffer: bytearray) -> int:
+    def get_data(self, buffer: bytearray) -> int:
         data = unpack_from(self.fmt, buffer, self.offset)[0]
         if self.bit is not None:
             return self._load_bin(data)
         return data
 
-    def set(self, value: int, buffer: bytearray) -> int:
+    def set_data(self, value: int, buffer: bytearray) -> int:
         if self.bit is not None:
             data = self._save_bin(unpack_from(self.fmt, buffer, self.offset)[0], value)
         else:
