@@ -1,13 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from typing import Optional
 from ..rom import ROM
 from .unit import Unit
 
 
 class ROBOT(ROM):
-    count = 0x1E6
-
     def __init__(self):
         super(ROBOT, self).__init__()
         self.units: list[Unit] = list()
@@ -15,7 +14,7 @@ class ROBOT(ROM):
     def parse(self) -> bool:
         if not self.buffer:
             return False
-        self.units = [Unit(self.buffer[Unit.length * idx: Unit.length * (1 + idx)]) for idx in range(self.count)]
+        self.units = [Unit(self.buffer[Unit.length * idx: Unit.length * (1 + idx)]) for idx in range(Unit.count)]
         return True
 
     def build(self) -> bool:
@@ -28,10 +27,10 @@ class ROBOT(ROM):
         self.buffer = buffer
         return True
 
-    def __getitem__(self, r_idx):
-        if len(self.units) > r_idx:
-            return self.units[r_idx]
+    def __getitem__(self, idx) -> Optional[Unit]:
+        if len(self.units) > idx:
+            return self.units[idx]
         return None
 
-    def __repr__(self):
-        return f'ROBOT.RAF with {self.count} units'
+    def __repr__(self) -> str:
+        return f'ROBOT.RAF with {Unit.count} units'

@@ -39,32 +39,40 @@ class Arm:
             '海適応': Value(0x26, 0x1),
             '宇適応': Value(0x27, 0x1)
         }
-        self._propertys: dict[str: Union[str, int]] = dict()
+        self._data: dict[str: Union[str, int]] = dict()
         self.parse()
 
     @property
     def propertys(self) -> list[str]:
-        return list(self._propertys.keys())
+        return list(self._data.keys())
 
     def parse(self) -> bool:
         if not self.buffer:
             return False
         for k, s in self.settings.items():
-            self._propertys[k] = s.get(self.buffer)
+            self._data[k] = s.get_data(self.buffer)
         return True
 
     def build(self) -> bool:
-        if not self.buffer or not self._propertys:
+        if not self.buffer or not self._data:
             return False
         for k, s in self.settings.items():
-            s.set(self._propertys.get(k), self.buffer)
+            s.set_data(self._data.get(k), self.buffer)
         return True
 
-    def __getitem__(self, property_name: str):
-        return self._propertys.get(property_name)
+    def __getitem__(self, item: Union[str, int]):
+        if isinstance(item, str):
+            return self._data.get(item)
+        return self._data.get(self.propertys[item])
 
-    def __setitem__(self, property_name: str, property_data: Union[str, int]):
-        self._propertys[property_name] = property_data
+    def __setitem__(self, data: Union[str, int], item: Union[str, int]):
+        if isinstance(item, str):
+            self._data[item] = data
+        else:
+            self._data[self.propertys[item]] = data
 
     def __repr__(self):
-        return f'Arm {self._propertys["名前"]} with {len(self.settings)} propertys'
+        text = '\nArm Info:'
+        for k, v in self._data.items():
+            text += f'\n{k}：{v}'
+        return text

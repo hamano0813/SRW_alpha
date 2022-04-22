@@ -8,7 +8,9 @@ from .arm import Arm
 
 
 class Unit:
+    count = 0x1E6
     length = 0x2C4
+    _arm = 0x44
 
     def __init__(self, buffer: bytearray):
         self.buffer = buffer
@@ -41,41 +43,47 @@ class Unit:
             '海適応': Value(0x42, 0x1),
             '宇適応': Value(0x43, 0x1),
         }
-        self._propertys: dict[str: Union[str, int, list[Arm]]] = dict()
+        self._data: dict[str: Union[str, int, list[Arm]]] = dict()
         self.parse()
 
     @property
     def propertys(self) -> list[str]:
-        return list(self._propertys.keys())
+        return list(self._data.keys())
 
     def parse(self) -> bool:
         if not self.buffer:
             return False
         for k, s in self.settings.items():
-            self._propertys[k] = s.get(self.buffer)
-        self._propertys['武装'] = [Arm(self.buffer[0x44 + Arm.length * idx: 0x44 + Arm.length * (idx + 1)])
-                                 for idx in range(Arm.count)]
+            self._data[k] = s.get_data(self.buffer)
+        self._data['武装'] = [Arm(self.buffer[self._arm + Arm.length * idx: self._arm + Arm.length * (idx + 1)])
+                            for idx in range(Arm.count)]
         return True
 
     def build(self) -> bool:
-        if not self.buffer:
+        if not self.buffer or not self._data:
             return False
-        buffer = self.buffer[:0x44]
-        if not self._propertys:
-            return False
+        buffer = self.buffer[:self._arm]
         for k, s in self.settings.items():
-            s.set(self._propertys.get(k), buffer)
-        for weapon in self._propertys['武装']:
-            weapon.build()
-            buffer += weapon.buffer
+            s.set_data(self._data.get(k), buffer)
+        for arm in self._data['武装']:
+            arm.build()
+            buffer += arm.buffer
         self.buffer = buffer
         return True
 
-    def __getitem__(self, property_name: str):
-        return self._propertys.get(property_name)
+    def __getitem__(self, item: Union[str, int]):
+        if isinstance(item, str):
+            return self._data.get(item)
+        return self._data.get(self.propertys[item])
 
-    def __setitem__(self, property_name: str, property_data: Union[str, int, list[Arm]]):
-        self._propertys[property_name] = property_data
+    def __setitem__(self, data: Union[str, int, list[Arm]], item: Union[str, int]):
+        if isinstance(item, str):
+            self._data[item] = data
+        else:
+            self._data[self.propertys[item]] = data
 
     def __repr__(self):
-        return f'Unit {self._propertys["名前"]} with {len(self.settings)} propertys'
+        text = '\nUnit Info:'
+        for k, v in self._data.items():
+            text += f'\n{k}：{v}'
+        return text
