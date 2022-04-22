@@ -15,6 +15,7 @@ class PILOT(ROM):
     def parse(self) -> bool:
         if not self.buffer:
             return False
+        Char.count = int.from_bytes(self.buffer[:self.header], 'little')
         self.chars = [Char(self.buffer[self.header + Char.length * idx: self.header + Char.length * (1 + idx)])
                       for idx in range(Char.count)]
         return True
@@ -22,7 +23,7 @@ class PILOT(ROM):
     def build(self) -> bool:
         if not self.chars:
             return False
-        buffer = self.buffer[:self.header]
+        buffer = bytearray(Char.count.to_bytes(self.header, 'little'))
         for char in self.chars:
             char.build()
             buffer += char.buffer
