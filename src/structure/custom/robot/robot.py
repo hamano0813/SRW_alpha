@@ -14,7 +14,8 @@ class ROBOT(ROM):
     def parse(self) -> bool:
         if not self.buffer:
             return False
-        self.units = [Unit(self.buffer[Unit.length * idx: Unit.length * (1 + idx)]) for idx in range(Unit.count)]
+        self.units = [Unit(self.buffer[Unit.length * idx: Unit.length * (1 + idx)])
+                      for idx in range(Unit.count)]
         return True
 
     def build(self) -> bool:

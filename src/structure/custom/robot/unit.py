@@ -55,19 +55,20 @@ class Unit:
             return False
         for k, s in self.settings.items():
             self._data[k] = s.get_data(self.buffer)
-        self._data['武装'] = [Arm(self.buffer[self._arm + Arm.length * idx: self._arm + Arm.length * (idx + 1)])
-                            for idx in range(Arm.count)]
+        self._data['武装'] = [
+            Arm(self.buffer[self._arm + Arm.length * idx: self._arm + Arm.length * (idx + 1)])
+            for idx in range(Arm.count)]
         return True
 
     def build(self) -> bool:
         if not self.buffer or not self._data:
             return False
         buffer = self.buffer[:self._arm]
-        for k, s in self.settings.items():
-            s.set_data(self._data.get(k), buffer)
         for arm in self._data['武装']:
             arm.build()
             buffer += arm.buffer
+        for k, s in self.settings.items():
+            s.set_data(self._data.get(k), buffer)
         self.buffer = buffer
         return True
 
