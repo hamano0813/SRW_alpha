@@ -6,7 +6,7 @@ import sys
 from PySide6.QtWidgets import QMainWindow, QMenu, QFileDialog
 from PySide6.QtGui import QIcon, QAction
 from .resource import *
-from structure import ROM, ROBOT, PILOT, SNMSG, SNDATA, ENLIST, SCRIPT, PRMGRP
+from structure import ROM, ROBOT, PILOT, SNMSG, SNDATA, ENLIST, AIUNP, SCRIPT, PRMGRP
 
 
 # noinspection PyTypeChecker
@@ -21,22 +21,24 @@ class MainWindow(QMainWindow):
         self.snmsg = SNMSG()
         self.sndata = SNDATA()
         self.enlist = ENLIST()
+        self.aiunp = AIUNP()
         self.script = SCRIPT()
         self.prmgrp = PRMGRP()
 
         self.setWindowTitle('超级机器人大战α 静态修改器')
         self.setWindowIcon(QIcon(':image/icon.png'))
 
-        robot_load = self.create_action('UNCOMPRESS_ROBOT.RAF...', self.load_file('UNCOMPRESS_ROBOT.RAF', self.robot))
-        pilot_load = self.create_action('PILOT.BIN...', self.load_file('PILOT.BIN', self.pilot))
-        snmsg_load = self.create_action('SNMSG.BIN...', self.load_file('SNMSG.BIN', self.snmsg))
-        sndata_load = self.create_action('SNDATA.BIN...', self.load_file('SNDATA.BIN', self.sndata))
-        enlist_load = self.create_action('ENLIST.BIN...', self.load_file('ENLIST.BIN', self.enlist))
-        script_load = self.create_action('SCRIPT.BIN...', self.load_file('SCRIPT.BIN', self.script))
-        prmgrp_load = self.create_action('PRM_GRP.BIN...', self.load_file('PRM_GRP.BIN', self.prmgrp))
+        robot = self.create_action('UNCOMPRESS_ROBOT.RAF...', self.load_file('UNCOMPRESS_ROBOT.RAF', self.robot))
+        pilot = self.create_action('PILOT.BIN...', self.load_file('PILOT.BIN', self.pilot))
+        snmsg = self.create_action('SNMSG.BIN...', self.load_file('SNMSG.BIN', self.snmsg))
+        sndata = self.create_action('SNDATA.BIN...', self.load_file('SNDATA.BIN', self.sndata))
+        enlist = self.create_action('ENLIST.BIN...', self.load_file('ENLIST.BIN', self.enlist))
+        aiunp = self.create_action('AIUNP.BIN...', self.load_file('AIUNP.BIN', self.aiunp))
+        script = self.create_action('SCRIPT.BIN...', self.load_file('SCRIPT.BIN', self.script))
+        prmgrp = self.create_action('PRM_GRP.BIN...', self.load_file('PRM_GRP.BIN', self.prmgrp))
 
         rom_menu = QMenu('文件', self)
-        rom_menu.addActions([robot_load, pilot_load, snmsg_load, sndata_load, enlist_load, script_load, prmgrp_load])
+        rom_menu.addActions([robot, pilot, snmsg, sndata, enlist, aiunp, script, prmgrp])
         self.save_action = self.create_action('保存', self.save_file)
         self.save_action.setEnabled(False)
         rom_menu.addSeparator()

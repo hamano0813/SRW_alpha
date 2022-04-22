@@ -9,7 +9,9 @@ from interface.main_window import MainWindow
 
 def main():
     app = QApplication(sys.argv)
-    app.setStyleSheet(qdarktheme.load_stylesheet('dark', 'sharp'))
+    style_sheet = qdarktheme.load_stylesheet('dark', 'sharp')
+    style_sheet = style_sheet.replace('* {', '* {\n    font: "Inziu Iosevka SC";')
+    app.setStyleSheet(style_sheet)
     window = MainWindow()
     window.show()
     sys.exit(app.exec())

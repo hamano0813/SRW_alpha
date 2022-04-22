@@ -7,5 +7,6 @@ from .custom.pilot import PILOT
 from .custom.snmsg import SNMSG
 from .custom.sndata import SNDATA
 from .custom.enlist import ENLIST
+from .custom.aiunp import AIUNP
 from .custom.script import SCRIPT
 from .custom.prmgrp import PRMGRP
