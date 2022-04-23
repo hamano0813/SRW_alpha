@@ -41,7 +41,7 @@ class Spirit:
             return self._data.get(item)
         return self._data.get(self.propertys[item])
 
-    def __setitem__(self, data: Union[str, int], item: Union[str, int]):
+    def __setitem__(self, item: Union[str, int], data: Union[str, int]):
         if isinstance(item, str):
             self._data[item] = data
         else:

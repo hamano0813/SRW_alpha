@@ -82,7 +82,7 @@ class Char:
             return self._data.get(item)
         return self._data.get(self.propertys[item])
 
-    def __setitem__(self, data: Union[str, int, list[Spirit, Skill]], item: Union[str, int]):
+    def __setitem__(self, item: Union[str, int], data: Union[str, int, list[Spirit, Skill]]):
         if isinstance(item, str):
             self._data[item] = data
         else:
