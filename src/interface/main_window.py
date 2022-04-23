@@ -7,6 +7,7 @@ from PySide6.QtWidgets import QMainWindow, QMenu, QFileDialog
 from PySide6.QtGui import QIcon, QAction
 from .resource import *
 from structure import ROM, ROBOT, PILOT, SNMSG, SNDATA, ENLIST, AIUNP, SCRIPT, PRMGRP
+from .robot_frame import RobotFrame
 
 
 # noinspection PyTypeChecker
@@ -48,6 +49,12 @@ class MainWindow(QMainWindow):
         rom_menu.addAction(quit_action)
         self.menuBar().addMenu(rom_menu)
 
+        self.robot_frame = RobotFrame(self.robot)
+        unit = self.create_action('机体', self.edit_unit)
+        edit_menu = QMenu('编辑', self)
+        edit_menu.addActions([unit, ])
+        self.menuBar().addMenu(edit_menu)
+
     def create_action(self, name: str, slot: callable = None) -> QAction:
         action = QAction(name, self)
         action.setObjectName(name)
@@ -76,3 +83,6 @@ class MainWindow(QMainWindow):
     def check_enable(self):
         if any([self.robot, self.pilot, self.snmsg, self.sndata, self.enlist, self.script, self.prmgrp]):
             self.save_action.setEnabled(True)
+
+    def edit_unit(self):
+        self.setCentralWidget(self.robot_frame)
