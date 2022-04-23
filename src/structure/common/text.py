@@ -17,8 +17,8 @@ class Text:
         return self._decode_text(data)
 
     def set_data(self, text: str, buffer: bytearray) -> str:
-        data = self._encode_text(text) + b'\00'
-        data += self.dummy[len(data):]
+        data = self._encode_text(text)[:self.length - 1] + b'\00'
+        data += self.dummy[min(len(data), self.length):]
         pack_into(f'{self.length}s', buffer, self.offset, data)
         return self._decode_text(data)
 
