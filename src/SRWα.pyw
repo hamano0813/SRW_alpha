@@ -10,12 +10,15 @@ from interface.main_window import MainWindow
 def main():
     app = QApplication(sys.argv)
     style_sheet = qdarktheme.load_stylesheet('dark', 'sharp')
-    style_sheet = style_sheet.replace('* {', '* {\n    font: 12pt "Inziu Iosevka SC";')
+    style_sheet = '''* {
+    font-family: 'Segoe UI', 'Microsoft Yahei UI', monospace;
+    font-size: 10pt;
+    font-weight: 600;
+}''' + style_sheet
     app.setStyleSheet(style_sheet)
     window = MainWindow()
     window.show()
     sys.exit(app.exec())
-
 
 if __name__ == '__main__':
     main()

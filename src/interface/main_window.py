@@ -5,9 +5,9 @@ import os
 import sys
 from PySide6.QtWidgets import QMainWindow, QMenu, QFileDialog
 from PySide6.QtGui import QIcon, QAction
-from .resource import *
-from structure import ROM, ROBOT, PILOT, SNMSG, SNDATA, ENLIST, AIUNP, SCRIPT, PRMGRP
+from structure import Rom, RobotRAF, PilotBIN
 from .robot_frame import RobotFrame
+from .resource import *
 
 
 # noinspection PyTypeChecker
@@ -17,14 +17,14 @@ class MainWindow(QMainWindow):
     def __init__(self, parent=None, flags=QtCore.Qt.MaximizeUsingFullscreenGeometryHint):
         super(MainWindow, self).__init__(parent, flags)
 
-        self.robot = ROBOT()
-        self.pilot = PILOT()
-        self.snmsg = SNMSG()
-        self.sndata = SNDATA()
-        self.enlist = ENLIST()
-        self.aiunp = AIUNP()
-        self.script = SCRIPT()
-        self.prmgrp = PRMGRP()
+        self.robot = RobotRAF()
+        self.pilot = PilotBIN()
+        self.snmsg = RobotRAF()
+        self.sndata = RobotRAF()
+        self.enlist = RobotRAF()
+        self.aiunp = RobotRAF()
+        self.script = RobotRAF()
+        self.prmgrp = RobotRAF()
 
         self.setWindowTitle('超级机器人大战α 静态修改器')
         self.setWindowIcon(QIcon(':image/icon.png'))
@@ -62,16 +62,13 @@ class MainWindow(QMainWindow):
             action.triggered.connect(slot)
         return action
 
-    def load_file(self, file_name: str, structure: ROM) -> callable:
+    def load_file(self, file_name: str, rom: Rom) -> callable:
         def load():
             folder = self.folder if self.folder else sys.path[0]
             path = QFileDialog().getOpenFileName(None, file_name, folder, file_name,
                                                  options=QFileDialog.DontResolveSymlinks)[0]
             if path:
-                with open(path, 'rb') as f:
-                    buffer = bytearray(f.read())
-                structure.set_path(path)
-                structure.set_buffer(buffer)
+                rom.load(path)
                 self.folder = os.path.split(path)[0]
             self.check_enable()
 
