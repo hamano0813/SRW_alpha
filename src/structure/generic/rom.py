@@ -41,3 +41,6 @@ class Rom:
 
     def __setitem__(self, key: str, value: RECORD):
         self._data[key] = value
+
+    def __repr__(self):
+        return str(self._data)
