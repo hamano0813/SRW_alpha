@@ -23,7 +23,7 @@ class Text:
         return buffer
 
     def _decode_text(self, data: bytes) -> str:
-        temp = data.split(b'\00')[0].replace(b'\r', b'\n').decode(self.code)
+        temp = data.split(b'\00')[0].replace(b'\r', b'\n').replace(b'\x81@', b' ').decode(self.code)
         if self.extra:
             for old, new in self.extra.items():
                 temp = temp.replace(old, new)
@@ -33,4 +33,4 @@ class Text:
         temp = text
         for old, new in reversed(self.extra.items()):
             temp = temp.replace(new, old)
-        return bytearray(temp.encode(self.code).replace(b'\n', b'\r'))
+        return bytearray(temp.encode(self.code).replace(b'\n', b'\r').replace(b' ', b'\x81@'))
