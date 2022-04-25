@@ -12,13 +12,14 @@ def main():
     style_sheet = qdarktheme.load_stylesheet('dark', 'sharp')
     style_sheet = '''* {
     font-family: 'Segoe UI', 'Microsoft Yahei UI', monospace;
-    font-size: 10pt;
-    font-weight: 600;
+    font-size: 12pt;
+    font-weight: 500;
 }''' + style_sheet
     app.setStyleSheet(style_sheet)
     window = MainWindow()
     window.show()
     sys.exit(app.exec())
+
 
 if __name__ == '__main__':
     main()
