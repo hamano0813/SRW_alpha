@@ -9,11 +9,11 @@ RECORD = Union[int, str, dict[str, "RECORD"]]
 
 
 class Sequence:
-    def __init__(self, offset: int, length: int, count: int = 0x1):
+    def __init__(self, structures: dict[str, Value | Text], offset: int, length: int, count: int = 0x1):
         self.offset = offset
         self.length = length
         self.count = count
-        self.structures: dict[str, Value | Text | Sequence] = dict()
+        self.structures = structures
 
     def parse(self, buffer: bytearray) -> list[dict[str, RECORD]]:
         sequence = list()
