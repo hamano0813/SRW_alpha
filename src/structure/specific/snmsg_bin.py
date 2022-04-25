@@ -1,16 +1,19 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from structure.generic import Rom, Value, Sequence
-from .char import Char
+from structure.generic import Rom, Value, Text, Sequence
+from parameter import TEXT
+
+SNMSG = {
+    '文本': Text(0x0, 0x100, 'shiftjisx0213', TEXT),
+}
 
 
-class PilotBIN(Rom):
+class SnmsgBIN(Rom):
     def __init__(self):
-        super(PilotBIN, self).__init__()
-        self.structures: dict[str, Sequence] = {
-            '数量': Value(0x0, 0x4),
-            '机师': Char(0x4, 0x70, 0x1D5)
+        super(SnmsgBIN, self).__init__()
+        self.structures: dict[str, Value | Sequence] = {
+            '场景文本': Sequence(SNMSG, 0x0, 0x100, 0x7F1F),
         }
 
     def parse(self) -> bool:
@@ -23,10 +26,6 @@ class PilotBIN(Rom):
     def build(self) -> bool:
         if not self._data:
             return False
-        # self._data['数量'] = self.structures['机师'].count
         for pname, data in self._data.items():
             self.structures[pname].build(data, self.buffer)
         return True
-
-    def __repr__(self):
-        return f'PILOT.BIN with {self._data["数量"]} chars'
