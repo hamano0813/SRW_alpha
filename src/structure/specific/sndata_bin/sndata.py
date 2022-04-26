@@ -38,10 +38,10 @@ class SndataBIN(Rom):
         self.parse()
         return True
 
-    def __getitem__(self, idx: int):
-        if len(self.scenario) > idx:
+    def __getitem__(self, idx: int) -> Scenario:
+        if idx < self.count:
             return self.scenario[idx]
-        return None
+        raise IndexError
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f'SNDATA.BIN with {self.count} Scenarios'

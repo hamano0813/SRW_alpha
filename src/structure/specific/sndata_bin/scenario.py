@@ -16,9 +16,9 @@ class Scenario:
         self.command: list[Command] = list()
         self.parse()
 
-    def parse(self):
+    def parse(self) -> bool:
         if not self.buffer:
-            return
+            return False
         self.setting = list(unpack_from('2L', self.buffer, 0x0))
         self.pointer = list(unpack_from('16L', self.buffer, 0x8))
         command_offset = self.header
@@ -27,8 +27,9 @@ class Scenario:
             command_buffer = self.buffer[command_offset: command_offset + command_length]
             self.command.append(Command(command_buffer, (command_offset - self.header) // 2))
             command_offset += command_length
+        return True
 
-    def build(self):
+    def build(self) -> bool:
         buffer = pack(f'{self.length}B', *(0xFF,) * self.length)
         pack_into('2L', self.buffer, 0x0, *self.setting)
         command_offset = self.length
@@ -40,7 +41,7 @@ class Scenario:
                 self.pointer[block_idx] = command.pos
         pack_into('16L', self.buffer, 0x8, *self.pointer)
         self.buffer = buffer
-        self.parse()
+        return self.parse()
 
     def insert(self, command_idx: int, command: Command):
         command.build()
@@ -64,13 +65,15 @@ class Scenario:
         self.insert(command_idx, command)
 
     @property
-    def count(self):
+    def count(self) -> int:
         return len(self.command)
 
-    def __getitem__(self, idx: int):
-        return self.command[idx]
+    def __getitem__(self, idx: int) -> Command:
+        if idx < self.count:
+            return self.command[idx]
+        raise IndexError
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self.buffer)
 
     def __repr__(self):
