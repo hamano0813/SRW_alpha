@@ -6,12 +6,12 @@ from structure.generic import Rom
 from .scenario import Scenario
 
 
-class SNDATA(Rom):
+class SndataBIN(Rom):
     header = 0x800
     count = 0x8C
 
     def __init__(self):
-        super(SNDATA, self).__init__()
+        super(SndataBIN, self).__init__()
         self.pointer: list[int] = list()
         self.scenario: list[Scenario] = list()
 
