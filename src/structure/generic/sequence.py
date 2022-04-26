@@ -1,19 +1,19 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from typing import Union
+from typing import Union, Optional
 from .value import Value
 from .text import Text
 
-RECORD = Union[int, str, dict[str, "RECORD"]]
+RECORD = Union[int, str, list[dict[str, Optional["RECORD"]]]]
 
 
 class Sequence:
-    def __init__(self, structures: dict[str, Value | Text], offset: int, length: int, count: int = 0x1):
+    def __init__(self, structures, offset: int, length: int, count: int = 0x1):
+        self.structures: dict[str, Value | Text | Optional["Sequence"]] = structures
         self.offset = offset
         self.length = length
         self.count = count
-        self.structures = structures
 
     def parse(self, buffer: bytearray) -> list[dict[str, RECORD]]:
         sequence = list()
@@ -44,10 +44,10 @@ class Sequence:
         return slice(self.offset + self.length * idx, self.offset + self.length * (idx + 1))
 
     @property
-    def property(self):
+    def property(self) -> list[str]:
         return list(self.structures)
 
-    def mapping(self, pname: str, buffer: bytearray):
+    def mapping(self, pname: str, buffer: bytearray) -> dict[int, str]:
         structure = self.structures.get(pname, None)
         if not structure:
             raise KeyError

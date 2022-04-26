@@ -8,7 +8,7 @@ class Rom:
     def __init__(self):
         self.path: str = ''
         self.buffer: bytearray = bytearray()
-        self._data: dict[str, any] = dict()
+        self._data: dict[str, RECORD] = dict()
 
     def load(self, path: str = None) -> bool:
         if path:
