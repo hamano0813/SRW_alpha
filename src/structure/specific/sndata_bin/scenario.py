@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from struct import unpack_from, pack_into, pack
+from struct import unpack_from, pack_into
 from .command import Command
 
 
@@ -36,7 +36,7 @@ class Scenario:
             buffer[offset: offset + command.length] = command.buffer
             offset += command.length
             if command['指令码'] == 0x00:
-                block_idx = command.argv[0]
+                block_idx = command['指令集'][0]
                 self._data['区块定位'][block_idx] = command['定位']
         pack_into('16L', self.buffer, 0x8, *self._data['区块定位'])
         self.buffer = buffer
@@ -46,16 +46,16 @@ class Scenario:
         command.build()
         command.pos = self._data['指令集'][command_idx]['定位']
         for idx in range(command_idx, self.count):
-            self._data['指令集'][idx]['定位'] += command['长度']
+            self._data['指令集'][idx]['定位'] += command.count
         self._data['指令集'].insert(command_idx, command)
 
     def append(self, command: Command):
         command.build()
-        command.pos = self._data['指令集'][-1]['定位'] + self._data['指令集'][-1]['长度']
+        command.pos = self._data['指令集'][-1]['定位'] + self._data['指令集'][-1].count
         self._data['指令集'].append(command)
 
     def delete(self, command_idx: int):
-        count = self._data['指令集'].pop(command_idx)['长度']
+        count = self._data['指令集'].pop(command_idx).count
         for idx in range(command_idx, self.count):
             self._data['指令集'][idx]['定位'] -= count
 
