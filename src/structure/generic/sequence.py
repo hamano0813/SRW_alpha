@@ -1,11 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from typing import Union, Optional
+from typing import Optional
 from .value import Value
 from .text import Text
-
-RECORD = Union[int, str, list[dict[str, Optional["RECORD"]]]]
 
 
 class Sequence:
@@ -15,7 +13,7 @@ class Sequence:
         self.length = length
         self.count = count
 
-    def parse(self, buffer: bytearray) -> list[dict[str, RECORD]]:
+    def parse(self, buffer: bytearray) -> list[dict[str, int | str | list[dict]]]:
         sequence = list()
         for idx in range(self.count):
             record = dict()
@@ -25,7 +23,7 @@ class Sequence:
             sequence.append(record)
         return sequence
 
-    def build(self, sequence: list[dict[str, RECORD]], buffer: bytearray) -> bytearray:
+    def build(self, sequence: list[dict[str, int | str | list[dict]]], buffer: bytearray) -> bytearray:
         for idx, record in enumerate(sequence):
             if idx < self.count:
                 _buffer = buffer[self._index_range(idx)]

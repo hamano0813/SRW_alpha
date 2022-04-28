@@ -3,7 +3,7 @@
 
 from structure.generic import Rom, Value, Sequence
 
-ENEMY = {
+ENEMY_STRUCTURE = {
     '机体': Value(0x0, 0x2),
     '机体改造': Value(0x2, 0x1),
     '武器改造': Value(0x3, 0x1),
@@ -15,7 +15,7 @@ ENEMY = {
     '所属批次': Value(0xB, 0x1),
 }
 
-ENLIST = {
+ENLIST_STRUCTURE = {
     '总机体数': Value(0x0, 0x2),
     '批次数': Value(0x2, 0x2),
     '第00批': Value(0x4, 0x1),
@@ -34,7 +34,7 @@ ENLIST = {
     '第13批': Value(0x11, 0x1),
     '第14批': Value(0x12, 0x1),
     '第15批': Value(0x13, 0x1),
-    '敌方列表': Sequence(ENEMY, 0x14, 0xC, 0xA0),
+    '机体列表': Sequence(ENEMY_STRUCTURE, 0x14, 0xC, 0xA0),
 }
 
 
@@ -42,7 +42,7 @@ class EnlistBIN(Rom):
     def __init__(self):
         super(EnlistBIN, self).__init__()
         self.structures: dict[str, Value | Sequence] = {
-            '敌方设定': Sequence(ENLIST, 0x0, 0x794, 0x96),
+            '敌方列表': Sequence(ENLIST_STRUCTURE, 0x0, 0x794, 0x96),
         }
 
     def parse(self) -> bool:

@@ -1,14 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from .sequence import RECORD
-
 
 class Rom:
     def __init__(self):
         self.path: str = ''
         self.buffer: bytearray = bytearray()
-        self._data: dict[str, RECORD] = dict()
+        self._data: dict = dict()
 
     def load(self, path: str = None) -> bool:
         if path:
@@ -36,10 +34,10 @@ class Rom:
     def build(self) -> bool:
         pass
 
-    def __getitem__(self, item: str) -> RECORD:
+    def __getitem__(self, item: str) -> list[dict[str, int | str | list[dict]]]:
         return self._data.get(item, None)
 
-    def __setitem__(self, key: str, value: RECORD):
+    def __setitem__(self, key: str, value: list[dict[str, int | str | list[dict]]]):
         self._data[key] = value
 
     def __repr__(self):
