@@ -36,7 +36,7 @@ class Scenario:
             buffer[offset: offset + command.length] = command.buffer
             offset += command.length
             if command['指令码'] == 0x00:
-                block_idx = command['指令集'][0]
+                block_idx = command['参数'][0]
                 self._data['区块定位'][block_idx] = command['定位']
         pack_into('16L', self.buffer, 0x8, *self._data['区块定位'])
         self.buffer = buffer

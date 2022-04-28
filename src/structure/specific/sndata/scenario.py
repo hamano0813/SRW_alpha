@@ -13,6 +13,8 @@ SCENARIO_STRUCTURE = {
 
 
 class Scenario(Sequence):
+    header: int = 0x48
+
     def __init__(self, structures, offset, length, count):
         super(Scenario, self).__init__(structures, offset, length, count)
         self.length_list: list[int] = list()
@@ -26,6 +28,12 @@ class Scenario(Sequence):
                 record[pname] = structure.parse(_buffer)
             sequence.append(record)
         return sequence
+
+    def build(self, sequence: list[dict[str, int | str | list[dict]]], buffer: bytearray = None) -> bytearray:
+        buffer = bytearray()
+        for scenario in sequence:
+            _buffer = bytearray(0x48)
+            c_buffer = self.structures['指令列表'].build(scenario['指令列表'], buffer)
 
     def _index_range(self, idx: int) -> slice:
         index_range: list[slice] = list()
