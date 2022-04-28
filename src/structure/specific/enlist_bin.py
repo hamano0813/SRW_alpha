@@ -3,7 +3,7 @@
 
 from structure.generic import Rom, Value, Sequence
 
-ENDETAIL = {
+ENEMY = {
     '机体': Value(0x0, 0x2),
     '机体改造': Value(0x2, 0x1),
     '武器改造': Value(0x3, 0x1),
@@ -34,7 +34,7 @@ ENLIST = {
     '第13批': Value(0x11, 0x1),
     '第14批': Value(0x12, 0x1),
     '第15批': Value(0x13, 0x1),
-    '敌方列表': Sequence(ENDETAIL, 0x14, 0xC, 0xA0),
+    '敌方列表': Sequence(ENEMY, 0x14, 0xC, 0xA0),
 }
 
 

@@ -4,16 +4,12 @@
 from structure.generic import Rom, Value, Text, Sequence
 from parameter import TEXT
 
-SNMSG = {
-    '文本': Text(0x0, 0x100, 'shiftjisx0213', TEXT),
-}
-
 
 class SnmsgBIN(Rom):
     def __init__(self):
         super(SnmsgBIN, self).__init__()
         self.structures: dict[str, Value | Sequence] = {
-            '场景文本': Sequence(SNMSG, 0x0, 0x100, 0x7F1F),
+            '场景文本': Sequence({'文本': Text(0x0, 0x100, 'shiftjisx0213', TEXT)}, 0x0, 0x100, 0x7F1F),
         }
 
     def parse(self) -> bool:
