@@ -27,7 +27,7 @@ class Rom:
         if not self.path:
             return False
         self.build()
-        with open(self.path, 'rb') as f:
+        with open(self.path, 'wb') as f:
             f.write(self.buffer)
         return True
 
