@@ -5,5 +5,5 @@ from .generic import Rom
 from .specific.robot_raf import RobotRAF
 from .specific.pilot_bin import PilotBIN
 from .specific.snmsg_bin import SnmsgBIN
-from .specific.sndata_bin import SndataBIN
+from .specific.sndata import SndataBIN
 from .specific.enlist_bin import EnlistBIN

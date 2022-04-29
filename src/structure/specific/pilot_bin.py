@@ -47,24 +47,6 @@ PILOT_STRUCTURE = {
 class PilotBIN(Rom):
     def __init__(self):
         super(PilotBIN, self).__init__()
-        self.structures: dict[str, Value | Sequence] = {
-            '机师数量': Value(0x0, 0x4),
+        self.structures = {
             '机师列表': Sequence(PILOT_STRUCTURE, 0x4, 0x70, 0x1D5),
         }
-
-    def parse(self) -> bool:
-        if not self.buffer:
-            return False
-        for pname, structure in self.structures.items():
-            if pname == '机师列表':
-                structure.count = self._data['机师数量']
-            self._data[pname] = structure.parse(self.buffer)
-        return True
-
-    def build(self) -> bool:
-        if not self._data:
-            return False
-        self._data['机师数量'] = self.structures['机师列表'].count
-        for pname, data in self._data.items():
-            self.structures[pname].build(data, self.buffer)
-        return True

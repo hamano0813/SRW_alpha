@@ -18,6 +18,7 @@ WEAPON_STRUCTURE = {
     '分类': Value(0x6, 0x1, 0),
     '属性': Value(0x6, 0x1, (1, 8)),
     '改造追加': Value(0x7, 0x1, (4, 8)),
+    # TODO 字符内容为第一个武器填充0X20，其后武器按照0x1顺序填充
     '名称': Text(0x8, 0x15, 'shiftjisx0213', TEXT, bytearray([0x20] * 0x15)),
     'MAP范围': Value(0x1D, 0x1),
     'MAP演出': Value(0x1E, 0x1),
@@ -67,20 +68,6 @@ ROBOT_STRUCTURE = {
 class RobotRAF(Rom):
     def __init__(self):
         super(RobotRAF, self).__init__()
-        self.structures: dict[str, Value | Sequence] = {
+        self.structures = {
             '机体列表': Sequence(ROBOT_STRUCTURE, 0x0, 0x2C4, 0x1E6),
         }
-
-    def parse(self) -> bool:
-        if not self.buffer:
-            return False
-        for pname, structure in self.structures.items():
-            self._data[pname] = structure.parse(self.buffer)
-        return True
-
-    def build(self) -> bool:
-        if not self._data:
-            return False
-        for pname, data in self._data.items():
-            self.structures[pname].build(data, self.buffer)
-        return True

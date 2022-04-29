@@ -13,17 +13,20 @@ class Text:
         self.dummy = dummy
 
     def parse(self, buffer: bytearray) -> str:
-        data = unpack_from(f'{self.length}s', buffer, self.offset)[0]
+        data = unpack_from(f'{self.length}s', buffer, self.offset)[0].split(b'\00')[0]
         return self._decode_text(data)
 
     def build(self, text: str, buffer: bytearray) -> bytearray:
         data = self._encode_text(text)[:self.length - 1] + b'\00'
-        data += self.dummy[len(data):]
-        pack_into(f'{self.length}s', buffer, self.offset, data)
+        length = len(data)
+        if self.dummy:
+            data += self.dummy[length:]
+            length = self.length
+        pack_into(f'{length}s', buffer, self.offset, data)
         return buffer
 
     def _decode_text(self, data: bytes) -> str:
-        temp = data.split(b'\00')[0].replace(b'\r', b'\n').replace(b'\x81@', b' ').decode(self.code)
+        temp = data.replace(b'\r', b'\n').replace(b'\x81@', b' ').decode(self.code)
         if self.extra:
             for old, new in self.extra.items():
                 temp = temp.replace(old, new)

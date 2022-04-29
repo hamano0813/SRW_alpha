@@ -41,20 +41,6 @@ ENLIST_STRUCTURE = {
 class EnlistBIN(Rom):
     def __init__(self):
         super(EnlistBIN, self).__init__()
-        self.structures: dict[str, Value | Sequence] = {
+        self.structures = {
             '敌方列表': Sequence(ENLIST_STRUCTURE, 0x0, 0x794, 0x96),
         }
-
-    def parse(self) -> bool:
-        if not self.buffer:
-            return False
-        for pname, structure in self.structures.items():
-            self._data[pname] = structure.parse(self.buffer)
-        return True
-
-    def build(self) -> bool:
-        if not self._data:
-            return False
-        for pname, data in self._data.items():
-            self.structures[pname].build(data, self.buffer)
-        return True
