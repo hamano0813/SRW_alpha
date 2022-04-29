@@ -210,7 +210,7 @@ class Explain:
             '机体': {},
             '文本': {},
         }
-        self.argv_struct = {
+        self.argv_fmt = {
             0x00: ('h', 'BLOCK #{0:X}',
                    (('区块编号', None),)),
             0x01: ('', 'STOP',
