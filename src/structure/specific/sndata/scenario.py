@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from structure.generic import Value, Sequence
+from structure.generic import Value, Sequence, SEQUENCE
 from .command import Command, COMMAND_STRUCTURE
 
 SCENARIO_STRUCTURE = {
     '指针数量': Value(0x0, 0x4),
     '指针长度': Value(0x4, 0x4),
-    '指针列表': Sequence(Value(0x0, 0x4), 0x8, 0x0, 0x0),
+    '指针列表': Sequence(Value(0x0, 0x4), 0x8, 0x4, 0xA),
     '指令列表': Command(COMMAND_STRUCTURE, 0x48, 0x0, 0x0),
 }
 
@@ -19,7 +19,7 @@ class Scenario(Sequence):
         super(Scenario, self).__init__(structures, offset, length, count)
         self.length_list: list[int] = list()
 
-    def parse(self, buffer: bytearray) -> list[dict[str, int | str | list[dict]]]:
+    def parse(self, buffer: bytearray) -> SEQUENCE:
         sequence = list()
         for idx in range(self.count):
             record = dict()
@@ -29,11 +29,12 @@ class Scenario(Sequence):
             sequence.append(record)
         return sequence
 
-    def build(self, sequence: list[dict[str, int | str | list[dict]]], buffer: bytearray = None) -> bytearray:
+    def build(self, sequence: SEQUENCE, buffer: bytearray = None) -> bytearray:
         buffer = bytearray()
         for scenario in sequence:
-            _buffer = bytearray(0x48)
+            _buffer = bytearray(self.structures['指令列表'].offset)
             c_buffer = self.structures['指令列表'].build(scenario['指令列表'], buffer)
+
 
     def _index_range(self, idx: int) -> slice:
         index_range: list[slice] = list()

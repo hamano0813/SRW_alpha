@@ -6,8 +6,6 @@ from .scenario import Scenario, SCENARIO_STRUCTURE
 
 
 class SndataBIN(Rom):
-    header = 0x800
-
     def __init__(self):
         super(SndataBIN, self).__init__()
         self.structures: dict[str, Value | Sequence | Scenario] = {
@@ -33,7 +31,7 @@ class SndataBIN(Rom):
         for length in self.structures['场景列表'].length_list:
             offset += length
             self['指针列表'].append({'指针': offset})
-        buffer = bytearray([0xFF] * self.header)
-        self.structures['指针列表'].build(self['指针列表'], buffer)
-        self.buffer = buffer + self.structures['场景列表'].build(self['场景列表'])
+        head_buffer = bytearray(self.structures['场景列表'].offset)
+        self.structures['指针列表'].build(self['指针列表'], head_buffer)
+        self.buffer = head_buffer + self.structures['场景列表'].build(self['场景列表'])
         return True
