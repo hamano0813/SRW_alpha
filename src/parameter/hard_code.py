@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-TEXT = {
+ROBOT_TEXT_EXTRA = {
     'ﾔﾟﾕﾟ': 'MK-',
     'ﾚﾟ': 'Ⅱ',
     'ﾛﾟ': 'Ⅲ',
@@ -105,9 +105,15 @@ TEXT = {
     'Rー': 'R-',
     'YFー': 'YF-',
     'TYPEー': 'TYPE-',
+}
+
+SNMSG_TEXT_EXTRA = {
+    'ﾔﾟﾕﾟ': 'MK-',
+    'ﾙﾟ': 'ν',
     '$n': '【主人公】',
     '$N': '【恋人】',
 }
+
 
 CHARACTER = {
     '$n': '【主人公】',
