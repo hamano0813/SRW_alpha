@@ -1,10 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from structure.generic import Rom, Value, Text, Sequence
-from parameter import TEXT
+from structure.generic import Rom, Text, Sequence
 
-SNMSG_STRUCTURE = {'文本': Text(0x0, 0x100, 'shiftjisx0213', TEXT)}
+SNMSG_STRUCTURE = {'文本': Text(0x0, 0x100, 'shiftjisx0213')}
 
 
 class SnmsgBIN(Rom):
