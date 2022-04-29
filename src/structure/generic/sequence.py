@@ -5,6 +5,8 @@ from typing import Optional
 from .value import Value
 from .text import Text
 
+SEQUENCE = list[dict[str, int | str | Optional["SEQUENCE"]]]
+
 
 class Sequence:
     def __init__(self, structures, offset: int, length: int, count: int = 0x1):
@@ -13,7 +15,7 @@ class Sequence:
         self.length = length
         self.count = count
 
-    def parse(self, buffer: bytearray) -> list[dict[str, int | str | list[dict]]]:
+    def parse(self, buffer: bytearray) -> SEQUENCE:
         sequence = list()
         for idx in range(self.count):
             record = dict()
@@ -23,14 +25,14 @@ class Sequence:
             sequence.append(record)
         return sequence
 
-    def build(self, sequence: list[dict[str, int | str | list[dict]]], buffer: bytearray) -> bytearray:
+    def build(self, sequence: SEQUENCE, buffer: bytearray) -> bytearray:
         for idx, record in enumerate(sequence):
             if idx < self.count:
                 _buffer = buffer[self._index_range(idx)]
             else:
                 _buffer = bytearray(self.length)
-            for pname, data in record.items():
-                self.structures[pname].build(data, _buffer)
+            for pname, pdata in record.items():
+                self.structures[pname].build(pdata, _buffer)
             if idx < self.count:
                 buffer[self._index_range(idx)] = _buffer
             else:

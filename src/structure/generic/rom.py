@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from typing import Optional
+from .sequence import SEQUENCE
+
 
 class Rom:
     def __init__(self):
@@ -34,10 +37,10 @@ class Rom:
     def build(self) -> bool:
         pass
 
-    def __getitem__(self, item: str) -> list[dict[str, int | str | list[dict]]]:
+    def __getitem__(self, item: str) -> SEQUENCE:
         return self._data.get(item, None)
 
-    def __setitem__(self, key: str, value: list[dict[str, int | str | list[dict]]]):
+    def __setitem__(self, key: str, value: SEQUENCE):
         self._data[key] = value
 
     def __repr__(self):

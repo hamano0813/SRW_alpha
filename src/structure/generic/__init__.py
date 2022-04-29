@@ -4,4 +4,4 @@
 from .rom import Rom
 from .value import Value
 from .text import Text
-from .sequence import Sequence
+from .sequence import Sequence, SEQUENCE
