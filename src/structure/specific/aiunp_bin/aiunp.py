@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from structure.generic import Rom, Value, Sequence
-from .ailist import AiLIST, LIST_STRUCTURE
+from .ai import AiSetting, SETTING_STRUCTURE
 
 
 class AiunpBIN(Rom):
@@ -10,7 +10,7 @@ class AiunpBIN(Rom):
         super(AiunpBIN, self).__init__()
         self.structures = {
             '指针列表': Sequence({'指针': Value(0x0, 0x4)}, 0x0, 0x4, 0x8D),
-            '场景列表': AiLIST(LIST_STRUCTURE, 0x800, 0x0, 0x8C),
+            '场景列表': AiSetting(SETTING_STRUCTURE, 0x800, 0x0, 0x8C),
         }
 
     def parse(self) -> bool:

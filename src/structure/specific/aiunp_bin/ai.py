@@ -16,7 +16,7 @@ AI_STRUCTURE = {
     '坐标Y': Value(0x9, 0x1),
 }
 
-LIST_STRUCTURE = {
+SETTING_STRUCTURE = {
     '空数据': Value(0x0, 0x2),
     'AI数量': Value(0x2, 0x2),
     'AI长度': Value(0x4, 0x2),
@@ -24,9 +24,9 @@ LIST_STRUCTURE = {
 }
 
 
-class AiLIST(Sequence):
+class AiSetting(Sequence):
     def __init__(self, structures, offset, length, count):
-        super(AiLIST, self).__init__(structures, offset, length, count)
+        super(AiSetting, self).__init__(structures, offset, length, count)
         self.pointers: list[dict[str, int]] = list()
 
     def parse(self, buffer: bytearray) -> SEQUENCE:
@@ -42,7 +42,19 @@ class AiLIST(Sequence):
         return sequence
 
     def build(self, sequence: SEQUENCE, buffer: bytearray) -> bytearray:
+        for idx, record in enumerate(sequence):
+            count = self.structures['AI列表'].count = record['AI数量'] = len(record['AI列表'])
+            length = self._calc_length(0xA * count + 0x6)
+            self.pointers[idx + 1]['指针'] = self.pointers[idx]['指针'] + length
+            _buffer = bytearray(length)
+            for key, data in record.items():
+                self.structures[key].build(data, _buffer)
+            buffer[self._idx_range(idx)] = _buffer
         return buffer
 
     def _idx_range(self, idx: int) -> slice:
         return slice(self.pointers[idx]['指针'], self.pointers[idx + 1]['指针'])
+
+    @staticmethod
+    def _calc_length(value: int, step: int = 0x4) -> int:
+        return (value // step + bool(value % step)) * step
