@@ -115,7 +115,7 @@ SNMSG_TEXT_EXTRA = {
 }
 
 
-CHARACTER = {
+SCRIPT_TEXT_EXTRA = {
     '$n': '【主人公】',
     '$l': '【恋人】',
     'τυ': 'MK-',
