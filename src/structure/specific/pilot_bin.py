@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from structure.generic import Rom, Value, Text, Sequence
+from parameter import HALF_TEXT_EXTRA
 
 SKILL_STRUCTURE = {
     '技能': Value(0x0, 0x1),
@@ -19,8 +20,8 @@ SKILL_STRUCTURE = {
 PILOT_STRUCTURE = {
     'CODE': Value(0x0, 0x2),
     '换乘系': Value(0x2, 0x2, bit=(0, 10)),
-    '机师名': Text(0x4, 0x14, code='shiftjisx0213'),
-    '爱称': Text(0x29, 0xC, code='shiftjisx0213'),
+    '机师名': Text(0x4, 0x14, code='shiftjisx0213', extra=HALF_TEXT_EXTRA),
+    '爱称': Text(0x29, 0xC, code='shiftjisx0213', extra=HALF_TEXT_EXTRA),
     '格斗': Value(0x36, 0x1),
     '射击': Value(0x37, 0x1),
     '回避': Value(0x38, 0x1),

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-ROBOT_TEXT_EXTRA = {
+HALF_TEXT_EXTRA = {
     'ﾔﾟﾕﾟ': 'MK-',
     'ﾚﾟ': 'Ⅱ',
     'ﾛﾟ': 'Ⅲ',

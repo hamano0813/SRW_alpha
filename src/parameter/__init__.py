@@ -2,4 +2,4 @@
 # -*- coding: utf-8 -*-
 
 from .enum_data import EnumData
-from .hard_code import ROBOT_TEXT_EXTRA, SNMSG_TEXT_EXTRA
+from .text_extra import HALF_TEXT_EXTRA, SNMSG_TEXT_EXTRA

@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from structure.generic import Rom, Value, Text, Sequence
-from parameter import ROBOT_TEXT_EXTRA
+from parameter import HALF_TEXT_EXTRA
 
 WEAPON_STRUCTURE = {
     '编号': Value(0x0, 0x1, (0, 4)),
@@ -18,7 +18,7 @@ WEAPON_STRUCTURE = {
     '分类': Value(0x6, 0x1, 0),
     '属性': Value(0x6, 0x1, (1, 8)),
     '改造追加': Value(0x7, 0x1, (4, 8)),
-    '名称': Text(0x8, 0x15, 'shiftjisx0213', ROBOT_TEXT_EXTRA),
+    '名称': Text(0x8, 0x15, 'shiftjisx0213', HALF_TEXT_EXTRA),
     'MAP范围': Value(0x1D, 0x1),
     'MAP演出': Value(0x1E, 0x1),
     '消费EN': Value(0x1F, 0x1),
@@ -33,7 +33,7 @@ WEAPON_STRUCTURE = {
 }
 
 ROBOT_STRUCTURE = {
-    '名称': Text(0x0, 0x1A, 'shiftjisx0213', ROBOT_TEXT_EXTRA),
+    '名称': Text(0x0, 0x1A, 'shiftjisx0213', HALF_TEXT_EXTRA),
     '编号': Value(0x1A, 0x2),
     '移动类型': Value(0x1C, 0x1, (0, 4)),
     '移动力': Value(0x1D, 0x1),
