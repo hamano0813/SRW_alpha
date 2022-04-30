@@ -5,7 +5,7 @@ import os
 import sys
 from PySide6.QtWidgets import QMainWindow, QMenu, QFileDialog
 from PySide6.QtGui import QIcon, QAction
-from structure import Rom, RobotRAF, PilotBIN, SnmsgBIN, SndataBIN, EnlistBIN
+from structure import Rom, RobotRAF, PilotBIN, SnmsgBIN, SndataBIN, EnlistBIN, AiunpBIN
 from .robot_frame import RobotFrame
 from .resource import *
 
@@ -22,7 +22,7 @@ class MainWindow(QMainWindow):
         self.snmsg = SnmsgBIN()
         self.sndata = SndataBIN()
         self.enlist = EnlistBIN()
-        self.aiunp = RobotRAF()
+        self.aiunp = AiunpBIN()
         self.script = RobotRAF()
         self.prmgrp = RobotRAF()
 
