@@ -8,3 +8,4 @@ from .specific.snmsg_bin import SnmsgBIN
 from .specific.sndata_bin import SndataBIN
 from .specific.enlist_bin import EnlistBIN
 from .specific.aiunp_bin import AiunpBIN
+from .specific.script_bin import ScriptBIN

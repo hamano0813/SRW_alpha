@@ -6,7 +6,7 @@ from .instruction import Instruction, INSTRUCTION_STRUCTURE
 
 SCREENPLAY_STRUCTURE = {
     '指令数量': Value(0x0, 0x4),
-    '指令列表': Instruction(INSTRUCTION_STRUCTURE, 0x0, 0x0, 0x0),
+    '指令列表': Instruction(INSTRUCTION_STRUCTURE, 0x4, 0x0, 0x0),
 }
 
 
@@ -31,6 +31,7 @@ class ScreenPlay(Sequence):
             record['指令数量'] = self.structures['指令列表'].count = len(record['指令列表'])
             self.structures['指令数量'].build(record['指令数量'], _buffer)
             self.structures['指令列表'].build(record['指令列表'], _buffer)
+            self.pointers[idx + 1]['指针'] = self.pointers[idx]['指针'] + len(_buffer)
             buffer[self._idx_range(idx)] = _buffer
         return buffer
 

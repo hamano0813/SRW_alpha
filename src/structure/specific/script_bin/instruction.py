@@ -2,13 +2,14 @@
 # -*- coding: utf-8 -*-
 
 from structure.generic import Value, Text, Sequence, SEQUENCE
+from parameter import SCRIPT_TEXT_EXTRA
 
 INSTRUCTION_STRUCTURE = {
     '指令码': Value(0x0, 0x2),
     '参数一': Value(0x2, 0x2),
     '参数二': Value(0x4, 0x2),
     '扩展字节': Value(0x6, 0x2),
-    '扩展文本': Text(0x8, 0x0, 'shiftjisx0213'),
+    '扩展文本': Text(0x8, 0x0, 'shiftjisx0213', SCRIPT_TEXT_EXTRA),
 }
 
 
@@ -21,7 +22,7 @@ class Instruction(Sequence):
         offset = self.offset
         for idx in range(self.count):
             record = dict()
-            _buffer = bytearray[offset:]
+            _buffer = buffer[offset:offset + 0xFF]
             record['指令码'] = self.structures['指令码'].parse(_buffer)
             record['参数一'] = self.structures['参数一'].parse(_buffer)
             record['参数二'] = self.structures['参数二'].parse(_buffer)
@@ -29,10 +30,25 @@ class Instruction(Sequence):
             record['扩展文本'] = self.structures['扩展文本'].parse(_buffer)
             length = self._calc_length(0x8 + record['扩展字节'])
             offset += length
+            sequence.append(record)
         return sequence
 
     def build(self, sequence: SEQUENCE, buffer: bytearray) -> bytearray:
-        pass
+        for idx, record in enumerate(sequence):
+            if record['扩展字节'] == 1:
+                self.structures['扩展文本'].length = record['扩展字节']
+            elif record['扩展文本']:
+                text_buf = Text(0x0, 0xFF, 'shiftjisx0213', SCRIPT_TEXT_EXTRA).build(record['扩展文本'], bytearray(0xFF))
+                record['扩展字节'] = self.structures['扩展文本'].length = len(text_buf.split(b'\00')[0]) + 0x1
+            else:
+                record['扩展字节'] = self.structures['扩展文本'].length = 0x0
+            _buffer = bytearray(0x8 + record['扩展字节'])
+            for key, data in record.items():
+                self.structures[key].build(data, _buffer)
+            complement_buf = bytearray([0x0, 0xD4, 0x41])[0: self._calc_length(record['扩展字节']) - record['扩展字节']]
+            _buffer += complement_buf
+            buffer += _buffer
+        return buffer
 
     @staticmethod
     def _calc_length(value: int, step: int = 0x4) -> int:
