@@ -28,6 +28,7 @@ class Text:
         if self.extra:
             for old, new in self.extra.items():
                 temp = temp.replace(old, new)
+        print(temp)
         return temp
 
     def _encode_text(self, text: str) -> bytearray:
