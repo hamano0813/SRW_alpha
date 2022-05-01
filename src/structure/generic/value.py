@@ -9,6 +9,7 @@ class Value:
 
     def __init__(self, offset: int, length: int, bit=None):
         self.offset = offset
+        self.signed = length < 0
         self.length = abs(length)
         self.fmt = self.length_format[length]
         self.bit: int | tuple = bit
@@ -30,9 +31,15 @@ class Value:
     def _load_bin(self, value: int) -> int:
         if isinstance(self.bit, int):
             return (value & (1 << self.bit)) >> self.bit
-        return (value & ((1 << self.bit[1]) - 1)) >> self.bit[0]
+        _value = (value & ((1 << self.bit[1]) - 1)) >> self.bit[0]
+        if not self.signed:
+            return _value
+        bit_width = self.bit[1] - self.bit[0] - 1
+        return (_value & ((1 << bit_width) - 1)) - (_value & (1 << bit_width))
 
     def _save_bin(self, data: int, value: int) -> int:
         if isinstance(self.bit, int):
             return data | (1 << self.bit) if value else data & ~ (1 << self.bit)
+        if value < 0:
+            value += (1 << (self.bit[1] - self.bit[0]))
         return ((data >> self.bit[1]) << self.bit[1]) | (data & ((1 << self.bit[0]) - 1)) | (value << self.bit[0])
