@@ -3,11 +3,13 @@
 
 import os
 import sys
-from PySide6.QtWidgets import QMainWindow, QMenu, QFileDialog
+
 from PySide6.QtGui import QIcon, QAction
+from PySide6.QtWidgets import QMainWindow, QMenu, QFileDialog
+
 from structure import Rom, RobotRAF, PilotBIN, SnmsgBIN, SndataBIN, EnlistBIN, AiunpBIN, ScriptBIN
-from .robot_frame import RobotFrame
 from .resource import *
+from .robot_frame import RobotFrame
 
 
 # noinspection PyTypeChecker

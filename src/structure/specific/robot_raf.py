@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from structure.generic import Rom, Value, Text, Sequence
 from parameter import HALF_TEXT_EXTRA
+from structure.generic import Rom, Value, Text, Sequence
 
 WEAPON_STRUCTURE = {
     '编号': Value(0x0, 0x1, (0, 4)),

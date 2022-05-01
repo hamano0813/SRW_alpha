@@ -2,6 +2,6 @@
 # -*- coding: utf-8 -*-
 
 from .rom import Rom
-from .value import Value
-from .text import Text
 from .sequence import Sequence, SEQUENCE
+from .text import Text
+from .value import Value

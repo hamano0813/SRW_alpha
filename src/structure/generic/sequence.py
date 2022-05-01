@@ -2,8 +2,9 @@
 # -*- coding: utf-8 -*-
 
 from typing import Optional
-from .value import Value
+
 from .text import Text
+from .value import Value
 
 SEQUENCE = list[dict[str, int | str | Optional["SEQUENCE"]]]
 

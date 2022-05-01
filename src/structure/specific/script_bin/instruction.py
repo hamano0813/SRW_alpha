@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from structure.generic import Value, Text, Sequence, SEQUENCE
 from parameter import SCRIPT_TEXT_EXTRA
+from structure.generic import Value, Text, Sequence, SEQUENCE
 
 INSTRUCTION_STRUCTURE = {
     '指令码': Value(0x0, 0x2),

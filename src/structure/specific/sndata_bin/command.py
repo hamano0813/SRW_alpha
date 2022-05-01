@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from struct import unpack_from, pack_into
+
 from structure.generic import Sequence, SEQUENCE
 from .explain import Explain
 
