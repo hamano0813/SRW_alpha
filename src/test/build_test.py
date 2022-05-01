@@ -4,7 +4,7 @@
 import copy
 import time
 
-from structure import RobotRAF, PilotBIN, SnmsgBIN, SndataBIN, EnlistBIN, AiunpBIN, ScriptBIN
+from structure import RobotRAF, PilotBIN, SnmsgBIN, SndataBIN, EnlistBIN, AiunpBIN, ScriptBIN, PrmgrpBIN
 
 paths = {
     'ROBOT': 'D:/Python/SRWα/resource/bin/UNCOMPRESS_ROBOT.RAF',
@@ -14,6 +14,7 @@ paths = {
     'ENLIST': 'D:/Python/SRWα/resource/bin/ENLIST.BIN',
     'AIUNP': 'D:/Python/SRWα/resource/bin/AIUNP.BIN',
     'SCRIPT': 'D:/Python/SRWα/resource/bin/SCRIPT.BIN',
+    'PRMGRP': 'D:/Python/SRWα/resource/bin/PRM_GRP.BIN',
 }
 
 roms = {
@@ -24,6 +25,7 @@ roms = {
     'ENLIST': EnlistBIN,
     'AIUNP': AiunpBIN,
     'SCRIPT': ScriptBIN,
+    'PRMGRP': PrmgrpBIN,
 }
 
 if __name__ == '__main__':
