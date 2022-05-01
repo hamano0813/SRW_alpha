@@ -35,17 +35,11 @@ class Instruction(Sequence):
 
     def build(self, sequence: SEQUENCE, buffer: bytearray) -> bytearray:
         for idx, record in enumerate(sequence):
-            if record['扩展字节'] == 1:
-                self.structures['扩展文本'].length = record['扩展字节']
-            elif record['扩展文本']:
-                text_buf = Text(0x0, 0xFF, 'shiftjisx0213', SCRIPT_TEXT_EXTRA).build(record['扩展文本'], bytearray(0xFF))
-                record['扩展字节'] = self.structures['扩展文本'].length = len(text_buf.split(b'\00')[0]) + 0x1
-            else:
-                record['扩展字节'] = self.structures['扩展文本'].length = 0x0
-            _buffer = bytearray(0x8 + record['扩展字节'])
+            length = self.structures['扩展文本'].length = record['扩展字节']
+            _buffer = bytearray(0x8 + length)
             for key, data in record.items():
                 self.structures[key].build(data, _buffer)
-            complement_buf = bytearray([0x0, 0xD4, 0x41])[0: self._calc_length(record['扩展字节']) - record['扩展字节']]
+            complement_buf = bytearray([0x0, 0xD4, 0x41])[0: self._calc_length(length) - length]
             _buffer += complement_buf
             buffer += _buffer
         return buffer
