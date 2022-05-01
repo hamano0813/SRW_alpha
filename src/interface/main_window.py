@@ -7,7 +7,7 @@ import sys
 from PySide6.QtGui import QIcon, QAction
 from PySide6.QtWidgets import QMainWindow, QMenu, QFileDialog
 
-from structure import Rom, RobotRAF, PilotBIN, SnmsgBIN, SndataBIN, EnlistBIN, AiunpBIN, ScriptBIN
+from structure import Rom, RobotRAF, PilotBIN, SnmsgBIN, SndataBIN, EnlistBIN, AiunpBIN, ScriptBIN, PrmgrpBIN
 from .resource import *
 from .robot_frame import RobotFrame
 
@@ -26,7 +26,7 @@ class MainWindow(QMainWindow):
         self.enlist = EnlistBIN()
         self.aiunp = AiunpBIN()
         self.script = ScriptBIN()
-        self.prmgrp = RobotRAF()
+        self.prmgrp = PrmgrpBIN()
 
         self.setWindowTitle('超级机器人大战α 静态修改器')
         self.setWindowIcon(QIcon(':image/icon.png'))
