@@ -16,6 +16,6 @@ class AiunpBIN(Rom):
     def parse(self) -> bool:
         if not self.buffer:
             return False
-        self._data['指针列表'] = self.structures['场景列表'].pointers = self.structures['指针列表'].parse(self.buffer)
-        self._data['场景列表'] = self.structures['场景列表'].parse(self.buffer)
+        self['指针列表'] = self.structures['场景列表'].pointers = self.structures['指针列表'].parse(self.buffer)
+        self['场景列表'] = self.structures['场景列表'].parse(self.buffer)
         return True

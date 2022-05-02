@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from structure.generic import Rom, Value, Text, Sequence, SEQUENCE
 from parameter import HALF_TEXT_EXTRA
+from structure.generic import Rom, Value, Text, Sequence, SEQUENCE
 
 SPECIAL_STRUCTURE = {
     '出生月': Value(0x0, 0x1),
@@ -46,7 +46,7 @@ PART_STRUCTURE = {
     '限界': Value(0x2, -0x1),
     '移动力': Value(0x3, -0x1, (0, 4)),
     '射程/命中率': Value(0x3, 0x1, (4, 6)),
-    '空A': Value(0x3, 0x1, (6, 8)),
+    '空飞/空A': Value(0x3, 0x1, (6, 8)),
 }
 
 

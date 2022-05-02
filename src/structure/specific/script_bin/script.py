@@ -16,6 +16,6 @@ class ScriptBIN(Rom):
     def parse(self) -> bool:
         if not self.buffer:
             return False
-        self._data['指针列表'] = self.structures['剧本列表'].pointers = self.structures['指针列表'].parse(self.buffer)
-        self._data['剧本列表'] = self.structures['剧本列表'].parse(self.buffer)
+        self['指针列表'] = self.structures['剧本列表'].pointers = self.structures['指针列表'].parse(self.buffer)
+        self['剧本列表'] = self.structures['剧本列表'].parse(self.buffer)
         return True

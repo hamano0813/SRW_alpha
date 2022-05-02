@@ -9,7 +9,7 @@ class Rom:
         self.path: str = ''
         self.buffer: bytearray = bytearray()
         self.structures: dict[str, Value | Sequence] = dict()
-        self._data: dict = dict()
+        self.data: dict = dict()
 
     def load(self, path: str = None) -> bool:
         if path:
@@ -35,21 +35,21 @@ class Rom:
         if not self.buffer:
             return False
         for pname, structure in self.structures.items():
-            self._data[pname] = structure.parse(self.buffer)
+            self.data[pname] = structure.parse(self.buffer)
         return True
 
     def build(self) -> bool:
-        if not self._data:
+        if not self.data:
             return False
-        for pname, data in self._data.items():
+        for pname, data in self.data.items():
             self.structures[pname].build(data, self.buffer)
         return True
 
     def __getitem__(self, item: str) -> SEQUENCE:
-        return self._data.get(item, None)
+        return self.data.get(item, None)
 
     def __setitem__(self, key: str, value: SEQUENCE):
-        self._data[key] = value
+        self.data[key] = value
 
     def __repr__(self):
-        return str(self._data)
+        return str(self.data)
