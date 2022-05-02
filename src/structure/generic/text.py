@@ -18,7 +18,7 @@ class Text:
         return self._decode_text(data)
 
     def build(self, text: str, buffer: bytearray) -> bytearray:
-        data = self._encode_text(text)[:self.length - 1] + b'\00'
+        data = self._encode_text(text)[:self.length]
         if self.dummy:
             _buffer = copy.deepcopy(self.dummy)
         else:
