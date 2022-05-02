@@ -36,11 +36,19 @@ if __name__ == '__main__':
         rom.load(path)
         parse_end = time.time()
         buf = copy.deepcopy(rom.buffer)
+        data = copy.deepcopy(rom.data)
         build_start = time.time()
         rom.build()
         build_end = time.time()
+        rom.parse()
 
-        result = "successful!" if buf == rom.buffer else "failed!"
+        if buf == rom.buffer:
+            result = "buffer successful!"
+        elif data == rom.data:
+            result = "  data successful!"
+        else:
+            result = "failed!"
+
         parse_time = parse_end - parse_start
         build_time = build_end - build_start
-        print(f'{r.__name__:<10s} test {result:<12s} parse time {parse_time:.3f}s, build time {build_time:.3f}s')
+        print(f'{r.__name__:<10s} {result:<12s}  parse time {parse_time:.3f}s, build time {build_time:.3f}s')
