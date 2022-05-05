@@ -4,7 +4,8 @@
 from typing import Optional
 
 from PySide6.QtCore import Qt, QAbstractTableModel, QSortFilterProxyModel, QModelIndex, QRegularExpression
-from PySide6.QtWidgets import QWidget, QTableView, QStyledItemDelegate, QStyleOptionViewItem
+from PySide6.QtGui import QAction, QCursor, QKeyEvent
+from PySide6.QtWidgets import QApplication, QWidget, QTableView, QMenu, QStyledItemDelegate, QStyleOptionViewItem
 
 from structure.generic import SEQUENCE
 from .abstract_widget import ControlWidget, SingleWidget
@@ -26,8 +27,8 @@ class ArrayModel(QAbstractTableModel):
         if role != Qt.DisplayRole:
             return None
         elif orientation == Qt.Horizontal:
-            return tuple(self.columns.keys())[section]
-        return f'[{section:0{len(hex(len(self.data_sequence))) - 2}X}]'
+            return '    ' + tuple(self.columns.keys())[section] + ' '
+        return f'  [{section:0{len(hex(len(self.data_sequence))) - 2}X}]'
 
     def rowCount(self, parent: QModelIndex = ...) -> int:
         return len(self.data_sequence)
@@ -47,6 +48,17 @@ class ArrayModel(QAbstractTableModel):
         if role == Qt.UserRole:
             return self.data_sequence[index.row()], self.columns[column_name]
         return None
+
+    def setData(self, index: QModelIndex, text: str, role: int = ...) -> bool:
+        if not index.isValid():
+            return False
+        if not role == Qt.EditRole:
+            return False
+        column_name = tuple(self.columns.keys())[index.column()]
+        data = self.columns[column_name].paste(text)
+        if data:
+            self.data_sequence[index.row()][column_name] = data
+            return True
 
     def flags(self, index: QModelIndex):
         if not index.isValid():
@@ -74,17 +86,16 @@ class ArrayDelegate(QStyledItemDelegate):
 
 
 class ArrayTable(ControlWidget, QTableView):
-    def __init__(self, parent, data_name, columns: dict[str, SingleWidget | QWidget]):
+    def __init__(self, parent, data_name, columns: dict[str, SingleWidget | QWidget], **kwargs):
         QTableView.__init__(self, parent=None)
-        ControlWidget.__init__(self, parent, data_name)
+        ControlWidget.__init__(self, parent, data_name, **kwargs)
         self.columns = columns
         self.array_delegate = ArrayDelegate(self)
         self.setItemDelegate(self.array_delegate)
         self.proxy_model = QSortFilterProxyModel(self)
-        self.proxy_model.setSortRole(Qt.EditRole)
-        self.setSortingEnabled(True)
-        self.horizontalHeader().setSortIndicatorClearable(True)
         self.horizontalHeader().setProperty('orientation', 'horizontal')
+
+        self.check_kwargs()
 
     def install(self, data_set: dict[str, int | str | SEQUENCE]) -> bool:
         array_model = ArrayModel(self, self.columns)
@@ -96,6 +107,28 @@ class ArrayTable(ControlWidget, QTableView):
         self.control_child(0)
         return True
 
+    def check_kwargs(self):
+        if self.kwargs.get('sortable', True):
+            self.proxy_model.setSortRole(Qt.EditRole)
+            self.setSortingEnabled(True)
+            self.horizontalHeader().setSortIndicatorClearable(True)
+        if self.kwargs.get('editable', False):
+            self.proxy_model.flags = lambda x: Qt.ItemIsEnabled | Qt.ItemIsSelectable
+        if self.kwargs.get('single', False):
+            self.setSelectionMode(QTableView.SingleSelection)
+            self.setSelectionBehavior(QTableView.SelectRows)
+        if self.kwargs.get('copy', True):
+            self.setContextMenuPolicy(Qt.CustomContextMenu)
+            self.customContextMenuRequested.connect(self.copy_paste)
+
+    def keyPressEvent(self, event: QKeyEvent) -> bool:
+        if self.kwargs.get('copy', True):
+            if event.key() == Qt.Key_C and event.modifiers() == Qt.ControlModifier:
+                return self.copy_range()
+            elif event.key() == Qt.Key_V and event.modifiers() == Qt.ControlModifier:
+                return self.paste_range()
+        return super(ArrayTable, self).keyPressEvent(event)
+
     def filterChanged(self, text: str) -> None:
         filter_text = text.strip()
         if filter_text:
@@ -106,3 +139,47 @@ class ArrayTable(ControlWidget, QTableView):
             self.proxy_model.setFilterRegularExpression(regexp)
         else:
             self.proxy_model.setFilterRegularExpression('')
+
+    def copy_paste(self) -> None:
+        right_click_menu = QMenu()
+        copy_action = QAction('复制', self)
+        copy_action.triggered.connect(self.copy_range)
+        paste_action = QAction('粘贴', self)
+        paste_action.triggered.connect(self.paste_range)
+        right_click_menu.addActions([copy_action, paste_action])
+        right_click_menu.exec_(QCursor().pos())
+
+    def copy_range(self) -> bool:
+        if not self.selectedIndexes():
+            return False
+        indexes = tuple(map(self.proxy_model.mapToSource, self.selectedIndexes()))
+        row_set = set(map(lambda idx: idx.row(), indexes))
+        col_set = set(map(lambda idx: idx.column(), indexes))
+        row_count = max(row_set) - min(row_set) + 1
+        col_count = max(col_set) - min(col_set) + 1
+        data = [[''] * col_count for _ in range(row_count)]
+        for index in indexes:
+            data[index.row() - min(row_set)][index.column() - min(col_set)] = index.data(Qt.DisplayRole)
+        text = '\n'.join(['\t'.join(row) for row in data])
+        QApplication.clipboard().setText(text)
+        return True
+
+    def paste_range(self) -> bool:
+        if not self.selectedIndexes():
+            return False
+        if not (text := QApplication.clipboard().text().rstrip()):
+            return False
+        internal_id = self.selectedIndexes()[0].internalId()
+        data = [row.split('\t') for row in text.split('\n')]
+        min_row = min(map(lambda idx: idx.row(), self.selectedIndexes()))
+        min_col = min(map(lambda idx: idx.column(), self.selectedIndexes()))
+        for rid, row in enumerate(data):
+            for cid, text in enumerate(row):
+                index = self.proxy_model.createIndex(min_row + rid, min_col + cid, internal_id)
+                source_index = self.proxy_model.mapToSource(index)
+                self._model.setData(source_index, text, Qt.EditRole)
+        return self.reset()
+
+    @property
+    def _model(self) -> ArrayModel:
+        return self.proxy_model.sourceModel()
