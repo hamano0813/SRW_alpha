@@ -35,3 +35,6 @@ class TextLine(SingleWidget, QLineEdit):
         if text:
             return text
         return ''
+
+    def paste(self, text: str) -> str:
+        return text.strip()

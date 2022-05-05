@@ -12,8 +12,8 @@ class ValueSpin(SingleWidget, QSpinBox):
     def __init__(self, parent, data_name: str, structure: Value, **kwargs):
         QSpinBox.__init__(self, parent)
         SingleWidget.__init__(self, parent, data_name, structure, **kwargs)
-        self.mapping = kwargs.get('mapping')
-        self.multiple = kwargs.get('multiple')
+        self.mapping: dict[int, str] = kwargs.get('mapping')
+        self.multiple: int = kwargs.get('multiple')
         if alignment := kwargs.get('alignment'):
             self.setAlignment(alignment)
         self.init_range()
@@ -52,10 +52,11 @@ class ValueSpin(SingleWidget, QSpinBox):
         return str(value)
 
     def valueFromText(self, text: str) -> int:
+        _text = text.strip()
         if self.mapping:
-            return {value: key for key, value in self.mapping.items()}.get(text, 0)
+            return {value: key for key, value in self.mapping.items()}.get(_text, 0)
         try:
-            return int(text)
+            return int(_text)
         except ValueError:
             return self.value()
 
@@ -78,3 +79,14 @@ class ValueSpin(SingleWidget, QSpinBox):
 
     def display(self, value: int) -> str:
         return '     ' + self.textFromValue(value) + '      '
+
+    def paste(self, text: str) -> int:
+        _text = text.strip()
+        if self.mapping:
+            mapping = {v: k for k, v in self.mapping.items()}
+            return mapping.get(_text, 0)
+        if self.multiple:
+            return int(_text) // self.multiple
+        if _text:
+            return int(_text)
+        return None
