@@ -30,6 +30,7 @@ class MainWindow(QMainWindow):
 
         self.setWindowTitle('超级机器人大战α 静态修改器')
         self.setWindowIcon(QIcon(':image/icon.png'))
+        self.setMinimumSize(800, 600)
 
         robot = self.create_action('UNCOMPRESS_ROBOT.RAF', self.load_file('UNCOMPRESS_ROBOT.RAF', self.robot))
         pilot = self.create_action('PILOT.BIN', self.load_file('PILOT.BIN', self.pilot))
@@ -51,7 +52,6 @@ class MainWindow(QMainWindow):
         rom_menu.addAction(quit_action)
         self.menuBar().addMenu(rom_menu)
 
-        self.robot_frame = RobotFrame(self.robot)
         unit = self.create_action('机体', self.edit_unit)
         edit_menu = QMenu('编辑', self)
         edit_menu.addActions([unit, ])
@@ -84,4 +84,6 @@ class MainWindow(QMainWindow):
             self.save_action.setEnabled(True)
 
     def edit_unit(self):
-        self.setCentralWidget(self.robot_frame)
+        robot_frame = RobotFrame()
+        robot_frame.set_rom(self.robot)
+        self.setCentralWidget(robot_frame)

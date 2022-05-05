@@ -8,7 +8,6 @@ from PySide6.QtWidgets import QApplication
 from interface.main_window import MainWindow
 
 
-# noinspection PyTypeChecker
 def main():
     app = QApplication(sys.argv)
     stylesheet = qdarktheme.load_stylesheet('dark', 'sharp')
