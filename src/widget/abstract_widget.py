@@ -5,9 +5,10 @@ from structure.generic import Value, Text, SEQUENCE
 
 
 class AbstractWidget:
-    def __init__(self, parent, data_name: str):
+    def __init__(self, parent, data_name: str, **kwargs):
         self.data_set: dict[str, int | str | SEQUENCE] = dict()
         self.data_name = data_name
+        self.kwargs = kwargs
         if isinstance(parent, ControlWidget):
             parent.append_child(self)
 
@@ -17,9 +18,8 @@ class AbstractWidget:
 
 class SingleWidget(AbstractWidget):
     def __init__(self, parent, data_name, structure: Value | Text, **kwargs):
-        AbstractWidget.__init__(self, parent, data_name)
+        AbstractWidget.__init__(self, parent, data_name, **kwargs)
         self.structure = structure
-        self.kwargs = kwargs
 
     def install(self, data_set: dict[str, int | str]) -> bool:
         pass
@@ -30,13 +30,16 @@ class SingleWidget(AbstractWidget):
     def display(self, data: int | str) -> str:
         pass
 
+    def paste(self, text: str) -> int | str:
+        pass
+
     def new(self, parent):
         return self.__class__(parent, self.data_name, self.structure, **self.kwargs)
 
 
 class ControlWidget(AbstractWidget):
-    def __init__(self, parent, data_name):
-        super(ControlWidget, self).__init__(parent, data_name)
+    def __init__(self, parent, data_name, **kwargs):
+        super(ControlWidget, self).__init__(parent, data_name, **kwargs)
         self.childs: list[AbstractWidget] = list()
 
     def install(self, data_set: dict[str, int | str | SEQUENCE]) -> bool:
