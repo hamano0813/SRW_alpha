@@ -21,14 +21,16 @@ class RobotFrame(BackgroundFrame):
 
     def init_robot_table(self):
         group = QGroupBox('机体列表')
-        self['机体列表'] = ArrayTable(self, '机体列表', {
-            '名称': TextLine(None, '名称', ROBOT_STRUCTURE['名称'], alignment=Qt.AlignLeft | Qt.AlignVCenter),
-            'HP': ValueSpin(None, 'HP', ROBOT_STRUCTURE['HP'], alignment=Qt.AlignRight | Qt.AlignVCenter),
-            'EN': ValueSpin(None, 'EN', ROBOT_STRUCTURE['EN'], alignment=Qt.AlignRight | Qt.AlignVCenter),
-            '运动性': ValueSpin(None, '运动性', ROBOT_STRUCTURE['运动性'], alignment=Qt.AlignRight | Qt.AlignVCenter),
-            '装甲': ValueSpin(None, '装甲', ROBOT_STRUCTURE['装甲'], alignment=Qt.AlignRight | Qt.AlignVCenter),
-            '限界': ValueSpin(None, '限界', ROBOT_STRUCTURE['限界'], alignment=Qt.AlignRight | Qt.AlignVCenter),
-        })
+        self['机体列表'] = ArrayTable(
+            self, '机体列表', {
+                '名称': TextLine(None, '名称', ROBOT_STRUCTURE['名称'], alignment=Qt.AlignLeft | Qt.AlignVCenter),
+                'HP': ValueSpin(None, 'HP', ROBOT_STRUCTURE['HP'], alignment=Qt.AlignRight | Qt.AlignVCenter),
+                'EN': ValueSpin(None, 'EN', ROBOT_STRUCTURE['EN'], alignment=Qt.AlignRight | Qt.AlignVCenter),
+                '运动性': ValueSpin(None, '运动性', ROBOT_STRUCTURE['运动性'], alignment=Qt.AlignRight | Qt.AlignVCenter),
+                '装甲': ValueSpin(None, '装甲', ROBOT_STRUCTURE['装甲'], alignment=Qt.AlignRight | Qt.AlignVCenter),
+                '限界': ValueSpin(None, '限界', ROBOT_STRUCTURE['限界'], alignment=Qt.AlignRight | Qt.AlignVCenter),
+            },
+        )
         filter_line = QLineEdit()
         filter_layout = QHBoxLayout()
         filter_layout.addWidget(QLabel('筛选机体'))
