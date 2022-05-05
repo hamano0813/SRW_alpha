@@ -2,20 +2,20 @@
 # -*- coding: utf-8 -*-
 
 import sys
+
 import qdarktheme
 from PySide6.QtWidgets import QApplication
 from interface.main_window import MainWindow
 
 
+# noinspection PyTypeChecker
 def main():
     app = QApplication(sys.argv)
-    style_sheet = qdarktheme.load_stylesheet('dark', 'sharp')
-    style_sheet = '''* {
-    font-family: 'Segoe UI', 'Microsoft Yahei UI', monospace;
-    font-size: 12pt;
-    font-weight: 500;
-}''' + style_sheet
-    app.setStyleSheet(style_sheet)
+    stylesheet = qdarktheme.load_stylesheet('dark', 'sharp')
+    stylesheet = stylesheet.replace('QHeaderView::down-arrow', 'QHeaderView[orientation="horizontal"]::down-arrow')
+    stylesheet = stylesheet.replace('QHeaderView::up-arrow', 'QHeaderView[orientation="horizontal"]::up-arrow')
+    stylesheet = stylesheet.replace('* {', '* {font: 12px;')
+    app.setStyleSheet(stylesheet)
     window = MainWindow()
     window.show()
     sys.exit(app.exec())

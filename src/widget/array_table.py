@@ -3,7 +3,7 @@
 
 from typing import Optional
 
-from PySide6.QtCore import Qt, QAbstractTableModel, QSortFilterProxyModel, QModelIndex, QRegularExpression, QRect
+from PySide6.QtCore import Qt, QAbstractTableModel, QSortFilterProxyModel, QModelIndex, QRegularExpression
 from PySide6.QtWidgets import QWidget, QTableView, QStyledItemDelegate, QStyleOptionViewItem
 
 from structure.generic import SEQUENCE
