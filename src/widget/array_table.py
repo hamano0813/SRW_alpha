@@ -55,11 +55,12 @@ class ArrayModel(QAbstractTableModel):
             return False
         column_name = tuple(self.columns.keys())[index.column()]
         previos_data = self.data_sequence[index.row()][column_name]
-        _data = data
+        if role == Qt.EditRole:
+            self.data_sequence[index.row()][column_name] = data
+            self.history.append((index, previos_data))
+            return True
         if role == Qt.UserRole:
-            _data = self.columns[column_name].interpret(data)
-        if _data != previos_data:
-            self.data_sequence[index.row()][column_name] = _data
+            self.data_sequence[index.row()][column_name] = self.columns[column_name].interpret(data)
             self.history.append((index, previos_data))
             return True
         return False
@@ -69,13 +70,11 @@ class ArrayModel(QAbstractTableModel):
             return None
         return Qt.ItemIsEditable | Qt.ItemIsEnabled | Qt.ItemIsSelectable
 
-    def undo(self) -> bool:
+    def undo(self):
         if self.history:
             index, data = self.history.pop(-1)
             column_name = tuple(self.columns.keys())[index.column()]
             self.data_sequence[index.row()][column_name] = data
-            return True
-        return False
 
 
 class ArrayDelegate(QStyledItemDelegate):
@@ -158,9 +157,9 @@ class ArrayTable(ControlWidget, QTableView):
             elif event.key() == Qt.Key_V and event.modifiers() == Qt.ControlModifier:
                 return self.paste_range()
             elif event.key() == Qt.Key_Z and event.modifiers() == Qt.ControlModifier:
-                undo = self.model().sourceModel().undo()
+                self.model().sourceModel().undo()
                 self.reset()
-                return undo
+                return True
         super(ArrayTable, self).keyPressEvent(event)
         return True
 
