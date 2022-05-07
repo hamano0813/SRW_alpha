@@ -30,7 +30,7 @@ class MainWindow(QMainWindow):
 
         self.setWindowTitle('超级机器人大战α 静态修改器')
         self.setWindowIcon(QIcon(':image/icon.png'))
-        self.setMinimumSize(800, 600)
+        self.setMinimumSize(1440, 960)
 
         robot = self.create_action('UNCOMPRESS_ROBOT.RAF', self.load_file('UNCOMPRESS_ROBOT.RAF', self.robot))
         pilot = self.create_action('PILOT.BIN', self.load_file('PILOT.BIN', self.pilot))

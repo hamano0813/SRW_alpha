@@ -78,7 +78,7 @@ class ValueSpin(SingleWidget, QSpinBox):
         return True
 
     def display(self, value: int) -> str:
-        return '     ' + self.textFromValue(value) + '      '
+        return '      ' + self.textFromValue(value) + '      '
 
     def paste(self, text: str) -> int:
         _text = text.strip()
