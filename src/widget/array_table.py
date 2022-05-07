@@ -16,6 +16,7 @@ class ArrayModel(QAbstractTableModel):
         super(ArrayModel, self).__init__(parent)
         self.data_sequence: SEQUENCE = list()
         self.columns = columns
+        self.history = list()
 
     def install(self, data_sequence: SEQUENCE) -> bool:
         self.beginResetModel()
@@ -42,28 +43,38 @@ class ArrayModel(QAbstractTableModel):
         if role == Qt.DisplayRole:
             return self.columns[column_name].display(data)
         if role == Qt.TextAlignmentRole:
-            return int(self.columns[column_name].kwargs.get('alignment', Qt.AlignVCenter))
+            return int(self.columns[column_name].kwargs.get('alignment', Qt.AlignLeft) | Qt.AlignVCenter)
         if role == Qt.EditRole:
             return data
         if role == Qt.UserRole:
             return self.data_sequence[index.row()], self.columns[column_name]
         return None
 
-    def setData(self, index: QModelIndex, text: str, role: int = ...) -> bool:
+    def setData(self, index: QModelIndex, data: int | str, role: int = ...) -> bool:
         if not index.isValid():
             return False
-        if not role == Qt.EditRole:
-            return False
         column_name = tuple(self.columns.keys())[index.column()]
-        data = self.columns[column_name].paste(text)
-        if data:
+        previos_data = self.data_sequence[index.row()][column_name]
+        if role == Qt.EditRole:
             self.data_sequence[index.row()][column_name] = data
+            self.history.append((index, previos_data))
             return True
+        if role == Qt.UserRole:
+            self.data_sequence[index.row()][column_name] = self.columns[column_name].interpret(data)
+            self.history.append((index, previos_data))
+            return True
+        return False
 
     def flags(self, index: QModelIndex):
         if not index.isValid():
             return None
         return Qt.ItemIsEditable | Qt.ItemIsEnabled | Qt.ItemIsSelectable
+
+    def undo(self):
+        if self.history:
+            index, data = self.history.pop(-1)
+            column_name = tuple(self.columns.keys())[index.column()]
+            self.data_sequence[index.row()][column_name] = data
 
 
 class ArrayDelegate(QStyledItemDelegate):
@@ -76,10 +87,11 @@ class ArrayDelegate(QStyledItemDelegate):
 
     def setEditorData(self, editor: SingleWidget, index: QModelIndex) -> None:
         data_set = index.data(Qt.UserRole)[0]
-        editor.install(data_set)
+        editor.install(data_set, True)
 
     def setModelData(self, editor: SingleWidget, model, index: QModelIndex) -> None:
-        pass
+        data = editor.delegate()
+        model.setData(index, data, Qt.EditRole)
 
     def updateEditorGeometry(self, editor, option, index: QModelIndex):
         editor.setGeometry(option.rect.adjusted(-1, -1, 1, 1))
@@ -129,6 +141,7 @@ class ArrayTable(ControlWidget, QTableView):
         self.control_child(self.model().mapToSource(index).row())
         return True
 
+    # noinspection PyUnresolvedReferences
     def check_kwargs(self):
         if self.kwargs.get('single', False):
             self.setSelectionMode(QTableView.SingleSelection)
@@ -143,7 +156,12 @@ class ArrayTable(ControlWidget, QTableView):
                 return self.copy_range()
             elif event.key() == Qt.Key_V and event.modifiers() == Qt.ControlModifier:
                 return self.paste_range()
-        return super(ArrayTable, self).keyPressEvent(event)
+            elif event.key() == Qt.Key_Z and event.modifiers() == Qt.ControlModifier:
+                self.model().sourceModel().undo()
+                self.reset()
+                return True
+        super(ArrayTable, self).keyPressEvent(event)
+        return True
 
     def filterChanged(self, text: str) -> None:
         filter_text = text.strip()
@@ -193,5 +211,6 @@ class ArrayTable(ControlWidget, QTableView):
             for cid, text in enumerate(row):
                 index = self.model().createIndex(min_row + rid, min_col + cid, internal_id)
                 source_index = self.model().mapToSource(index)
-                self.model().sourceModel().setData(source_index, text, Qt.EditRole)
-        return self.reset()
+                self.model().sourceModel().setData(source_index, text, Qt.UserRole)
+        self.reset()
+        return True

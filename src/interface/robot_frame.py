@@ -28,12 +28,12 @@ class RobotFrame(BackgroundFrame):
         group = QGroupBox('机体列表')
         self['机体列表'] = ArrayTable(
             self, '机体列表', {
-                '名称': TextLine(None, '名称', ROBOT_STRUCTURE['名称'], alignment=Qt.AlignLeft | Qt.AlignVCenter),
-                'HP': ValueSpin(None, 'HP', ROBOT_STRUCTURE['HP'], alignment=Qt.AlignRight | Qt.AlignVCenter),
-                'EN': ValueSpin(None, 'EN', ROBOT_STRUCTURE['EN'], alignment=Qt.AlignRight | Qt.AlignVCenter),
-                '运动性': ValueSpin(None, '运动性', ROBOT_STRUCTURE['运动性'], alignment=Qt.AlignRight | Qt.AlignVCenter),
-                '装甲': ValueSpin(None, '装甲', ROBOT_STRUCTURE['装甲'], alignment=Qt.AlignRight | Qt.AlignVCenter),
-                '限界': ValueSpin(None, '限界', ROBOT_STRUCTURE['限界'], alignment=Qt.AlignRight | Qt.AlignVCenter),
+                '名称': TextLine(None, '名称', ROBOT_STRUCTURE['名称']),
+                'HP': ValueSpin(None, 'HP', ROBOT_STRUCTURE['HP'], alignment=Qt.AlignRight),
+                'EN': ValueSpin(None, 'EN', ROBOT_STRUCTURE['EN'], alignment=Qt.AlignRight),
+                '运动性': ValueSpin(None, '运动性', ROBOT_STRUCTURE['运动性'], alignment=Qt.AlignRight),
+                '装甲': ValueSpin(None, '装甲', ROBOT_STRUCTURE['装甲'], alignment=Qt.AlignRight),
+                '限界': ValueSpin(None, '限界', ROBOT_STRUCTURE['限界'], alignment=Qt.AlignRight),
             },
         )
         filter_line = QLineEdit()
@@ -53,12 +53,12 @@ class RobotFrame(BackgroundFrame):
         group = QGroupBox('武器列表')
         self['武器列表'] = ArrayTable(
             self['机体列表'], '武器列表', {
-                '名称': TextLine(None, '名称', WEAPON_STRUCTURE['名称'], alignment=Qt.AlignLeft | Qt.AlignVCenter),
-                '攻击力': ValueSpin(None, '攻击力', WEAPON_STRUCTURE['攻击力'], alignment=Qt.AlignRight | Qt.AlignVCenter),
-                '近射程': ValueSpin(None, '近射程', WEAPON_STRUCTURE['近射程'], alignment=Qt.AlignRight | Qt.AlignVCenter),
-                '远射程': ValueSpin(None, '远射程', WEAPON_STRUCTURE['远射程'], alignment=Qt.AlignRight | Qt.AlignVCenter),
-                '命中率': ValueSpin(None, '命中率', WEAPON_STRUCTURE['命中率'], alignment=Qt.AlignRight | Qt.AlignVCenter),
-                '会心率': ValueSpin(None, '会心率', WEAPON_STRUCTURE['会心率'], alignment=Qt.AlignRight | Qt.AlignVCenter),
+                '名称': TextLine(None, '名称', WEAPON_STRUCTURE['名称']),
+                '攻击力': ValueSpin(None, '攻击力', WEAPON_STRUCTURE['攻击力'], alignment=Qt.AlignRight),
+                '近射程': ValueSpin(None, '近射程', WEAPON_STRUCTURE['近射程'], alignment=Qt.AlignRight),
+                '远射程': ValueSpin(None, '远射程', WEAPON_STRUCTURE['远射程'], alignment=Qt.AlignRight),
+                '命中率': ValueSpin(None, '命中率', WEAPON_STRUCTURE['命中率'], alignment=Qt.AlignRight),
+                '会心率': ValueSpin(None, '会心率', WEAPON_STRUCTURE['会心率'], alignment=Qt.AlignRight),
             },
         )
         group_layout = QVBoxLayout()
