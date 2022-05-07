@@ -21,16 +21,20 @@ class SingleWidget(AbstractWidget):
         AbstractWidget.__init__(self, parent, data_name, **kwargs)
         self.structure = structure
 
-    def install(self, data_set: dict[str, int | str]) -> bool:
+    def install(self, data_set: dict[str, int | str], delegate: bool = False) -> bool:
         pass
 
-    def write(self) -> bool:
-        pass
+    def overwrite(self) -> bool:
+        self.data_set[self.data_name] = self.delegate()
+        return True
 
     def display(self, data: int | str) -> str:
         pass
 
-    def paste(self, text: str) -> int | str:
+    def interpret(self, text: str) -> int | str:
+        pass
+
+    def delegate(self) -> int | str:
         pass
 
     def new(self, parent):

@@ -17,24 +17,22 @@ class TextLine(SingleWidget, QLineEdit):
             self.setAlignment(alignment)
 
     # noinspection PyUnresolvedReferences
-    def install(self, data_set: dict[str, int | str]) -> bool:
+    def install(self, data_set: dict[str, int | str], delegate: bool = False) -> bool:
         self.disconnect(self)
         self.data_set = data_set
         text = self.data_set.get(self.data_name)
-        if text:
-            self.setText(text)
-        self.editingFinished.connect(self.write)
-        return True
-
-    def write(self) -> bool:
-        text = self.text().strip()
-        self.data_set[self.data_name] = text
+        self.setText(self.display(text))
+        if not delegate:
+            self.editingFinished.connect(self.overwrite)
         return True
 
     def display(self, text: str) -> str:
-        if text:
+        if text is not None:
             return text
         return ''
 
-    def paste(self, text: str) -> str:
+    def interpret(self, text: str) -> str:
         return text.strip()
+
+    def delegate(self):
+        return self.interpret(self.text())
