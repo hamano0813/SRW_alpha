@@ -27,7 +27,7 @@ class ArrayModel(QAbstractTableModel):
         if role != Qt.DisplayRole:
             return None
         elif orientation == Qt.Horizontal:
-            return '    ' + tuple(self.columns.keys())[section] + ' '
+            return '      ' + tuple(self.columns.keys())[section] + ' '
         return f'  [{section:0{len(hex(len(self.data_sequence))) - 2}X}]'
 
     def rowCount(self, parent: QModelIndex = ...) -> int:
@@ -71,11 +71,11 @@ class ArrayDelegate(QStyledItemDelegate):
         super(ArrayDelegate, self).__init__(parent)
 
     def createEditor(self, parent, option: QStyleOptionViewItem, index: QModelIndex) -> SingleWidget:
-        editor = index.model().data(index, Qt.UserRole)[1].new(parent)
+        editor = index.data(Qt.UserRole)[1].new(parent)
         return editor
 
     def setEditorData(self, editor: SingleWidget, index: QModelIndex) -> None:
-        data_set = index.model().data(index, Qt.UserRole)[0]
+        data_set = index.data(Qt.UserRole)[0]
         editor.install(data_set)
 
     def setModelData(self, editor: SingleWidget, model, index: QModelIndex) -> None:
@@ -90,30 +90,46 @@ class ArrayTable(ControlWidget, QTableView):
         QTableView.__init__(self, parent=None)
         ControlWidget.__init__(self, parent, data_name, **kwargs)
         self.columns = columns
-        self.array_delegate = ArrayDelegate(self)
-        self.setItemDelegate(self.array_delegate)
-        self.proxy_model = QSortFilterProxyModel(self)
+        self.setItemDelegate(ArrayDelegate(self))
         self.horizontalHeader().setProperty('orientation', 'horizontal')
 
         self.check_kwargs()
 
+    # noinspection PyUnresolvedReferences
     def install(self, data_set: dict[str, int | str | SEQUENCE]) -> bool:
         array_model = ArrayModel(self, self.columns)
         array_model.install(data_set.get(self.data_name, list()))
-        self.proxy_model.setSourceModel(array_model)
-        self.setModel(self.proxy_model)
+        proxy = self.generate_proxy()
+        proxy.setSourceModel(array_model)
+        self.setModel(proxy)
+
         self.resizeColumnsToContents()
+        self.horizontalHeader().setSectionResizeMode(0, self.horizontalHeader().Stretch)
+
         self.data_set = data_set
         self.control_child(0)
+
+        self.clicked[QModelIndex].connect(self.select_index)
+        self.selectionModel().currentChanged[QModelIndex, QModelIndex].connect(self.select_index)
         return True
 
-    def check_kwargs(self):
+    def generate_proxy(self) -> QSortFilterProxyModel:
+        proxy = QSortFilterProxyModel(self)
         if self.kwargs.get('sortable', True):
-            self.proxy_model.setSortRole(Qt.EditRole)
+            proxy.setSortRole(Qt.EditRole)
             self.setSortingEnabled(True)
             self.horizontalHeader().setSortIndicatorClearable(True)
         if self.kwargs.get('editable', False):
-            self.proxy_model.flags = lambda x: Qt.ItemIsEnabled | Qt.ItemIsSelectable
+            proxy.flags = lambda x: Qt.ItemIsEnabled | Qt.ItemIsSelectable
+        return proxy
+
+    def select_index(self, index: QModelIndex) -> bool:
+        if not index.isValid():
+            return False
+        self.control_child(self.model().mapToSource(index).row())
+        return True
+
+    def check_kwargs(self):
         if self.kwargs.get('single', False):
             self.setSelectionMode(QTableView.SingleSelection)
             self.setSelectionBehavior(QTableView.SelectRows)
@@ -136,9 +152,9 @@ class ArrayTable(ControlWidget, QTableView):
             regexp = QRegularExpression(pattern)
             options = regexp.patternOptions() | QRegularExpression.CaseInsensitiveOption
             regexp.setPatternOptions(options)
-            self.proxy_model.setFilterRegularExpression(regexp)
+            self.model().setFilterRegularExpression(regexp)
         else:
-            self.proxy_model.setFilterRegularExpression('')
+            self.model().setFilterRegularExpression('')
 
     def copy_paste(self) -> None:
         right_click_menu = QMenu()
@@ -152,7 +168,7 @@ class ArrayTable(ControlWidget, QTableView):
     def copy_range(self) -> bool:
         if not self.selectedIndexes():
             return False
-        indexes = tuple(map(self.proxy_model.mapToSource, self.selectedIndexes()))
+        indexes = tuple(map(self.model().mapToSource, self.selectedIndexes()))
         row_set = set(map(lambda idx: idx.row(), indexes))
         col_set = set(map(lambda idx: idx.column(), indexes))
         row_count = max(row_set) - min(row_set) + 1
@@ -175,11 +191,7 @@ class ArrayTable(ControlWidget, QTableView):
         min_col = min(map(lambda idx: idx.column(), self.selectedIndexes()))
         for rid, row in enumerate(data):
             for cid, text in enumerate(row):
-                index = self.proxy_model.createIndex(min_row + rid, min_col + cid, internal_id)
-                source_index = self.proxy_model.mapToSource(index)
-                self._model.setData(source_index, text, Qt.EditRole)
+                index = self.model().createIndex(min_row + rid, min_col + cid, internal_id)
+                source_index = self.model().mapToSource(index)
+                self.model().sourceModel().setData(source_index, text, Qt.EditRole)
         return self.reset()
-
-    @property
-    def _model(self) -> ArrayModel:
-        return self.proxy_model.sourceModel()
