@@ -9,8 +9,7 @@ class Value:
 
     def __init__(self, offset: int, length: int, bit=None):
         self.offset = offset
-        self.signed = length < 0
-        self.length = abs(length)
+        self.length = length
         self.fmt = self.length_format[length]
         self.bit: int | tuple = bit
 
@@ -32,7 +31,7 @@ class Value:
         if isinstance(self.bit, int):
             return (value & (1 << self.bit)) >> self.bit
         _value = (value & ((1 << self.bit[1]) - 1)) >> self.bit[0]
-        if not self.signed:
+        if self.length > 0:
             return _value
         bit_width = self.bit[1] - self.bit[0] - 1
         return (_value & ((1 << bit_width) - 1)) - (_value & (1 << bit_width))
