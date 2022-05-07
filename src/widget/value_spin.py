@@ -15,6 +15,8 @@ class ValueSpin(SingleWidget, QSpinBox):
         self.multiple = multiple
         if alignment := kwargs.get('alignment'):
             self.setAlignment(alignment)
+        if font := kwargs.get('font'):
+            self.setFont(font)
         self.init_range()
 
     def init_range(self) -> bool:
@@ -63,5 +65,5 @@ class ValueSpin(SingleWidget, QSpinBox):
     def interpret(self, text: str) -> int:
         return self.valueFromText(text) // self.multiple
 
-    def delegate(self) -> int | str:
+    def delegate(self) -> int:
         return self.value() // self.multiple

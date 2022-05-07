@@ -7,11 +7,13 @@ from structure.generic import Value
 from .abstract_widget import SingleWidget
 
 
-class MappingSpin(SingleWidget, QComboBox):
+class RadioCombo(SingleWidget, QComboBox):
     def __init__(self, parent, data_name: str, structure: Value, mapping: dict[int, str], **kwargs):
         QComboBox.__init__(self, parent)
         SingleWidget.__init__(self, parent, data_name, structure, **kwargs)
         self.mapping = mapping
+        if font := kwargs.get('font'):
+            self.setFont(font)
 
     def init_mapping(self):
         for data, text in self.mapping.items():
@@ -34,5 +36,5 @@ class MappingSpin(SingleWidget, QComboBox):
         mapping = {value: key for key, value in self.mapping.items()}
         return mapping.get(text, self.data_set.get(self.data_name, 0))
 
-    def delegate(self) -> int | str:
+    def delegate(self) -> int:
         return self.interpret(self.currentText())

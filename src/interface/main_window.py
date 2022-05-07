@@ -35,7 +35,6 @@ class MainWindow(QMainWindow):
 
         self.setWindowTitle('超级机器人大战α 静态修改器')
         self.setWindowIcon(QIcon(':image/icon.png'))
-        self.setMinimumSize(1440, 960)
         self.check_enable()
 
     def init_file_menu(self):

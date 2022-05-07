@@ -14,6 +14,8 @@ class MappingSpin(SingleWidget, QSpinBox):
         self.mapping = mapping
         if alignment := kwargs.get('alignment'):
             self.setAlignment(alignment)
+        if font := kwargs.get('font'):
+            self.setFont(font)
         self.init_mapping()
 
     def init_mapping(self) -> bool:
@@ -44,5 +46,5 @@ class MappingSpin(SingleWidget, QSpinBox):
     def interpret(self, text: str) -> int:
         return self.valueFromText(text)
 
-    def delegate(self) -> int | str:
+    def delegate(self) -> int:
         return self.value()

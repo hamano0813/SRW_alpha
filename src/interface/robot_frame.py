@@ -18,8 +18,15 @@ class RobotFrame(BackgroundFrame):
         robot_table_group = self.init_robot_table()
         weapon_table_group = self.init_weapon_table()
 
+        move_group = self.init_move_group()
+        robot_layout = QHBoxLayout()
+        robot_layout.addWidget(move_group)
+        robot_layout.addStretch()
+
         right_layout = QVBoxLayout()
+        right_layout.addLayout(robot_layout)
         right_layout.addWidget(weapon_table_group)
+        right_layout.addStretch()
         main_layout = QHBoxLayout()
         main_layout.addWidget(robot_table_group)
         main_layout.addLayout(right_layout)
@@ -48,8 +55,22 @@ class RobotFrame(BackgroundFrame):
         group.setLayout(group_layout)
         # noinspection PyUnresolvedReferences
         filter_line.textChanged[str].connect(self['机体列表'].filterChanged)
+        filter_line.setFont('Yu Gothic UI Semibold')
         group.setFixedWidth(690)
         return group
+
+    def init_move_group(self):
+        move_group = QGroupBox('地形及移动')
+        self['移动类型'] = CheckCombo(
+            self['机体列表'], '移动类型', ROBOT_STRUCTURE['移动类型'], ['空', '陸', '海', '地'], font='Yu Gothic UI Semibold')
+
+        group_layout = QVBoxLayout()
+        group_layout.addWidget(QLabel('移动类型'))
+        group_layout.addWidget(self['移动类型'])
+
+        move_group.setLayout(group_layout)
+        return move_group
+
 
     def init_weapon_table(self):
         group = QGroupBox('武器列表')

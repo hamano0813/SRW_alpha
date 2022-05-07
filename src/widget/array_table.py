@@ -125,7 +125,8 @@ class ArrayTable(ControlWidget, QTableView):
         self.setModel(proxy)
 
         self.resizeColumnsToContents()
-        self.horizontalHeader().setSectionResizeMode(0, self.horizontalHeader().Stretch)
+        stretch_column = self.kwargs.get('stretch', 0)
+        self.horizontalHeader().setSectionResizeMode(stretch_column, self.horizontalHeader().Stretch)
 
         self.data_set = data_set
         self.control_child(0)
