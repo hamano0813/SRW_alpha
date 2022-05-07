@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from collections import deque
 from typing import Optional
 
 from PySide6.QtCore import Qt, QAbstractTableModel, QSortFilterProxyModel, QModelIndex, QRegularExpression
@@ -17,6 +18,7 @@ class ArrayModel(QAbstractTableModel):
         self.data_sequence: SEQUENCE = list()
         self.columns = columns
         self.history = list()
+        self.history = deque(maxlen=100)
 
     def install(self, data_sequence: SEQUENCE) -> bool:
         self.beginResetModel()
@@ -56,12 +58,14 @@ class ArrayModel(QAbstractTableModel):
         column_name = tuple(self.columns.keys())[index.column()]
         previos_data = self.data_sequence[index.row()][column_name]
         if role == Qt.EditRole:
-            self.data_sequence[index.row()][column_name] = data
-            self.history.append((index, previos_data))
+            _data = self.data_sequence[index.row()][column_name] = data
+            if not _data == previos_data:
+                self.history.append((index, previos_data))
             return True
         if role == Qt.UserRole:
-            self.data_sequence[index.row()][column_name] = self.columns[column_name].interpret(data)
-            self.history.append((index, previos_data))
+            _data = self.data_sequence[index.row()][column_name] = self.columns[column_name].interpret(data)
+            if not _data == previos_data:
+                self.history.append((index, previos_data))
             return True
         return False
 
@@ -72,7 +76,7 @@ class ArrayModel(QAbstractTableModel):
 
     def undo(self):
         if self.history:
-            index, data = self.history.pop(-1)
+            index, data = self.history.pop()
             column_name = tuple(self.columns.keys())[index.column()]
             self.data_sequence[index.row()][column_name] = data
 
