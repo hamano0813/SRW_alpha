@@ -67,8 +67,7 @@ class MainWindow(QMainWindow):
     def load_file(self, file_name: str, rom: Rom) -> callable:
         def load():
             folder = self.folder if self.folder else sys.path[0]
-            path = QFileDialog().getOpenFileName(None, file_name, folder, file_name,
-                                                 options=QFileDialog.DontResolveSymlinks)[0]
+            path = QFileDialog().getOpenFileName(None, file_name, folder, file_name)[0]
             if path:
                 rom.load(path)
                 self.folder = os.path.split(path)[0]
