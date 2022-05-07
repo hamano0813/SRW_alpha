@@ -114,7 +114,6 @@ SNMSG_TEXT_EXTRA = {
     '$N': '【恋人】',
 }
 
-
 SCRIPT_TEXT_EXTRA = {
     '$n': '【主人公】',
     '$l': '【恋人】',

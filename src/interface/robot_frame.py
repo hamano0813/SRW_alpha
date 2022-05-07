@@ -2,8 +2,10 @@
 # -*- coding: utf-8 -*-
 
 from typing import Optional
-from PySide6.QtWidgets import QLabel, QLineEdit, QGroupBox, QHBoxLayout, QVBoxLayout
+
 from PySide6.QtCore import Qt
+from PySide6.QtWidgets import QLabel, QLineEdit, QGroupBox, QHBoxLayout, QVBoxLayout
+
 from structure import RobotRAF
 from structure.specific.robot_raf import ROBOT_STRUCTURE, WEAPON_STRUCTURE
 from widget import *
@@ -28,7 +30,7 @@ class RobotFrame(BackgroundFrame):
         group = QGroupBox('机体列表')
         self['机体列表'] = ArrayTable(
             self, '机体列表', {
-                '名称': TextLine(None, '名称', ROBOT_STRUCTURE['名称']),
+                '名称': TextLine(None, '名称', ROBOT_STRUCTURE['名称'], font="Yu Gothic UI Semibold"),
                 'HP': ValueSpin(None, 'HP', ROBOT_STRUCTURE['HP'], alignment=Qt.AlignRight),
                 'EN': ValueSpin(None, 'EN', ROBOT_STRUCTURE['EN'], alignment=Qt.AlignRight),
                 '运动性': ValueSpin(None, '运动性', ROBOT_STRUCTURE['运动性'], alignment=Qt.AlignRight),
@@ -46,14 +48,14 @@ class RobotFrame(BackgroundFrame):
         group.setLayout(group_layout)
         # noinspection PyUnresolvedReferences
         filter_line.textChanged[str].connect(self['机体列表'].filterChanged)
-        group.setFixedWidth(705)
+        group.setFixedWidth(690)
         return group
 
     def init_weapon_table(self):
         group = QGroupBox('武器列表')
         self['武器列表'] = ArrayTable(
             self['机体列表'], '武器列表', {
-                '名称': TextLine(None, '名称', WEAPON_STRUCTURE['名称']),
+                '名称': TextLine(None, '名称', WEAPON_STRUCTURE['名称'], font="Yu Gothic UI Semibold"),
                 '攻击力': ValueSpin(None, '攻击力', WEAPON_STRUCTURE['攻击力'], alignment=Qt.AlignRight),
                 '近射程': ValueSpin(None, '近射程', WEAPON_STRUCTURE['近射程'], alignment=Qt.AlignRight),
                 '远射程': ValueSpin(None, '远射程', WEAPON_STRUCTURE['远射程'], alignment=Qt.AlignRight),
@@ -64,7 +66,7 @@ class RobotFrame(BackgroundFrame):
         group_layout = QVBoxLayout()
         group_layout.addWidget(self['武器列表'])
         group.setLayout(group_layout)
-        group.setFixedSize(705, 546)
+        group.setFixedSize(690, 546)
         return group
 
     def set_rom(self, rom: RobotRAF):

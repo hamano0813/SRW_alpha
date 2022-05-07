@@ -8,13 +8,15 @@ from .abstract_widget import SingleWidget
 
 
 class TextLine(SingleWidget, QLineEdit):
-    def __init__(self, parent, data_name, structure: Text, **kwargs):
+    def __init__(self, parent, data_name, structure: Text, extra: dict[str, str] = None, **kwargs):
         QLineEdit.__init__(self, parent)
         SingleWidget.__init__(self, parent, data_name, structure, **kwargs)
-        if extra := kwargs.get('extra'):
+        if extra:
             self.structure.extra |= extra
         if alignment := kwargs.get('alignment'):
             self.setAlignment(alignment)
+        if font := kwargs.get('font'):
+            self.setFont(font)
 
     # noinspection PyUnresolvedReferences
     def install(self, data_set: dict[str, int | str], delegate: bool = False) -> bool:

@@ -11,6 +11,8 @@ from PySide6.QtWidgets import QApplication, QWidget, QTableView, QMenu, QStyledI
 from structure.generic import SEQUENCE
 from .abstract_widget import ControlWidget, SingleWidget
 
+HALF_FONT = 'Yu Gothic UI Semibold'
+
 
 class ArrayModel(QAbstractTableModel):
     def __init__(self, parent: Optional['ArrayTable'], columns: dict[str, SingleWidget]):
@@ -50,6 +52,9 @@ class ArrayModel(QAbstractTableModel):
             return data
         if role == Qt.UserRole:
             return self.data_sequence[index.row()], self.columns[column_name]
+        if role == Qt.FontRole:
+            if not hasattr(self.columns[column_name], 'init_range'):
+                return HALF_FONT
         return None
 
     def setData(self, index: QModelIndex, data: int | str, role: int = ...) -> bool:
@@ -180,9 +185,9 @@ class ArrayTable(ControlWidget, QTableView):
 
     def copy_paste(self) -> None:
         right_click_menu = QMenu()
-        copy_action = QAction('复制', self)
+        copy_action = QAction('复制(C)', self)
         copy_action.triggered.connect(self.copy_range)
-        paste_action = QAction('粘贴', self)
+        paste_action = QAction('粘贴(V)', self)
         paste_action.triggered.connect(self.paste_range)
         right_click_menu.addActions([copy_action, paste_action])
         right_click_menu.exec_(QCursor().pos())
