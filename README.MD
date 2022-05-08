@@ -4,10 +4,8 @@
 [![Pillow](https://img.shields.io/badge/Pillow-9.1.0-darkcyan?logo=nintendogamecube&style=flat&labelColor=013243)](https://python-pillow.org/)
 [![pyqtdarktheme](https://img.shields.io/badge/pyqtdarktheme-1.1.0-darkcyan?style=flat&labelColor=013243)](https://pypi.org/project/pyqtdarktheme/)
 #### 项目说明
-~~~
 用于修改机战α的静态修改器，为了弥补luxiwen版本修改器部分不能改或无法直观修改的数据而写的，所谓自己动手丰衣足食是也。
 主要特点是可以修改战场的剧情配置和幕间剧情配置，同时明确熟练度和隐藏的获得条件等。
-~~~
 #### 主要实现功能
 - [x] 机体属性
 - [x] 武器属性
@@ -33,7 +31,5 @@
 + PRM_GRP.BIN
 + 12F.DAT
 #### 使用方法
-~~~
 将上述所需文件提前准备好，机体文件需要用luxiwen版本修改器解压一下，然后在程序中载入即可开始修改。
 修改数据后点击写入会暂存本次修改，退出程序前不要忘记保存ROM。
-~~~

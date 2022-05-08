@@ -13,6 +13,7 @@ from structure.specific.robot_raf import ROBOT_STRUCTURE, WEAPON_STRUCTURE
 from widget import *
 
 
+# noinspection PyUnresolvedReferences
 class RobotFrame(BackgroundFrame):
     def __init__(self, parent=None, **kwargs):
         super(RobotFrame, self).__init__(parent)
@@ -20,7 +21,6 @@ class RobotFrame(BackgroundFrame):
         self.kwargs = kwargs
         self.init_ui()
 
-    # noinspection PyUnresolvedReferences
     def init_ui(self):
         robot_table = self.init_robot_table()
         move_group = self.init_move_group()
@@ -83,7 +83,7 @@ class RobotFrame(BackgroundFrame):
         group = QGroupBox('机体列表')
         self['机体列表'] = ArrayTable(
             self, '机体列表', {
-                '名称': TextLine(None, '名称', ROBOT_STRUCTURE['名称'],
+                '机体': TextLine(None, '机体', ROBOT_STRUCTURE['机体'],
                                font="Yu Gothic UI"),
                 'ＨＰ': ValueSpin(None, 'ＨＰ', ROBOT_STRUCTURE['ＨＰ'],
                                 alignment=Qt.AlignRight),
@@ -105,7 +105,6 @@ class RobotFrame(BackgroundFrame):
         group_layout.addWidget(self['机体列表'])
         group_layout.addLayout(filter_layout)
         group.setLayout(group_layout)
-        # noinspection PyUnresolvedReferences
         filter_line.textChanged[str].connect(self['机体列表'].filterChanged)
         filter_line.setFont('Yu Gothic UI')
         group.setFixedSize(630, 780)
@@ -113,18 +112,24 @@ class RobotFrame(BackgroundFrame):
 
     def init_move_group(self):
         group = QGroupBox('机体属性')
-        self['移动类型'] = CheckCombo(self['机体列表'], '移动类型', ROBOT_STRUCTURE['移动类型'], EnumData.ROBOT['移动类型'])
+        self['移动类型'] = CheckCombo(self['机体列表'], '移动类型', ROBOT_STRUCTURE['移动类型'],
+                                  EnumData.ROBOT['移动类型'])
         self['移动力'] = ValueSpin(self['机体列表'], '移动力', ROBOT_STRUCTURE['移动类型'],
                                 alignment=Qt.AlignRight)
-        self['空适应'] = MappingSpin(self['机体列表'], '空适应', ROBOT_STRUCTURE['空适应'], EnumData.ROBOT['空适应'],
+        self['空适应'] = MappingSpin(self['机体列表'], '空适应', ROBOT_STRUCTURE['空适应'],
+                                  EnumData.ROBOT['适应'],
                                   alignment=Qt.AlignRight)
-        self['陆适应'] = MappingSpin(self['机体列表'], '陆适应', ROBOT_STRUCTURE['陆适应'], EnumData.ROBOT['陆适应'],
+        self['陆适应'] = MappingSpin(self['机体列表'], '陆适应', ROBOT_STRUCTURE['陆适应'],
+                                  EnumData.ROBOT['适应'],
                                   alignment=Qt.AlignRight)
-        self['海适应'] = MappingSpin(self['机体列表'], '海适应', ROBOT_STRUCTURE['海适应'], EnumData.ROBOT['海适应'],
+        self['海适应'] = MappingSpin(self['机体列表'], '海适应', ROBOT_STRUCTURE['海适应'],
+                                  EnumData.ROBOT['适应'],
                                   alignment=Qt.AlignRight)
-        self['宇适应'] = MappingSpin(self['机体列表'], '宇适应', ROBOT_STRUCTURE['宇适应'], EnumData.ROBOT['宇适应'],
+        self['宇适应'] = MappingSpin(self['机体列表'], '宇适应', ROBOT_STRUCTURE['宇适应'],
+                                  EnumData.ROBOT['适应'],
                                   alignment=Qt.AlignRight)
-        self['尺寸'] = MappingSpin(self['机体列表'], '尺寸', ROBOT_STRUCTURE['尺寸'], EnumData.ROBOT['尺寸'],
+        self['尺寸'] = MappingSpin(self['机体列表'], '尺寸', ROBOT_STRUCTURE['尺寸'],
+                                 EnumData.ROBOT['尺寸'],
                                  alignment=Qt.AlignRight)
         self['部件槽数'] = ValueSpin(self['机体列表'], '部件槽数', ROBOT_STRUCTURE['部件槽数'],
                                  alignment=Qt.AlignRight)
@@ -190,8 +195,9 @@ class RobotFrame(BackgroundFrame):
         return group
 
     def init_transfer_group(self):
-        group = QGroupBox('换乘系统及机体BGM')
-        self['换乘系'] = CheckList(self['机体列表'], '换乘系', ROBOT_STRUCTURE['换乘系'], EnumData.ROBOT['换乘系'],
+        group = QGroupBox('换乘系统')
+        self['换乘系'] = CheckList(self['机体列表'], '换乘系', ROBOT_STRUCTURE['换乘系'],
+                                EnumData.ROBOT['换乘系'],
                                 font='Yu Gothic UI')
         group_layout = QVBoxLayout()
         group_layout.addWidget(self['换乘系'])
@@ -201,7 +207,8 @@ class RobotFrame(BackgroundFrame):
 
     def init_skill_group(self):
         group = QGroupBox('机体特殊能力')
-        self['特殊能力'] = CheckList(self['机体列表'], '特殊能力', ROBOT_STRUCTURE['特殊能力'], EnumData.ROBOT['特殊能力'],
+        self['特殊能力'] = CheckList(self['机体列表'], '特殊能力', ROBOT_STRUCTURE['特殊能力'],
+                                 item_list=EnumData.ROBOT['特殊能力'],
                                  font='Yu Gothic UI')
         group_layout = QHBoxLayout()
         group_layout.addWidget(self['特殊能力'])
@@ -212,9 +219,8 @@ class RobotFrame(BackgroundFrame):
     def init_bgm_group(self):
         group = QGroupBox('机体音乐')
         self['BGM'] = RadioCombo(self['机体列表'], 'BGM', ROBOT_STRUCTURE['BGM'],
-                                 {k: f'[{k:02X}]{v}' for k, v in EnumData.MUSIC.items()},
+                                 mapping={k: f'[{k:02X}] {v}' for k, v in EnumData.MUSIC.items()},
                                  font='Yu Gothic UI')
-        # noinspection PyUnresolvedReferences
         self['BGM'].setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         group_layout = QHBoxLayout()
         group_layout.addWidget(QLabel('选择BGM'))
@@ -227,7 +233,7 @@ class RobotFrame(BackgroundFrame):
         group = QGroupBox('武器列表')
         self['武器列表'] = ArrayTable(
             self['机体列表'], '武器列表', {
-                '名称': TextLine(None, '名称', WEAPON_STRUCTURE['名称'],
+                '武器': TextLine(None, '武器', WEAPON_STRUCTURE['武器'],
                                font="Yu Gothic UI"),
                 '分类': MappingSpin(None, '分类', WEAPON_STRUCTURE['分类'], EnumData.WEAPON['分类'],
                                   alignment=Qt.AlignRight, font='Yu Gothic UI'),
@@ -313,39 +319,43 @@ class RobotFrame(BackgroundFrame):
 
     def init_weapon_map(self):
         group = QGroupBox('地图武器设置')
-        self['MAP类型'] = RadioCombo(self['武器列表'], 'MAP类型', WEAPON_STRUCTURE['MAP类型'], EnumData.WEAPON['MAP类型'],
+        self['MAP类型'] = RadioCombo(self['武器列表'], 'MAP类型', WEAPON_STRUCTURE['MAP类型'],
+                                   mapping=EnumData.WEAPON['MAP类型'],
                                    font='Yu Gothic UI')
-        self['MAP演出'] = ValueSpin(self['武器列表'], 'MAP演出', WEAPON_STRUCTURE['MAP演出'], alignment=Qt.AlignRight)
-        self['MAP着弹范围'] = ValueSpin(self['武器列表'], 'MAP着弹范围', WEAPON_STRUCTURE['MAP着弹范围'])
+        self['MAP演出'] = ValueSpin(self['武器列表'], 'MAP演出', WEAPON_STRUCTURE['MAP演出'],
+                                  alignment=Qt.AlignRight)
+        self['MAP着弹范围'] = ValueSpin(self['武器列表'], 'MAP着弹范围', WEAPON_STRUCTURE['MAP着弹范围'],
+                                    alignment=Qt.AlignRight)
         self['MAP范围'] = RangeCombo(self['武器列表'], 'MAP范围', WEAPON_STRUCTURE['MAP范围'])
 
         self['MAP类型'].currentIndexChanged.connect(self.charge_map)
         self['MAP演出'].setFixedSize(60, 28)
         self['MAP着弹范围'].setFixedSize(60, 28)
 
-        self.weapon_map_layout = QGridLayout()
-        self.weapon_map_layout.addWidget(QLabel('地图武器类型'), 0, 0, 1, 2)
-        self.weapon_map_layout.addWidget(self['MAP类型'], 1, 0, 1, 2)
-        self.weapon_map_layout.addWidget(QLabel('地图武器演出效果'), 2, 0, 1, 1)
-        self.weapon_map_layout.addWidget(self['MAP演出'], 2, 1, 1, 1)
-        self.weapon_map_layout.addWidget(QLabel('着弾点指定型范围半径'), 3, 0, 1, 1)
-        self.weapon_map_layout.addWidget(self['MAP着弹范围'], 3, 1, 1, 1)
-        self.weapon_map_layout.addWidget(QLabel('方向指定型覆盖范围'), 4, 0, 1, 1)
-        self.weapon_map_layout.addWidget(self['MAP范围'], 5, 0, 1, 2)
-        self.weapon_map_layout.addItem(QSpacerItem(1, 1, QSizePolicy.Fixed, QSizePolicy.Expanding), 6, 0, 1, 2)
-        group.setLayout(self.weapon_map_layout)
+        group_layout = QGridLayout()
+        group_layout.setObjectName('weapon_map')
+        group_layout.addWidget(QLabel('地图武器类型'), 0, 0, 1, 2)
+        group_layout.addWidget(self['MAP类型'], 1, 0, 1, 2)
+        group_layout.addWidget(QLabel('地图武器演出效果'), 2, 0, 1, 1)
+        group_layout.addWidget(self['MAP演出'], 2, 1, 1, 1)
+        group_layout.addWidget(QLabel('着弾点指定型范围半径'), 3, 0, 1, 1)
+        group_layout.addWidget(self['MAP着弹范围'], 3, 1, 1, 1)
+        group_layout.addWidget(QLabel('方向指定型覆盖范围'), 4, 0, 1, 1)
+        group_layout.addWidget(self['MAP范围'], 5, 0, 1, 2)
+        group_layout.addItem(QSpacerItem(1, 1, QSizePolicy.Fixed, QSizePolicy.Expanding), 6, 0, 1, 2)
+        group.setLayout(group_layout)
         group.setFixedSize(245, 289)
         return group
 
     def init_weapon_adaptation(self):
         group = QGroupBox('武器适应性')
-        self['空'] = MappingSpin(self['武器列表'], '空适应', WEAPON_STRUCTURE['空适应'], EnumData.WEAPON['空适应'],
+        self['空'] = MappingSpin(self['武器列表'], '空适应', WEAPON_STRUCTURE['空适应'], EnumData.WEAPON['适应'],
                                 alignment=Qt.AlignRight)
-        self['陆'] = MappingSpin(self['武器列表'], '陆适应', WEAPON_STRUCTURE['陆适应'], EnumData.WEAPON['陆适应'],
+        self['陆'] = MappingSpin(self['武器列表'], '陆适应', WEAPON_STRUCTURE['陆适应'], EnumData.WEAPON['适应'],
                                 alignment=Qt.AlignRight)
-        self['海'] = MappingSpin(self['武器列表'], '海适应', WEAPON_STRUCTURE['海适应'], EnumData.WEAPON['海适应'],
+        self['海'] = MappingSpin(self['武器列表'], '海适应', WEAPON_STRUCTURE['海适应'], EnumData.WEAPON['适应'],
                                 alignment=Qt.AlignRight)
-        self['宇'] = MappingSpin(self['武器列表'], '宇适应', WEAPON_STRUCTURE['宇适应'], EnumData.WEAPON['宇适应'],
+        self['宇'] = MappingSpin(self['武器列表'], '宇适应', WEAPON_STRUCTURE['宇适应'], EnumData.WEAPON['适应'],
                                 alignment=Qt.AlignRight)
         group_layout = QFormLayout()
         group_layout.addRow('空适应', self['空'])
@@ -357,31 +367,32 @@ class RobotFrame(BackgroundFrame):
         return group
 
     def charge_map(self):
+        layout = self.findChild(QGridLayout, 'weapon_map')
         if self['MAP类型'].currentIndex() == 0:
-            self.weapon_map_layout.itemAtPosition(2, 0).widget().setHidden(True)
-            self.weapon_map_layout.itemAtPosition(3, 0).widget().setHidden(True)
-            self.weapon_map_layout.itemAtPosition(4, 0).widget().setHidden(True)
+            layout.itemAtPosition(2, 0).widget().setHidden(True)
+            layout.itemAtPosition(3, 0).widget().setHidden(True)
+            layout.itemAtPosition(4, 0).widget().setHidden(True)
             self['MAP演出'].setHidden(True)
             self['MAP着弹范围'].setHidden(True)
             self['MAP范围'].setHidden(True)
         elif self['MAP类型'].currentIndex() == 1:
-            self.weapon_map_layout.itemAtPosition(2, 0).widget().setHidden(False)
-            self.weapon_map_layout.itemAtPosition(3, 0).widget().setHidden(True)
-            self.weapon_map_layout.itemAtPosition(4, 0).widget().setHidden(False)
+            layout.itemAtPosition(2, 0).widget().setHidden(False)
+            layout.itemAtPosition(3, 0).widget().setHidden(True)
+            layout.itemAtPosition(4, 0).widget().setHidden(False)
             self['MAP演出'].setHidden(False)
             self['MAP着弹范围'].setHidden(True)
             self['MAP范围'].setHidden(False)
         elif self['MAP类型'].currentIndex() == 2:
-            self.weapon_map_layout.itemAtPosition(2, 0).widget().setHidden(False)
-            self.weapon_map_layout.itemAtPosition(3, 0).widget().setHidden(True)
-            self.weapon_map_layout.itemAtPosition(4, 0).widget().setHidden(True)
+            layout.itemAtPosition(2, 0).widget().setHidden(False)
+            layout.itemAtPosition(3, 0).widget().setHidden(True)
+            layout.itemAtPosition(4, 0).widget().setHidden(True)
             self['MAP演出'].setHidden(False)
             self['MAP着弹范围'].setHidden(True)
             self['MAP范围'].setHidden(True)
         elif self['MAP类型'].currentIndex() == 3:
-            self.weapon_map_layout.itemAtPosition(2, 0).widget().setHidden(False)
-            self.weapon_map_layout.itemAtPosition(3, 0).widget().setHidden(False)
-            self.weapon_map_layout.itemAtPosition(4, 0).widget().setHidden(True)
+            layout.itemAtPosition(2, 0).widget().setHidden(False)
+            layout.itemAtPosition(3, 0).widget().setHidden(False)
+            layout.itemAtPosition(4, 0).widget().setHidden(True)
             self['MAP演出'].setHidden(False)
             self['MAP着弹范围'].setHidden(False)
             self['MAP范围'].setHidden(True)

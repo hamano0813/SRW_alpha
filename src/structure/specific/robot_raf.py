@@ -18,7 +18,7 @@ WEAPON_STRUCTURE = {
     '分类': Value(0x6, 0x1, 0),
     '属性': Value(0x6, 0x1, (1, 8)),
     '改造追加': Value(0x7, 0x1, (4, 8)),
-    '名称': Text(0x8, 0x15, 'shiftjisx0213', HALF_TEXT_EXTRA),
+    '武器': Text(0x8, 0x15, 'shiftjisx0213', HALF_TEXT_EXTRA),
     'MAP范围': Value(0x1D, 0x1),
     'MAP演出': Value(0x1E, 0x1),
     '消费EN': Value(0x1F, 0x1),
@@ -33,7 +33,7 @@ WEAPON_STRUCTURE = {
 }
 
 ROBOT_STRUCTURE = {
-    '名称': Text(0x0, 0x1A, 'shiftjisx0213', HALF_TEXT_EXTRA),
+    '机体': Text(0x0, 0x1A, 'shiftjisx0213', HALF_TEXT_EXTRA),
     '编号': Value(0x1A, 0x2),
     '移动类型': Value(0x1C, 0x1, (0, 4)),
     '移动力': Value(0x1D, 0x1),
@@ -74,4 +74,4 @@ class RobotRAF(Rom):
     def robots(self) -> dict[int, str]:
         if not self.data:
             return dict()
-        return {idx: f"[{idx:03X}]{node['名称']}" for idx, node in enumerate(self.data['机体列表'])}
+        return {idx: f"[{idx:03X}] {node['机体']}" for idx, node in enumerate(self.data['机体列表'])}
