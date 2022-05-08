@@ -33,7 +33,7 @@ class ArrayModel(QAbstractTableModel):
             return None
         elif orientation == Qt.Horizontal:
             return '      ' + tuple(self.columns.keys())[section] + ' '
-        return f'  [{section:0{len(hex(len(self.data_sequence))) - 2}X}]'
+        return f'  [{section:0{len(hex(len(self.data_sequence) - 1)) - 2}X}]'
 
     def rowCount(self, parent: QModelIndex = ...) -> int:
         return len(self.data_sequence)
@@ -113,6 +113,7 @@ class ArrayTable(ControlWidget, QTableView):
         self.columns = columns
         self.setItemDelegate(ArrayDelegate(self))
         self.horizontalHeader().setProperty('orientation', 'horizontal')
+        self.horizontalHeader().setMinimumSectionSize(70)
 
         self.check_kwargs()
 
@@ -125,6 +126,7 @@ class ArrayTable(ControlWidget, QTableView):
         self.setModel(proxy)
 
         self.resizeColumnsToContents()
+        self.resizeRowsToContents()
         stretch_column = self.kwargs.get('stretch', 0)
         self.horizontalHeader().setSectionResizeMode(stretch_column, self.horizontalHeader().Stretch)
 

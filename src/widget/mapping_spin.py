@@ -12,9 +12,9 @@ class MappingSpin(SingleWidget, QSpinBox):
         QSpinBox.__init__(self, parent)
         SingleWidget.__init__(self, parent, data_name, structure, **kwargs)
         self.mapping = mapping
-        if alignment := kwargs.get('alignment'):
+        if alignment := self.kwargs.get('alignment'):
             self.setAlignment(alignment)
-        if font := kwargs.get('font'):
+        if font := self.kwargs.get('font'):
             self.setFont(font)
         self.init_mapping()
 

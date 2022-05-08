@@ -71,9 +71,9 @@ class MainWindow(QMainWindow):
     def init_option_menu(self):
         option_menu = QMenu('选项', self)
 
-        style_menu = QMenu('主题', self)
-        light_action = self.create_action('亮色', self.charge_style)
-        dark_action = self.create_action('暗色', self.charge_style)
+        style_menu = QMenu('选择颜色', self)
+        light_action = self.create_action('浅色', self.charge_style)
+        dark_action = self.create_action('深色', self.charge_style)
         style_menu.addActions([light_action, dark_action])
 
         option_menu.addMenu(style_menu)
@@ -110,12 +110,12 @@ class MainWindow(QMainWindow):
         self.findChild(QAction, '机体').setEnabled(robot)
 
     def edit_unit(self):
-        robot_frame = RobotFrame()
+        robot_frame = RobotFrame(robots=self.robot.robots())
         robot_frame.set_rom(self.robot)
         self.setCentralWidget(robot_frame)
 
     def charge_style(self):
-        if self.sender().objectName() == '暗色':
+        if self.sender().objectName() == '深色':
             style_sheet = qdarktheme.load_stylesheet('dark', 'sharp')
         else:
             style_sheet = qdarktheme.load_stylesheet('light', 'sharp')
@@ -128,8 +128,10 @@ class MainWindow(QMainWindow):
         for old, new in sheet_change.items():
             style_sheet = style_sheet.replace(old, new)
         sheet_expand = [
-            'QComboBox QAbstractItemView::item {height: 20px;}',
+            'QComboBox QAbstractItemView::item {height: 24px;}',
+            'QAbstractSpinBox::up-button, QAbstractSpinBox::down-button {width: 6px; padding: 3px 1px 3px -1px;}'
         ]
         for expand in sheet_expand:
             style_sheet += expand
+        print(style_sheet)
         QApplication.instance().setStyleSheet(style_sheet)

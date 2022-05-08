@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from PySide6.QtWidgets import QComboBox, QCheckBox, QLineEdit, QListWidget, QListWidgetItem, QSizePolicy
+from PySide6.QtWidgets import QComboBox, QCheckBox, QLineEdit, QListWidget, QListWidgetItem
 
 from .abstract_widget import SingleWidget
 
@@ -16,8 +16,7 @@ class CheckCombo(SingleWidget, QComboBox):
         self.setLineEdit(QLineEdit())
         self.lineEdit().setReadOnly(True)
         self.check_list: list[QCheckBox] = list()
-        self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
-        if font := kwargs.get('font'):
+        if font := self.kwargs.get('font'):
             self.lineEdit().setFont(font)
             self.view().setFont(font)
         self.init_check()
@@ -32,6 +31,7 @@ class CheckCombo(SingleWidget, QComboBox):
         self.setModel(list_widget.model())
         self.setView(list_widget)
 
+    # noinspection PyUnresolvedReferences
     def install(self, data_set: dict[str, int | str], delegate: bool = False) -> bool:
         self.disconnect(self)
         self.data_set = data_set
@@ -39,9 +39,9 @@ class CheckCombo(SingleWidget, QComboBox):
         for bit, check_box in enumerate(self.check_list):
             check_box.disconnect(check_box)
             check_box.setChecked((value & 1 << bit) >> bit)
-            # noinspection PyUnresolvedReferences
             check_box.stateChanged.connect(self.overwrite)
         self.lineEdit().setText(self.value_text(value))
+        self.lineEdit().textChanged.connect(self.overwrite)
         return True
 
     def overwrite(self) -> bool:

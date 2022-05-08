@@ -22,8 +22,8 @@ WEAPON_STRUCTURE = {
     'MAP范围': Value(0x1D, 0x1),
     'MAP演出': Value(0x1E, 0x1),
     '消费EN': Value(0x1F, 0x1),
-    '命中率': Value(0x20, -0x1),
-    '会心率': Value(0x21, -0x1),
+    '命中': Value(0x20, -0x1),
+    '会心': Value(0x21, -0x1),
     '初期弹数': Value(0x22, 0x1),
     '最大弹数': Value(0x23, 0x1),
     '空适应': Value(0x24, 0x1),
@@ -37,12 +37,12 @@ ROBOT_STRUCTURE = {
     '编号': Value(0x1A, 0x2),
     '移动类型': Value(0x1C, 0x1, (0, 4)),
     '移动力': Value(0x1D, 0x1),
-    'HP': Value(0x1E, 0x2),
-    'EN': Value(0x20, 0x2),
-    '运动性': Value(0x22, 0x2),
+    'ＨＰ': Value(0x1E, 0x2),
+    'ＥＮ': Value(0x20, 0x2),
+    '运动': Value(0x22, 0x2),
     '装甲': Value(0x24, 0x2),
     '限界': Value(0x26, 0x2),
-    'SIZE': Value(0x28, 0x1),
+    '尺寸': Value(0x28, 0x1),
     '部件槽数': Value(0x29, 0x1),
     '换乘系': Value(0x2A, 0x2, (0, 10)),
     '特殊能力': Value(0x2C, 0x4, (0, 31)),
@@ -54,7 +54,7 @@ ROBOT_STRUCTURE = {
     '合体序号': Value(0x37, 0x1),
     '分离序号': Value(0x38, 0x2),
     '合体数量': Value(0x3A, 0x1),
-    '换装组号': Value(0x3B, 0x1),
+    '换装组': Value(0x3B, 0x1),
     'BGM': Value(0x3C, 0x1),
     '空适应': Value(0x40, 0x1),
     '陆适应': Value(0x41, 0x1),
@@ -70,3 +70,6 @@ class RobotRAF(Rom):
         self.structures = {
             '机体列表': Sequence(ROBOT_STRUCTURE, 0x0, 0x2C4, 0x1E6),
         }
+
+    def robots(self) -> dict[int, str]:
+        return {idx: f"[{idx:03X}]{node['名称']}" for idx, node in enumerate(self.data['机体列表'])}

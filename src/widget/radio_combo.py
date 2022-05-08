@@ -12,11 +12,15 @@ class RadioCombo(SingleWidget, QComboBox):
         QComboBox.__init__(self, parent)
         SingleWidget.__init__(self, parent, data_name, structure, **kwargs)
         self.mapping = mapping
-        if font := kwargs.get('font'):
+        if font := self.kwargs.get('font'):
             self.setFont(font)
+        self.init_mapping(mapping)
 
-    def init_mapping(self):
-        for data, text in self.mapping.items():
+    def init_mapping(self, mapping: dict[int, str]):
+        if mapping:
+            self.disconnect(self)
+            self.clear()
+        for data, text in mapping.items():
             self.addItem(text, data)
 
     # noinspection PyUnresolvedReferences

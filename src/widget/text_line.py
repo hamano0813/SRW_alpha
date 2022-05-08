@@ -15,7 +15,7 @@ class TextLine(SingleWidget, QLineEdit):
             self.structure.extra |= extra
         if alignment := kwargs.get('alignment'):
             self.setAlignment(alignment)
-        if font := kwargs.get('font'):
+        if font := self.kwargs.get('font'):
             self.setFont(font)
 
     # noinspection PyUnresolvedReferences

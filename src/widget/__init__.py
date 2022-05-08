@@ -9,3 +9,4 @@ from .value_spin import ValueSpin
 from .mapping_spin import MappingSpin
 from .radio_combo import RadioCombo
 from .check_combo import CheckCombo
+from .check_list import CheckList
