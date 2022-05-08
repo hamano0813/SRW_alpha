@@ -57,4 +57,6 @@ class CheckCombo(SingleWidget, QComboBox):
         texts = []
         for bit, item_text in enumerate(self.item_list):
             texts.append(item_text) if (value & 1 << bit) else texts.append(self.dummy)
+        while '' in texts:
+            texts.remove('')
         return self.sep.join(texts)

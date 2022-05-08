@@ -18,9 +18,7 @@ class RobotFrame(BackgroundFrame):
         super(RobotFrame, self).__init__(parent)
         self.rom: Optional[RobotRAF] = None
         self.kwargs = kwargs
-        robot_table_group = self.init_robot_table()
-        weapon_table_group = self.init_weapon_table()
-
+        robot_table = self.init_robot_table()
         move_group = self.init_move_group()
         deform_group = self.init_deform_group()
         transfer_group = self.init_transfer_group()
@@ -36,8 +34,16 @@ class RobotFrame(BackgroundFrame):
         robot_layout.addLayout(robot_sub_layout)
         robot_layout.addStretch()
 
+        weapon_table = self.init_weapon_table()
+        weapon_group = self.init_weapon_group()
+
+        weapon_sub_layout = QVBoxLayout()
+        weapon_sub_layout.addWidget(weapon_group)
+        weapon_sub_layout.addStretch()
+
         weapon_layout = QHBoxLayout()
-        weapon_layout.addWidget(weapon_table_group)
+        weapon_layout.addWidget(weapon_table)
+        weapon_layout.addLayout(weapon_sub_layout)
 
         weapon_layout.addStretch()
 
@@ -47,7 +53,7 @@ class RobotFrame(BackgroundFrame):
         right_layout.addStretch()
 
         main_layout = QHBoxLayout()
-        main_layout.addWidget(robot_table_group, alignment=Qt.AlignTop)
+        main_layout.addWidget(robot_table, alignment=Qt.AlignTop)
         main_layout.addLayout(right_layout)
         main_layout.addStretch()
         self.setLayout(main_layout)
@@ -214,15 +220,72 @@ class RobotFrame(BackgroundFrame):
 
     def init_weapon_group(self):
         group = QGroupBox('武器属性')
+        self['属性'] = CheckCombo(self['武器列表'], '属性', WEAPON_STRUCTURE['属性'],
+                                item_list=EnumData.WEAPON['属性'], dummy='', sep='  ', font='Yu Gothic UI Semibold')
+
         self['近射程'] = ValueSpin(self['武器列表'], '近射程', WEAPON_STRUCTURE['近射程'],
                                 alignment=Qt.AlignRight)
         self['远射程'] = ValueSpin(self['武器列表'], '远射程', WEAPON_STRUCTURE['远射程'],
                                 alignment=Qt.AlignRight)
+
         self['命中'] = ValueSpin(self['武器列表'], '命中', WEAPON_STRUCTURE['命中'],
                                alignment=Qt.AlignRight)
         self['会心'] = ValueSpin(self['武器列表'], '会心', WEAPON_STRUCTURE['会心'],
                                alignment=Qt.AlignRight)
+
+        self['必要新人类Lv'] = ValueSpin(self['武器列表'], '必要新人类Lv', WEAPON_STRUCTURE['必要新人类Lv'],
+                                    alignment=Qt.AlignRight)
+        self['必要圣战士Lv'] = ValueSpin(self['武器列表'], '必要圣战士Lv', WEAPON_STRUCTURE['必要圣战士Lv'],
+                                    alignment=Qt.AlignRight)
+        self['必要气力'] = ValueSpin(self['武器列表'], '必要气力', WEAPON_STRUCTURE['必要气力'],
+                                 alignment=Qt.AlignRight)
+
+        self['改造类型'] = ValueSpin(self['武器列表'], '改造类型', WEAPON_STRUCTURE['改造类型'],
+                                 alignment=Qt.AlignRight)
+        self['改造追加'] = MappingSpin(self['武器列表'], '改造追加', WEAPON_STRUCTURE['改造追加'],
+                                   mapping={i: f'[{i:X}]' for i in range(0x10)},
+                                   alignment=Qt.AlignRight)
+
+        self['初期弹数'] = ValueSpin(self['武器列表'], '初期弹数', WEAPON_STRUCTURE['初期弹数'],
+                                 alignment=Qt.AlignRight)
+        self['最大弹数'] = ValueSpin(self['武器列表'], '最大弹数', WEAPON_STRUCTURE['最大弹数'],
+                                 alignment=Qt.AlignRight)
+        self['消费EN'] = ValueSpin(self['武器列表'], '消费EN', WEAPON_STRUCTURE['消费EN'],
+                                 alignment=Qt.AlignRight)
+
         group_layout = QGridLayout()
+        group_layout.addWidget(QLabel('特性'), 0, 0, 1, 1)
+        group_layout.addWidget(self['属性'], 0, 1, 1, 5)
+
+        group_layout.addWidget(QLabel('近射程'), 1, 0, 1, 1)
+        group_layout.addWidget(self['近射程'], 1, 1, 1, 1)
+        group_layout.addWidget(QLabel('远射程'), 2, 0, 1, 1)
+        group_layout.addWidget(self['远射程'], 2, 1, 1, 1)
+        group_layout.addWidget(QLabel('命中'), 3, 0, 1, 1)
+        group_layout.addWidget(self['命中'], 3, 1, 1, 1)
+        group_layout.addWidget(QLabel('会心'), 4, 0, 1, 1)
+        group_layout.addWidget(self['会心'], 4, 1, 1, 1)
+
+        group_layout.addWidget(QLabel('初期弹数'), 1, 2, 1, 1)
+        group_layout.addWidget(self['初期弹数'], 1, 3, 1, 1)
+        group_layout.addWidget(QLabel('最大弹数'), 2, 2, 1, 1)
+        group_layout.addWidget(self['最大弹数'], 2, 3, 1, 1)
+        group_layout.addWidget(QLabel('改造类型'), 3, 2, 1, 1)
+        group_layout.addWidget(self['改造类型'], 3, 3, 1, 1)
+        group_layout.addWidget(QLabel('改造追加'), 4, 2, 1, 1)
+        group_layout.addWidget(self['改造追加'], 4, 3, 1, 1)
+
+        group_layout.addWidget(QLabel('消费EN'), 1, 4, 1, 1)
+        group_layout.addWidget(self['消费EN'], 1, 5, 1, 1)
+        group_layout.addWidget(QLabel('气力需求'), 2, 4, 1, 1)
+        group_layout.addWidget(self['必要气力'], 2, 5, 1, 1)
+        group_layout.addWidget(QLabel('新人类Lv'), 3, 4, 1, 1)
+        group_layout.addWidget(self['必要新人类Lv'], 3, 5, 1, 1)
+        group_layout.addWidget(QLabel('圣战士Lv'), 4, 4, 1, 1)
+        group_layout.addWidget(self['必要圣战士Lv'], 4, 5, 1, 1)
+
+        group.setLayout(group_layout)
+        group.setFixedWidth(386)
         return group
 
     def set_rom(self, rom: RobotRAF):
