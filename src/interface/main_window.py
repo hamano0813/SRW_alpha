@@ -127,4 +127,9 @@ class MainWindow(QMainWindow):
         }
         for old, new in sheet_change.items():
             style_sheet = style_sheet.replace(old, new)
+        sheet_expand = [
+            'QComboBox QAbstractItemView::item {height: 20px;}',
+        ]
+        for expand in sheet_expand:
+            style_sheet += expand
         QApplication.instance().setStyleSheet(style_sheet)

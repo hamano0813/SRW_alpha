@@ -62,7 +62,7 @@ class RobotFrame(BackgroundFrame):
     def init_move_group(self):
         move_group = QGroupBox('地形及移动')
         self['移动类型'] = CheckCombo(
-            self['机体列表'], '移动类型', ROBOT_STRUCTURE['移动类型'], ['空', '陸', '海', '地'], font='Yu Gothic UI Semibold')
+            self['机体列表'], '移动类型', ROBOT_STRUCTURE['移动类型'], ['空', '陸', '海', '地'])
 
         group_layout = QVBoxLayout()
         group_layout.addWidget(QLabel('移动类型'))

@@ -20,7 +20,6 @@ class CheckCombo(SingleWidget, QComboBox):
         if font := kwargs.get('font'):
             self.lineEdit().setFont(font)
             self.view().setFont(font)
-
         self.init_check()
 
     def init_check(self):
@@ -54,7 +53,7 @@ class CheckCombo(SingleWidget, QComboBox):
         self.lineEdit().setText(self.value_text(value))
         return True
 
-    def value_text(self, value):
+    def value_text(self, value: int) -> str:
         texts = []
         for bit, item_text in enumerate(self.item_list):
             texts.append(item_text) if (value & 1 << bit) else texts.append(self.dummy)
