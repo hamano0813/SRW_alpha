@@ -17,7 +17,7 @@ from .robot_frame import RobotFrame
 class MainWindow(QMainWindow):
     folder: str = ''
 
-    def __init__(self, parent=None, flags=QtCore.Qt.MaximizeUsingFullscreenGeometryHint):
+    def __init__(self, parent=None, flags=QtCore.Qt.WindowCloseButtonHint):
         super(MainWindow, self).__init__(parent, flags)
 
         self.robot = RobotRAF()
@@ -32,10 +32,17 @@ class MainWindow(QMainWindow):
         self.init_file_menu()
         self.init_edit_menu()
         self.init_option_menu()
+        self.init_tool_bar()
 
         self.setWindowTitle('超级机器人大战α 静态修改器')
         self.setWindowIcon(QIcon(':image/icon.png'))
+        self.setFixedSize(1440, 860)
         self.check_enable()
+
+    def init_tool_bar(self):
+        tool_bar = self.addToolBar('')
+        tool_bar.addActions(self.edit_list)
+        tool_bar.setMovable(False)
 
     def init_file_menu(self):
         file_menu = QMenu('文件', self)
@@ -64,7 +71,9 @@ class MainWindow(QMainWindow):
         edit_menu = QMenu('编辑', self)
 
         unit = self.create_action('机体', self.edit_unit)
-        edit_menu.addActions([unit, ])
+
+        self.edit_list = [unit, ]
+        edit_menu.addActions(self.edit_list)
 
         self.menuBar().addMenu(edit_menu)
 
@@ -78,7 +87,7 @@ class MainWindow(QMainWindow):
 
         option_menu.addMenu(style_menu)
         self.menuBar().addMenu(option_menu)
-        dark_action.trigger()
+        light_action.trigger()
 
     def create_action(self, name: str, slot: callable = None) -> QAction:
         action = QAction(name, self)
@@ -129,7 +138,8 @@ class MainWindow(QMainWindow):
             style_sheet = style_sheet.replace(old, new)
         sheet_expand = [
             'QComboBox QAbstractItemView::item {height: 24px;}',
-            'QAbstractSpinBox::up-button, QAbstractSpinBox::down-button {width: 6px; padding: 3px 1px 3px -1px;}'
+            'QAbstractSpinBox::up-button, QAbstractSpinBox::down-button {width: 6px; padding: 3px 1px 3px -1px;}',
+            'RangeCombo QAbstractItemView::item {height: 105px;}'
         ]
         for expand in sheet_expand:
             style_sheet += expand

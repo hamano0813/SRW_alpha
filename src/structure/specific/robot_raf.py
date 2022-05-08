@@ -72,4 +72,6 @@ class RobotRAF(Rom):
         }
 
     def robots(self) -> dict[int, str]:
+        if not self.data:
+            return dict()
         return {idx: f"[{idx:03X}]{node['名称']}" for idx, node in enumerate(self.data['机体列表'])}

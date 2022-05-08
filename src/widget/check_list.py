@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from PySide6.QtWidgets import QCheckBox, QListWidget, QListWidgetItem
+
 from .abstract_widget import SingleWidget
 
 
