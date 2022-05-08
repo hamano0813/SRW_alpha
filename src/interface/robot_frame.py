@@ -36,12 +36,18 @@ class RobotFrame(BackgroundFrame):
         robot_layout.addLayout(robot_sub_layout)
         robot_layout.addStretch()
 
+        weapon_layout = QHBoxLayout()
+        weapon_layout.addWidget(weapon_table_group)
+
+        weapon_layout.addStretch()
+
         right_layout = QVBoxLayout()
         right_layout.addLayout(robot_layout)
-        right_layout.addWidget(weapon_table_group)
+        right_layout.addLayout(weapon_layout)
         right_layout.addStretch()
+
         main_layout = QHBoxLayout()
-        main_layout.addWidget(robot_table_group)
+        main_layout.addWidget(robot_table_group, alignment=Qt.AlignTop)
         main_layout.addLayout(right_layout)
         main_layout.addStretch()
         self.setLayout(main_layout)
@@ -75,7 +81,7 @@ class RobotFrame(BackgroundFrame):
         # noinspection PyUnresolvedReferences
         filter_line.textChanged[str].connect(self['机体列表'].filterChanged)
         filter_line.setFont('Yu Gothic UI Semibold')
-        group.setFixedWidth(630)
+        group.setFixedSize(630, 792)
         return group
 
     def init_move_group(self):
@@ -153,6 +159,7 @@ class RobotFrame(BackgroundFrame):
         group_layout.addWidget(QLabel('修理费'), 8, 0, 1, 1)
         group_layout.addWidget(self['修理费'], 8, 1, 1, 3)
         group.setLayout(group_layout)
+        group.setFixedWidth(249)
         return group
 
     def init_transfer_group(self):
@@ -193,22 +200,29 @@ class RobotFrame(BackgroundFrame):
             self['机体列表'], '武器列表', {
                 '名称': TextLine(None, '名称', WEAPON_STRUCTURE['名称'],
                                font="Yu Gothic UI Semibold"),
+                '分类': MappingSpin(None, '分类', WEAPON_STRUCTURE['分类'], EnumData.WEAPON['分类'],
+                                  alignment=Qt.AlignRight, font='Yu Gothic UI Semibold'),
                 '攻击力': ValueSpin(None, '攻击力', WEAPON_STRUCTURE['攻击力'],
                                  alignment=Qt.AlignRight),
-                '近射程': ValueSpin(None, '近射程', WEAPON_STRUCTURE['近射程'],
-                                 alignment=Qt.AlignRight),
-                '远射程': ValueSpin(None, '远射程', WEAPON_STRUCTURE['远射程'],
-                                 alignment=Qt.AlignRight),
-                '命中': ValueSpin(None, '命中', WEAPON_STRUCTURE['命中'],
-                                alignment=Qt.AlignRight),
-                '会心': ValueSpin(None, '会心', WEAPON_STRUCTURE['会心'],
-                                alignment=Qt.AlignRight),
             },
         )
         group_layout = QVBoxLayout()
         group_layout.addWidget(self['武器列表'])
         group.setLayout(group_layout)
-        group.setFixedSize(630, 480)
+        group.setFixedSize(390, 480)
+        return group
+
+    def init_weapon_group(self):
+        group = QGroupBox('武器属性')
+        self['近射程'] = ValueSpin(self['武器列表'], '近射程', WEAPON_STRUCTURE['近射程'],
+                                alignment=Qt.AlignRight)
+        self['远射程'] = ValueSpin(self['武器列表'], '远射程', WEAPON_STRUCTURE['远射程'],
+                                alignment=Qt.AlignRight)
+        self['命中'] = ValueSpin(self['武器列表'], '命中', WEAPON_STRUCTURE['命中'],
+                               alignment=Qt.AlignRight)
+        self['会心'] = ValueSpin(self['武器列表'], '会心', WEAPON_STRUCTURE['会心'],
+                               alignment=Qt.AlignRight)
+        group_layout = QGridLayout()
         return group
 
     def set_rom(self, rom: RobotRAF):

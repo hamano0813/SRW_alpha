@@ -41,10 +41,13 @@ class MappingSpin(SingleWidget, QSpinBox):
         return True
 
     def display(self, value: int) -> str:
-        return '      ' + self.textFromValue(value) + '      '
+        return self.textFromValue(value) + '   '
 
     def interpret(self, text: str) -> int:
         return self.valueFromText(text)
 
     def delegate(self) -> int:
         return self.value()
+
+    def new(self, parent):
+        return self.__class__(parent, self.data_name, self.structure, self.mapping, **self.kwargs)
