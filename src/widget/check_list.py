@@ -20,8 +20,9 @@ class CheckList(SingleWidget, QListWidget):
             if font := self.kwargs.get('font'):
                 check_box.setFont(font)
             self.check_list.append(check_box)
-            check_item = QListWidgetItem(self)
-            self.setItemWidget(check_item, check_box)
+            if item:
+                check_item = QListWidgetItem(self)
+                self.setItemWidget(check_item, check_box)
 
     # noinspection PyUnresolvedReferences
     def install(self, data_set: dict[str, int | str], delegate: bool = False) -> bool:

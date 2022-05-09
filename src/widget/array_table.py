@@ -30,7 +30,7 @@ class ArrayModel(QAbstractTableModel):
         if role != Qt.DisplayRole:
             return None
         elif orientation == Qt.Horizontal:
-            return '      ' + tuple(self.columns.keys())[section] + ' '
+            return tuple(self.columns.keys())[section]
         return f'  [{section:0{len(hex(len(self.data_sequence) - 1)) - 2}X}]'
 
     def rowCount(self, parent: QModelIndex = ...) -> int:

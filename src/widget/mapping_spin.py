@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from PySide6.QtWidgets import QSpinBox
+from PySide6.QtCore import Qt
 
 from structure.generic import Value
 from .abstract_widget import SingleWidget
@@ -12,7 +13,7 @@ class MappingSpin(SingleWidget, QSpinBox):
         QSpinBox.__init__(self, parent)
         SingleWidget.__init__(self, parent, data_name, structure, **kwargs)
         self.mapping = mapping
-        if alignment := self.kwargs.get('alignment'):
+        if alignment := self.kwargs.get('alignment', Qt.AlignRight):
             self.setAlignment(alignment)
         if font := self.kwargs.get('font'):
             self.setFont(font)
@@ -23,7 +24,6 @@ class MappingSpin(SingleWidget, QSpinBox):
     def init_mapping(self) -> bool:
         self.setRange(min(self.mapping), max(self.mapping))
         self.setWrapping(True)
-
         return True
 
     def textFromValue(self, value: int) -> str:

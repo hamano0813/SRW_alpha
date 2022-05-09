@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from PySide6.QtGui import QIntValidator
+from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QSpinBox
 
 from structure.generic import Value
@@ -13,7 +14,7 @@ class ValueSpin(SingleWidget, QSpinBox):
         QSpinBox.__init__(self, parent)
         SingleWidget.__init__(self, parent, data_name, structure, **kwargs)
         self.multiple = multiple
-        if alignment := self.kwargs.get('alignment'):
+        if alignment := self.kwargs.get('alignment', Qt.AlignRight):
             self.setAlignment(alignment)
         if font := self.kwargs.get('font'):
             self.setFont(font)

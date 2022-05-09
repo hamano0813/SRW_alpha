@@ -9,9 +9,9 @@ from PySide6.QtGui import QIcon, QAction
 from PySide6.QtWidgets import QApplication, QMainWindow, QMenu, QFileDialog
 
 from structure import Rom, RobotRAF, PilotBIN, SnmsgBIN, SndataBIN, EnlistBIN, AiunpBIN, ScriptBIN, PrmgrpBIN
-from .resource import *
-from . import RobotFrame, PilotFrame
 from widget import BackgroundFrame
+from . import RobotFrame, PilotFrame
+from .resource import *
 
 
 # noinspection PyTypeChecker
@@ -133,21 +133,24 @@ class MainWindow(QMainWindow):
         sheet_change = {
             'QHeaderView::down-arrow': 'QHeaderView[orientation="horizontal"]::down-arrow',
             'QHeaderView::up-arrow': 'QHeaderView[orientation="horizontal"]::up-arrow',
-            'margin: -2px -6px -6px -6px;': 'margin: -2px -1px -6px -6px;position:right;',
-            '* {': '* {font: 10pt;',
+            'margin: -2px -6px -6px -6px;': 'margin: -2px -3px -6px -6px;position:right;',
+            '* {': '* {font: 10pt "Yu Gothic UI Semibold";',
             'rgba(255.000, 255.000, 255.000, 0.000)': '#ffffff',
         }
         for old, new in sheet_change.items():
             style_sheet = style_sheet.replace(old, new)
         sheet_expand = [
-            'QComboBox QAbstractItemView::item {height: 28px;}',
-            'QAbstractItemView RadioCombo {padding: -2px 0px 0px -2px;}'
-            'QAbstractItemView ValueSpin {padding-top: 1px;}'
-            'QAbstractItemView MappingSpin, QAbstractItemView TextLine {padding-top: -2px;}'
-            'TransposeTable MappingSpin {padding-top: 1px;}'
-            'RadioCombo, CheckCombo {padding: -2px 0px 0px -2px;}'
+            'QComboBox QAbstractItemView::item {height: 25px;}',
+            'QAbstractItemView RadioCombo {padding: -3px 0px 0px -2px;}',
+            'QAbstractItemView ValueSpin {padding-top: -2px; padding-right: -1px; padding-left: 0px;}',
+            'QAbstractItemView MappingSpin, QAbstractItemView TextLine {padding-top: -2px; padding-right: -1px;}',
+            'RadioCombo, CheckCombo {padding: -2px 0px 0px -2px;}',
             'QAbstractSpinBox::up-button, QAbstractSpinBox::down-button {width: 6px; padding: 3px 1px 3px -1px;}',
             'RangeCombo QAbstractItemView::item {height: 105px;}',
+            'QHeaderView::section {padding: -1px -2px 0 3px;}',
+            'ValueSpin, MappingSpin {padding-top: 0px; padding-right: -1px; padding-left: 0px}',
+            'CheckCombo QLineEdit {padding: 0px 5px 0px 5px;}',
+            'TransposeTable MappingSpin {padding-top: -2px; padding-right: -1px; padding-left: 0px;}'
         ]
         for expand in sheet_expand:
             style_sheet += expand

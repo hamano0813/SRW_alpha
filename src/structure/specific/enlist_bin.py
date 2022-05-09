@@ -34,7 +34,7 @@ ENLIST_STRUCTURE = {
     '第13批': Value(0x11, 0x1),
     '第14批': Value(0x12, 0x1),
     '第15批': Value(0x13, 0x1),
-    '机体列表': Sequence(ENEMY_STRUCTURE, 0x14, 0xC, 0xA0),
+    '機体リスト': Sequence(ENEMY_STRUCTURE, 0x14, 0xC, 0xA0),
 }
 
 

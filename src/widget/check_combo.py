@@ -11,21 +11,20 @@ class CheckCombo(SingleWidget, QComboBox):
         SingleWidget.__init__(self, parent, data_name, structure, **kwargs)
         QComboBox.__init__(self, parent)
         self.item_list = item_list
-        self.dummy = kwargs.get('dummy', 'ー')
+        self.dummy = kwargs.get('dummy', '一')
         self.sep = kwargs.get('sep', ' ')
         self.setLineEdit(QLineEdit())
         self.lineEdit().setReadOnly(True)
         self.check_list: list[QCheckBox] = list()
         if font := self.kwargs.get('font'):
             self.lineEdit().setFont(font)
-            # TODO 下拉字体
-            self.view().setFont(font)
         self.init_check()
 
     def init_check(self):
         list_widget = QListWidget()
         for item in self.item_list:
             check_box = QCheckBox(item)
+            check_box.setFont(self.kwargs.get('font')) if self.kwargs.get('font') else False
             self.check_list.append(check_box)
             check_item = QListWidgetItem(list_widget)
             list_widget.setItemWidget(check_item, check_box)
