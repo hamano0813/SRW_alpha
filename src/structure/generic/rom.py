@@ -45,6 +45,9 @@ class Rom:
             self.structures[pname].build(data, self.buffer)
         return True
 
+    def __bool__(self):
+        return bool(self.buffer)
+
     def __getitem__(self, item: str) -> SEQUENCE:
         return self.data.get(item, None)
 

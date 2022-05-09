@@ -8,6 +8,6 @@ from .abstract_widget import BackgroundWidget
 
 
 class BackgroundFrame(BackgroundWidget, QFrame):
-    def __init__(self, parent):
+    def __init__(self, parent, **kwargs):
         QFrame.__init__(self, parent, Qt.Widget)
-        BackgroundWidget.__init__(self)
+        BackgroundWidget.__init__(self, **kwargs)

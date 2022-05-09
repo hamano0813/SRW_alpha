@@ -65,8 +65,9 @@ class ControlWidget(AbstractWidget):
 
 
 class BackgroundWidget:
-    def __init__(self):
+    def __init__(self, **kwargs):
         self.widgets: dict[str, AbstractWidget] = dict()
+        self.kwargs = kwargs
 
     def __getitem__(self, widget_name: str) -> AbstractWidget:
         return self.widgets.get(widget_name)

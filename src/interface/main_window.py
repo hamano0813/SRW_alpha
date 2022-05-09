@@ -10,7 +10,8 @@ from PySide6.QtWidgets import QApplication, QMainWindow, QMenu, QFileDialog
 
 from structure import Rom, RobotRAF, PilotBIN, SnmsgBIN, SndataBIN, EnlistBIN, AiunpBIN, ScriptBIN, PrmgrpBIN
 from .resource import *
-from .robot_frame import RobotFrame
+from . import RobotFrame, PilotFrame
+from widget import BackgroundFrame
 
 
 # noinspection PyTypeChecker
@@ -20,67 +21,62 @@ class MainWindow(QMainWindow):
     def __init__(self, parent=None, flags=QtCore.Qt.WindowCloseButtonHint):
         super(MainWindow, self).__init__(parent, flags)
 
-        self.robot = RobotRAF()
-        self.pilot = PilotBIN()
-        self.snmsg = SnmsgBIN()
-        self.sndata = SndataBIN()
-        self.enlist = EnlistBIN()
-        self.aiunp = AiunpBIN()
-        self.script = ScriptBIN()
-        self.prmgrp = PrmgrpBIN()
+        self.roms = {
+            'UNCOMPRESS_ROBOT.RAF': RobotRAF(),
+            'PILOT.BIN': PilotBIN(),
+            'SNMSG.BIN': SnmsgBIN(),
+            'SNDATA.BIN': SndataBIN(),
+            'ENLIST.BIN': EnlistBIN(),
+            'AINUP.BIN': AiunpBIN(),
+            'SCRIPT.BIN': ScriptBIN(),
+            'PRM_GRP.BIN': PrmgrpBIN(),
+        }
+        self.frames = {
+            '机体': (RobotFrame, 'UNCOMPRESS_ROBOT.RAF',
+                   {'robots': self.roms['UNCOMPRESS_ROBOT.RAF'].robots}),
+            '机师': (PilotFrame, 'PILOT.BIN',),
+        }
 
         self.init_file_menu()
         self.init_edit_menu()
         self.init_option_menu()
-        self.init_tool_bar()
 
         self.setWindowTitle('超级机器人大战α 静态修改器')
         self.setWindowIcon(QIcon(':image/icon.png'))
         self.setFixedSize(1440, 860)
         self.check_enable()
 
-    def init_tool_bar(self):
-        tool_bar = self.addToolBar('')
-        tool_bar.addActions(self.edit_list)
-        tool_bar.setMovable(False)
-
     def init_file_menu(self):
         file_menu = QMenu('文件', self)
-
-        robot = self.create_action('UNCOMPRESS_ROBOT.RAF', self.load_file('UNCOMPRESS_ROBOT.RAF', self.robot))
-        pilot = self.create_action('PILOT.BIN', self.load_file('PILOT.BIN', self.pilot))
-        snmsg = self.create_action('SNMSG.BIN', self.load_file('SNMSG.BIN', self.snmsg))
-        sndata = self.create_action('SNDATA.BIN', self.load_file('SNDATA.BIN', self.sndata))
-        enlist = self.create_action('ENLIST.BIN', self.load_file('ENLIST.BIN', self.enlist))
-        aiunp = self.create_action('AIUNP.BIN', self.load_file('AIUNP.BIN', self.aiunp))
-        script = self.create_action('SCRIPT.BIN', self.load_file('SCRIPT.BIN', self.script))
-        prmgrp = self.create_action('PRM_GRP.BIN', self.load_file('PRM_GRP.BIN', self.prmgrp))
-        file_menu.addActions([robot, pilot, snmsg, sndata, enlist, aiunp, script, prmgrp])
+        for name, rom in self.roms.items():
+            action = self.create_action(name, self.load_file(name, rom))
+            file_menu.addAction(action)
 
         save_action = self.create_action('保存', self.save_file)
         file_menu.addSeparator()
         file_menu.addAction(save_action)
-
         quit_action = self.create_action('退出', self.close)
         file_menu.addSeparator()
         file_menu.addAction(quit_action)
-
         self.menuBar().addMenu(file_menu)
 
     def init_edit_menu(self):
         edit_menu = QMenu('编辑', self)
-
-        unit = self.create_action('机体', self.edit_unit)
-
-        self.edit_list = [unit, ]
-        edit_menu.addActions(self.edit_list)
-
+        edit_list = []
+        for name, frame_setting in self.frames.items():
+            action = self.create_action(name, self.open_frame(*frame_setting))
+            edit_list.append(action)
+        edit_menu.addActions(edit_list)
         self.menuBar().addMenu(edit_menu)
+
+        tool_bar = self.addToolBar('')
+        tool_bar.addActions(edit_list)
+        tool_bar.setMovable(False)
 
     def init_option_menu(self):
         option_menu = QMenu('选项', self)
 
-        style_menu = QMenu('选择颜色', self)
+        style_menu = QMenu('界面主题', self)
         light_action = self.create_action('浅色', self.charge_style)
         dark_action = self.create_action('深色', self.charge_style)
         style_menu.addActions([light_action, dark_action])
@@ -108,20 +104,26 @@ class MainWindow(QMainWindow):
 
         return wrapper
 
+    def open_frame(self, frame_class: type(BackgroundFrame), rom_name: str, parameter: dict[str, callable] = None):
+        def wrapper():
+            if parameter:
+                kwargs = {k: v() for k, v in parameter.items()}
+            else:
+                kwargs = dict()
+            frame = frame_class(**kwargs)
+            frame.set_rom(self.roms[rom_name])
+            self.setCentralWidget(frame)
+
+        return wrapper
+
     def save_file(self):
         pass
 
     # noinspection PyUnresolvedReferences
     def check_enable(self):
-        save = any([self.robot, self.pilot, self.snmsg, self.sndata, self.enlist, self.script, self.prmgrp])
-        self.findChild(QAction, '保存').setEnabled(save)
-        robot = bool(self.robot)
-        self.findChild(QAction, '机体').setEnabled(robot)
-
-    def edit_unit(self):
-        robot_frame = RobotFrame(robots=self.robot.robots())
-        robot_frame.set_rom(self.robot)
-        self.setCentralWidget(robot_frame)
+        self.findChild(QAction, '保存').setEnabled(any([self.roms.values()]))
+        self.findChild(QAction, '机体').setEnabled(bool(self.roms.get('UNCOMPRESS_ROBOT.RAF')))
+        self.findChild(QAction, '机师').setEnabled(bool(self.roms.get('PILOT.BIN')))
 
     def charge_style(self):
         if self.sender().objectName() == '深色':
@@ -139,9 +141,9 @@ class MainWindow(QMainWindow):
         sheet_expand = [
             'QComboBox QAbstractItemView::item {height: 24px;}',
             'QAbstractSpinBox::up-button, QAbstractSpinBox::down-button {width: 6px; padding: 3px 1px 3px -1px;}',
-            'RangeCombo QAbstractItemView::item {height: 105px;}'
+            'RangeCombo QAbstractItemView::item {height: 105px;}',
         ]
         for expand in sheet_expand:
             style_sheet += expand
-        print(style_sheet)
+        # print(style_sheet)
         QApplication.instance().setStyleSheet(style_sheet)

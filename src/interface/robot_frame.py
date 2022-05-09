@@ -16,9 +16,8 @@ from widget import *
 # noinspection PyUnresolvedReferences
 class RobotFrame(BackgroundFrame):
     def __init__(self, parent=None, **kwargs):
-        super(RobotFrame, self).__init__(parent)
+        super(RobotFrame, self).__init__(parent, **kwargs)
         self.rom: Optional[RobotRAF] = None
-        self.kwargs = kwargs
         self.init_ui()
 
     def init_ui(self):
