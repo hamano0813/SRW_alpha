@@ -11,3 +11,4 @@ from .radio_combo import RadioCombo
 from .range_combo import RangeCombo
 from .text_line import TextLine
 from .value_spin import ValueSpin
+from .transpose_table import TransposeTable

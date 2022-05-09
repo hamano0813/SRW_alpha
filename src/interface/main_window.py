@@ -83,7 +83,7 @@ class MainWindow(QMainWindow):
 
         option_menu.addMenu(style_menu)
         self.menuBar().addMenu(option_menu)
-        light_action.trigger()
+        dark_action.trigger()
 
     def create_action(self, name: str, slot: callable = None) -> QAction:
         action = QAction(name, self)
@@ -121,7 +121,7 @@ class MainWindow(QMainWindow):
 
     # noinspection PyUnresolvedReferences
     def check_enable(self):
-        self.findChild(QAction, '保存').setEnabled(any([self.roms.values()]))
+        self.findChild(QAction, '保存').setEnabled(any(map(bool, self.roms.values())))
         self.findChild(QAction, '机体').setEnabled(bool(self.roms.get('UNCOMPRESS_ROBOT.RAF')))
         self.findChild(QAction, '机师').setEnabled(bool(self.roms.get('PILOT.BIN')))
 
@@ -135,15 +135,21 @@ class MainWindow(QMainWindow):
             'QHeaderView::up-arrow': 'QHeaderView[orientation="horizontal"]::up-arrow',
             'margin: -2px -6px -6px -6px;': 'margin: -2px -1px -6px -6px;position:right;',
             '* {': '* {font: 10pt;',
+            'rgba(255.000, 255.000, 255.000, 0.000)': '#ffffff',
         }
         for old, new in sheet_change.items():
             style_sheet = style_sheet.replace(old, new)
         sheet_expand = [
-            'QComboBox QAbstractItemView::item {height: 24px;}',
+            'QComboBox QAbstractItemView::item {height: 28px;}',
+            'QAbstractItemView RadioCombo {padding: -2px 0px 0px -2px;}'
+            'QAbstractItemView ValueSpin {padding-top: 1px;}'
+            'QAbstractItemView MappingSpin, QAbstractItemView TextLine {padding-top: -2px;}'
+            'TransposeTable MappingSpin {padding-top: 1px;}'
+            'RadioCombo, CheckCombo {padding: -2px 0px 0px -2px;}'
             'QAbstractSpinBox::up-button, QAbstractSpinBox::down-button {width: 6px; padding: 3px 1px 3px -1px;}',
             'RangeCombo QAbstractItemView::item {height: 105px;}',
         ]
         for expand in sheet_expand:
             style_sheet += expand
-        # print(style_sheet)
+        print(style_sheet)
         QApplication.instance().setStyleSheet(style_sheet)

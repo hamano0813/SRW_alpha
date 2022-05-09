@@ -4,7 +4,7 @@
 from collections import deque
 from typing import Optional
 
-from PySide6.QtCore import Qt, QAbstractTableModel, QSortFilterProxyModel, QModelIndex, QRegularExpression, QRect
+from PySide6.QtCore import Qt, QAbstractTableModel, QModelIndex
 from PySide6.QtGui import QAction, QCursor, QKeyEvent
 from PySide6.QtWidgets import QApplication, QWidget, QTableView, QMenu, QStyledItemDelegate, QStyleOptionViewItem
 
@@ -12,11 +12,11 @@ from structure.generic import SEQUENCE
 from .abstract_widget import ControlWidget, SingleWidget
 
 
-class ArrayModel(QAbstractTableModel):
-    def __init__(self, parent: Optional['ArrayTable'], columns: dict[str, SingleWidget]):
-        super(ArrayModel, self).__init__(parent)
+class TransposeModel(QAbstractTableModel):
+    def __init__(self, parent: Optional['TransposeTable'], rows: dict[str, SingleWidget]):
+        super(TransposeModel, self).__init__(parent)
         self.data_sequence: SEQUENCE = list()
-        self.columns = columns
+        self.rows = rows
         self.history = list()
         self.history = deque(maxlen=100)
 
@@ -30,43 +30,43 @@ class ArrayModel(QAbstractTableModel):
         if role != Qt.DisplayRole:
             return None
         elif orientation == Qt.Horizontal:
-            return '      ' + tuple(self.columns.keys())[section] + ' '
-        return f'  [{section:0{len(hex(len(self.data_sequence) - 1)) - 2}X}]'
+            return section
+        return tuple(self.rows.keys())[section]
 
     def rowCount(self, parent: QModelIndex = ...) -> int:
-        return len(self.data_sequence)
+        return len(self.rows)
 
     def columnCount(self, parent: QModelIndex = ...) -> int:
-        return len(self.columns)
+        return len(self.data_sequence)
 
     def data(self, index: QModelIndex, role: int = ...) -> any:
-        column_name = tuple(self.columns.keys())[index.column()]
-        data = self.data_sequence[index.row()][column_name]
+        row_name = tuple(self.rows.keys())[index.row()]
+        data = self.data_sequence[index.column()][row_name]
         if role == Qt.DisplayRole:
-            return self.columns[column_name].display(data)
+            return self.rows[row_name].display(data)
         if role == Qt.TextAlignmentRole:
-            return int(self.columns[column_name].kwargs.get('alignment', Qt.AlignLeft) | Qt.AlignVCenter)
+            return int(self.rows[row_name].kwargs.get('alignment', Qt.AlignLeft) | Qt.AlignVCenter)
         if role == Qt.EditRole:
             return data
         if role == Qt.UserRole:
-            return self.data_sequence[index.row()], self.columns[column_name]
+            return self.data_sequence[index.column()], self.rows[row_name]
         if role == Qt.FontRole:
-            if font := self.columns[column_name].kwargs.get('font'):
+            if font := self.rows[row_name].kwargs.get('font'):
                 return font
         return None
 
     def setData(self, index: QModelIndex, data: int | str, role: int = ...) -> bool:
         if not index.isValid():
             return False
-        column_name = tuple(self.columns.keys())[index.column()]
-        previos_data = self.data_sequence[index.row()][column_name]
+        row_name = tuple(self.rows.keys())[index.row()]
+        previos_data = self.data_sequence[index.column()][row_name]
         if role == Qt.EditRole:
-            _data = self.data_sequence[index.row()][column_name] = data
+            _data = self.data_sequence[index.column()][row_name] = data
             if not _data == previos_data:
                 self.history.append((index, previos_data))
             return True
         if role == Qt.UserRole:
-            _data = self.data_sequence[index.row()][column_name] = self.columns[column_name].interpret(data)
+            _data = self.data_sequence[index.column()][row_name] = self.rows[row_name].interpret(data)
             if not _data == previos_data:
                 self.history.append((index, previos_data))
             return True
@@ -80,13 +80,13 @@ class ArrayModel(QAbstractTableModel):
     def undo(self):
         if self.history:
             index, data = self.history.pop()
-            column_name = tuple(self.columns.keys())[index.column()]
-            self.data_sequence[index.row()][column_name] = data
+            row_name = tuple(self.rows.keys())[index.row()]
+            self.data_sequence[index.column()][row_name] = data
 
 
-class ArrayDelegate(QStyledItemDelegate):
+class TransposeDelegate(QStyledItemDelegate):
     def __init__(self, parent):
-        super(ArrayDelegate, self).__init__(parent)
+        super(TransposeDelegate, self).__init__(parent)
 
     def createEditor(self, parent, option: QStyleOptionViewItem, index: QModelIndex) -> SingleWidget:
         editor = index.data(Qt.UserRole)[1].new(parent)
@@ -104,59 +104,31 @@ class ArrayDelegate(QStyledItemDelegate):
         editor.setGeometry(option.rect.adjusted(-1, -1, 1, 1))
 
 
-class ArrayTable(ControlWidget, QTableView):
-    def __init__(self, parent, data_name, columns: dict[str, SingleWidget | QWidget], **kwargs):
+class TransposeTable(ControlWidget, QTableView):
+    def __init__(self, parent, data_name, rows: dict[str, SingleWidget | QWidget], **kwargs):
         QTableView.__init__(self, parent=None)
         ControlWidget.__init__(self, parent, data_name, **kwargs)
-        self.columns = columns
-        self.setItemDelegate(ArrayDelegate(self))
-        self.horizontalHeader().setProperty('orientation', 'horizontal')
-        self.horizontalHeader().setMinimumSectionSize(70)
-
+        self.rows = rows
+        self.setItemDelegate(TransposeDelegate(self))
+        self.horizontalHeader().setHidden(True)
         self.check_kwargs()
 
     # noinspection PyUnresolvedReferences
     def install(self, data_set: dict[str, int | str | SEQUENCE]) -> bool:
-        array_model = ArrayModel(self, self.columns)
-        array_model.install(data_set.get(self.data_name, list()))
-        proxy = self.generate_proxy()
-        proxy.setSourceModel(array_model)
-        self.setModel(proxy)
-
+        transpose_model = TransposeModel(self, self.rows)
+        transpose_model.install(data_set.get(self.data_name, list()))
+        self.setModel(transpose_model)
         self.resizeColumnsToContents()
         self.resizeRowsToContents()
-        stretch_columns = self.kwargs.get('stretch', (0,))
-        for column in stretch_columns:
+        for column in range(transpose_model.columnCount()):
             self.horizontalHeader().setSectionResizeMode(column, self.horizontalHeader().Stretch)
-
-        self.data_set = data_set
-        self.control_child(0)
-
-        self.clicked[QModelIndex].connect(self.select_index)
-        self.selectionModel().currentChanged[QModelIndex, QModelIndex].connect(self.select_index)
-        return True
-
-    def generate_proxy(self) -> QSortFilterProxyModel:
-        proxy = QSortFilterProxyModel(self)
-        if self.kwargs.get('sortable', True):
-            proxy.setSortRole(Qt.EditRole)
-            self.setSortingEnabled(True)
-            self.horizontalHeader().setSortIndicatorClearable(True)
-        if self.kwargs.get('editable', False):
-            proxy.flags = lambda x: Qt.ItemIsEnabled | Qt.ItemIsSelectable
-        return proxy
-
-    def select_index(self, index: QModelIndex) -> bool:
-        if not index.isValid():
-            return False
-        self.control_child(self.model().mapToSource(index).row())
         return True
 
     # noinspection PyUnresolvedReferences
     def check_kwargs(self):
         if self.kwargs.get('single', False):
             self.setSelectionMode(QTableView.SingleSelection)
-            self.setSelectionBehavior(QTableView.SelectRows)
+            self.setSelectionBehavior(QTableView.SelectColumns)
         if self.kwargs.get('copy', True):
             self.setContextMenuPolicy(Qt.CustomContextMenu)
             self.customContextMenuRequested.connect(self.copy_paste)
@@ -168,22 +140,11 @@ class ArrayTable(ControlWidget, QTableView):
             elif event.key() == Qt.Key_V and event.modifiers() == Qt.ControlModifier:
                 return self.paste_range()
             elif event.key() == Qt.Key_Z and event.modifiers() == Qt.ControlModifier:
-                self.model().sourceModel().undo()
+                self.model().undo()
                 self.reset()
                 return True
-        super(ArrayTable, self).keyPressEvent(event)
+        super(TransposeTable, self).keyPressEvent(event)
         return True
-
-    def filterChanged(self, text: str) -> None:
-        filter_text = text.strip()
-        if filter_text:
-            pattern = QRegularExpression.wildcardToRegularExpression(f'*{filter_text}*')
-            regexp = QRegularExpression(pattern)
-            options = regexp.patternOptions() | QRegularExpression.CaseInsensitiveOption
-            regexp.setPatternOptions(options)
-            self.model().setFilterRegularExpression(regexp)
-        else:
-            self.model().setFilterRegularExpression('')
 
     def copy_paste(self) -> None:
         right_click_menu = QMenu()
@@ -197,7 +158,7 @@ class ArrayTable(ControlWidget, QTableView):
     def copy_range(self) -> bool:
         if not self.selectedIndexes():
             return False
-        indexes = tuple(map(self.model().mapToSource, self.selectedIndexes()))
+        indexes = self.selectedIndexes()
         row_set = set(map(lambda idx: idx.row(), indexes))
         col_set = set(map(lambda idx: idx.column(), indexes))
         row_count = max(row_set) - min(row_set) + 1
@@ -214,14 +175,12 @@ class ArrayTable(ControlWidget, QTableView):
             return False
         if not (text := QApplication.clipboard().text().rstrip()):
             return False
-        internal_id = self.selectedIndexes()[0].internalId()
         data = [row.split('\t') for row in text.split('\n')]
         min_row = min(map(lambda idx: idx.row(), self.selectedIndexes()))
         min_col = min(map(lambda idx: idx.column(), self.selectedIndexes()))
         for rid, row in enumerate(data):
             for cid, text in enumerate(row):
-                index = self.model().createIndex(min_row + rid, min_col + cid, internal_id)
-                source_index = self.model().mapToSource(index)
-                self.model().sourceModel().setData(source_index, text, Qt.UserRole)
+                index = self.model().createIndex(min_row + rid, min_col + cid)
+                self.model().setData(index, text, Qt.UserRole)
         self.reset()
         return True

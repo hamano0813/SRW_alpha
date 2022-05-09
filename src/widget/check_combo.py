@@ -18,6 +18,7 @@ class CheckCombo(SingleWidget, QComboBox):
         self.check_list: list[QCheckBox] = list()
         if font := self.kwargs.get('font'):
             self.lineEdit().setFont(font)
+            # TODO 下拉字体
             self.view().setFont(font)
         self.init_check()
 

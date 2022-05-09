@@ -22,7 +22,7 @@ class RobotFrame(BackgroundFrame):
 
     def init_ui(self):
         robot_table = self.init_robot_table()
-        move_group = self.init_move_group()
+        robot_group = self.init_robot_group()
         deform_group = self.init_deform_group()
         transfer_group = self.init_transfer_group()
         skill_group = self.init_skill_group()
@@ -33,7 +33,7 @@ class RobotFrame(BackgroundFrame):
         robot_sub_layout.addWidget(skill_group, 0, 1, 1, 1)
         robot_sub_layout.addWidget(bgm_group, 1, 0, 1, 2)
         robot_layout = QHBoxLayout()
-        robot_layout.addWidget(move_group)
+        robot_layout.addWidget(robot_group)
         robot_layout.addWidget(deform_group)
         robot_layout.addLayout(robot_sub_layout)
         robot_layout.addStretch()
@@ -83,7 +83,7 @@ class RobotFrame(BackgroundFrame):
         self['机体列表'] = ArrayTable(
             self, '机体列表', {
                 '机体': TextLine(None, '机体', ROBOT_STRUCTURE['机体'],
-                               font="Yu Gothic UI"),
+                               font='Yu Gothic UI semibold'),
                 'ＨＰ': ValueSpin(None, 'ＨＰ', ROBOT_STRUCTURE['ＨＰ'],
                                 alignment=Qt.AlignRight),
                 'ＥＮ': ValueSpin(None, 'ＥＮ', ROBOT_STRUCTURE['ＥＮ'],
@@ -105,11 +105,11 @@ class RobotFrame(BackgroundFrame):
         group_layout.addLayout(filter_layout)
         group.setLayout(group_layout)
         filter_line.textChanged[str].connect(self['机体列表'].filterChanged)
-        filter_line.setFont('Yu Gothic UI')
+        filter_line.setFont('Yu Gothic UI semibold')
         group.setFixedSize(630, 780)
         return group
 
-    def init_move_group(self):
+    def init_robot_group(self):
         group = QGroupBox('机体属性')
         self['移动类型'] = CheckCombo(self['机体列表'], '移动类型', ROBOT_STRUCTURE['移动类型'],
                                   EnumData.ROBOT['移动类型'])
@@ -164,10 +164,10 @@ class RobotFrame(BackgroundFrame):
                                  alignment=Qt.AlignRight)
         self['分离序号'] = RadioCombo(self['机体列表'], '分离序号', ROBOT_STRUCTURE['分离序号'],
                                   mapping=self.kwargs.get('robots', dict()) | {0xFFFF: 'ーー'},
-                                  alignment=Qt.AlignRight, font='Yu Gothic UI')
+                                  alignment=Qt.AlignRight, font='Yu Gothic UI semibold')
         self['换装组'] = RadioCombo(self['机体列表'], '换装组', ROBOT_STRUCTURE['换装组'],
                                  mapping=EnumData.ROBOT['换装组'],
-                                 alignment=Qt.AlignRight, font='Yu Gothic UI')
+                                 alignment=Qt.AlignRight, font='Yu Gothic UI semibold')
         self['修理费'] = ValueSpin(self['机体列表'], '修理费', ROBOT_STRUCTURE['修理费'],
                                 alignment=Qt.AlignRight)
         self['资金'] = ValueSpin(self['机体列表'], '资金', ROBOT_STRUCTURE['资金'],
@@ -197,7 +197,7 @@ class RobotFrame(BackgroundFrame):
         group = QGroupBox('换乘系统')
         self['换乘系'] = CheckList(self['机体列表'], '换乘系', ROBOT_STRUCTURE['换乘系'],
                                 EnumData.ROBOT['换乘系'],
-                                font='Yu Gothic UI')
+                                font='Yu Gothic UI semibold')
         group_layout = QVBoxLayout()
         group_layout.addWidget(self['换乘系'])
         group.setLayout(group_layout)
@@ -208,7 +208,7 @@ class RobotFrame(BackgroundFrame):
         group = QGroupBox('机体特殊能力')
         self['特殊能力'] = CheckList(self['机体列表'], '特殊能力', ROBOT_STRUCTURE['特殊能力'],
                                  item_list=EnumData.ROBOT['特殊能力'],
-                                 font='Yu Gothic UI')
+                                 font='Yu Gothic UI semibold')
         group_layout = QHBoxLayout()
         group_layout.addWidget(self['特殊能力'])
         group.setLayout(group_layout)
@@ -219,7 +219,7 @@ class RobotFrame(BackgroundFrame):
         group = QGroupBox('机体音乐')
         self['BGM'] = RadioCombo(self['机体列表'], 'BGM', ROBOT_STRUCTURE['BGM'],
                                  mapping={k: f'[{k:02X}] {v}' for k, v in EnumData.MUSIC.items()},
-                                 font='Yu Gothic UI')
+                                 font='Yu Gothic UI semibold')
         self['BGM'].setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         group_layout = QHBoxLayout()
         group_layout.addWidget(QLabel('选择BGM'))
@@ -233,9 +233,9 @@ class RobotFrame(BackgroundFrame):
         self['武器列表'] = ArrayTable(
             self['机体列表'], '武器列表', {
                 '武器': TextLine(None, '武器', WEAPON_STRUCTURE['武器'],
-                               font="Yu Gothic UI"),
+                               font='Yu Gothic UI semibold'),
                 '分类': MappingSpin(None, '分类', WEAPON_STRUCTURE['分类'], EnumData.WEAPON['分类'],
-                                  alignment=Qt.AlignRight, font='Yu Gothic UI'),
+                                  alignment=Qt.AlignRight, font='Yu Gothic UI semibold'),
                 '攻击力': ValueSpin(None, '攻击力', WEAPON_STRUCTURE['攻击力'],
                                  alignment=Qt.AlignRight),
             },
@@ -249,31 +249,27 @@ class RobotFrame(BackgroundFrame):
     def init_weapon_group(self):
         group = QGroupBox('武器常规设置')
         self['属性'] = CheckCombo(self['武器列表'], '属性', WEAPON_STRUCTURE['属性'],
-                                item_list=EnumData.WEAPON['属性'], dummy='', sep='  ', font='Yu Gothic UI')
-
+                                item_list=EnumData.WEAPON['属性'],
+                                dummy='', sep='  ', font='Yu Gothic UI semibold')
         self['近射程'] = ValueSpin(self['武器列表'], '近射程', WEAPON_STRUCTURE['近射程'],
                                 alignment=Qt.AlignRight)
         self['远射程'] = ValueSpin(self['武器列表'], '远射程', WEAPON_STRUCTURE['远射程'],
                                 alignment=Qt.AlignRight)
-
         self['命中'] = ValueSpin(self['武器列表'], '命中', WEAPON_STRUCTURE['命中'],
                                alignment=Qt.AlignRight)
         self['会心'] = ValueSpin(self['武器列表'], '会心', WEAPON_STRUCTURE['会心'],
                                alignment=Qt.AlignRight)
-
         self['必要新人类Lv'] = ValueSpin(self['武器列表'], '必要新人类Lv', WEAPON_STRUCTURE['必要新人类Lv'],
                                     alignment=Qt.AlignRight)
         self['必要圣战士Lv'] = ValueSpin(self['武器列表'], '必要圣战士Lv', WEAPON_STRUCTURE['必要圣战士Lv'],
                                     alignment=Qt.AlignRight)
         self['必要气力'] = ValueSpin(self['武器列表'], '必要气力', WEAPON_STRUCTURE['必要气力'],
                                  alignment=Qt.AlignRight)
-
         self['改造类型'] = ValueSpin(self['武器列表'], '改造类型', WEAPON_STRUCTURE['改造类型'],
                                  alignment=Qt.AlignRight)
         self['改造追加'] = MappingSpin(self['武器列表'], '改造追加', WEAPON_STRUCTURE['改造追加'],
                                    mapping={i: f'[{i:X}]' for i in range(0x10)},
                                    alignment=Qt.AlignRight)
-
         self['初期弹数'] = ValueSpin(self['武器列表'], '初期弹数', WEAPON_STRUCTURE['初期弹数'],
                                  alignment=Qt.AlignRight)
         self['最大弹数'] = ValueSpin(self['武器列表'], '最大弹数', WEAPON_STRUCTURE['最大弹数'],
@@ -320,7 +316,7 @@ class RobotFrame(BackgroundFrame):
         group = QGroupBox('地图武器设置')
         self['MAP类型'] = RadioCombo(self['武器列表'], 'MAP类型', WEAPON_STRUCTURE['MAP类型'],
                                    mapping=EnumData.WEAPON['MAP类型'],
-                                   font='Yu Gothic UI')
+                                   font='Yu Gothic UI semibold')
         self['MAP演出'] = ValueSpin(self['武器列表'], 'MAP演出', WEAPON_STRUCTURE['MAP演出'],
                                   alignment=Qt.AlignRight)
         self['MAP着弹范围'] = ValueSpin(self['武器列表'], 'MAP着弹范围', WEAPON_STRUCTURE['MAP着弹范围'],
