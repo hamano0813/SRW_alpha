@@ -30,7 +30,7 @@ class PilotFrame(BackgroundFrame):
         pilot_adaptation = self.init_pilot_adaptation()
         button_layout = self.init_button_layout()
 
-        pilot_table.setFixedWidth(1050)
+        pilot_table.setFixedWidth(1070)
         skill_table.setFixedHeight(297)
         pilot_sprite.setFixedHeight(220)
         pilot_skill.setFixedSize(135, 220)

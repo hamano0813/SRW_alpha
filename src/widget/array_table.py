@@ -187,9 +187,9 @@ class ArrayTable(ControlWidget, QTableView):
 
     def copy_paste(self) -> None:
         right_click_menu = QMenu()
-        copy_action = QAction('复制(C)', self)
+        copy_action = QAction('複製(C)', self)
         copy_action.triggered.connect(self.copy_range)
-        paste_action = QAction('粘贴(V)', self)
+        paste_action = QAction('粘貼(V)', self)
         paste_action.triggered.connect(self.paste_range)
         right_click_menu.addActions([copy_action, paste_action])
         right_click_menu.exec_(QCursor().pos())
