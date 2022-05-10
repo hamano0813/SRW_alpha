@@ -5,7 +5,7 @@ from structure.generic import Value, Text, SEQUENCE
 
 
 class AbstractWidget:
-    def __init__(self, parent, data_name: str, **kwargs):
+    def __init__(self, parent, data_name: str | tuple, **kwargs):
         self.data_set: dict[str, int | str | SEQUENCE] = dict()
         self.data_name = data_name
         self.kwargs = kwargs

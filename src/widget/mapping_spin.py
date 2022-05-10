@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from PySide6.QtWidgets import QSpinBox
 from PySide6.QtCore import Qt
+from PySide6.QtWidgets import QSpinBox
 
 from structure.generic import Value
 from .abstract_widget import SingleWidget

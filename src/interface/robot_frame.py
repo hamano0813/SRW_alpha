@@ -28,55 +28,54 @@ class RobotFrame(BackgroundFrame):
         robot_skill = self.init_robot_skill()
         robot_bgm = self.init_robot_bgm()
 
-        robot_sub_layout = QGridLayout()
-        robot_sub_layout.addWidget(robot_transfer, 0, 0, 1, 1)
-        robot_sub_layout.addWidget(robot_skill, 0, 1, 1, 1)
-        robot_sub_layout.addWidget(robot_bgm, 1, 0, 1, 2)
-        robot_layout = QHBoxLayout()
-        robot_layout.addWidget(robot_data)
-        robot_layout.addWidget(robot_special)
-        robot_layout.addLayout(robot_sub_layout)
-        robot_layout.addStretch()
-
         weapon_table = self.init_weapon_table()
         weapon_data = self.init_weapon_data()
         weapon_map = self.init_weapon_map()
         weapon_adaptation = self.init_weapon_adaptation()
+        button_layout = self.init_button_layout()
 
+        robot_table.setFixedWidth(630)
+        robot_data.setFixedWidth(135)
+        weapon_adaptation.setFixedWidth(135)
+
+        top_left_layout = QHBoxLayout()
+        top_left_layout.addWidget(robot_data)
+        top_left_layout.addWidget(robot_special)
+
+        top_right_layout = QGridLayout()
+        top_right_layout.addWidget(robot_transfer, 0, 0, 1, 1)
+        top_right_layout.addWidget(robot_skill, 0, 1, 1, 1)
+        top_right_layout.addWidget(robot_bgm, 1, 0, 1, 2)
+
+        bottom_right_layout = QGridLayout()
+        bottom_right_layout.addWidget(weapon_data, 0, 0, 1, 2)
+        bottom_right_layout.addWidget(weapon_map, 1, 0, 2, 1)
+        bottom_right_layout.addWidget(weapon_adaptation, 1, 1, 1, 1)
+        bottom_right_layout.addLayout(button_layout, 2, 1, 1, 1)
+
+        main_layout = QHBoxLayout()
+        grid_layout = QGridLayout()
+        grid_layout.addLayout(top_left_layout, 0, 0, 1, 1)
+        grid_layout.addLayout(top_right_layout, 0, 1, 1, 1)
+        grid_layout.addWidget(weapon_table, 1, 0, 1, 1)
+        grid_layout.addLayout(bottom_right_layout, 1, 1, 1, 1)
+        main_layout.addWidget(robot_table)
+        main_layout.addLayout(grid_layout)
+        main_layout.addStretch()
+
+        self.setLayout(main_layout)
+
+    def init_button_layout(self):
+        layout = QVBoxLayout()
         parse_button = QPushButton('解析')
         build_button = QPushButton('構築')
         parse_button.clicked.connect(self.parse)
         build_button.clicked.connect(self.build)
         parse_button.setFixedHeight(40)
         build_button.setFixedHeight(40)
-
-        button_layout = QVBoxLayout()
-        button_layout.addWidget(weapon_adaptation)
-        button_layout.addStretch()
-        button_layout.addWidget(parse_button)
-        button_layout.addWidget(build_button)
-
-        weapon_bottom_layout = QHBoxLayout()
-        weapon_bottom_layout.addWidget(weapon_map)
-        weapon_bottom_layout.addLayout(button_layout)
-        weapon_sub_layout = QVBoxLayout()
-        weapon_sub_layout.addWidget(weapon_data)
-        weapon_sub_layout.addLayout(weapon_bottom_layout)
-        weapon_sub_layout.addStretch()
-        weapon_layout = QHBoxLayout()
-        weapon_layout.addWidget(weapon_table)
-        weapon_layout.addLayout(weapon_sub_layout)
-        weapon_layout.addStretch()
-
-        right_layout = QVBoxLayout()
-        right_layout.addLayout(robot_layout)
-        right_layout.addLayout(weapon_layout)
-
-        main_layout = QHBoxLayout()
-        main_layout.addWidget(robot_table, alignment=Qt.AlignTop)
-        main_layout.addLayout(right_layout)
-        main_layout.addStretch()
-        self.setLayout(main_layout)
+        layout.addWidget(parse_button)
+        layout.addWidget(build_button)
+        return layout
 
     def init_robot_table(self):
         group = QGroupBox('機体リスト')
@@ -99,7 +98,6 @@ class RobotFrame(BackgroundFrame):
         group_layout.addLayout(filter_layout)
         group.setLayout(group_layout)
         filter_line.textChanged[str].connect(self['機体リスト'].filterChanged)
-        group.setFixedSize(630, 780)
         return group
 
     def init_robot_data(self):
@@ -131,9 +129,8 @@ class RobotFrame(BackgroundFrame):
         group_layout.addWidget(QLabel('タイプ'))
         group_layout.addWidget(self['タイプ'])
         group_layout.addLayout(form_layout)
-
+        group_layout.addStretch()
         group.setLayout(group_layout)
-        group.setFixedWidth(135)
         return group
 
     def init_robot_special(self):
@@ -166,8 +163,8 @@ class RobotFrame(BackgroundFrame):
         group_layout.addWidget(self['資金'], 7, 1, 1, 3)
         group_layout.addWidget(QLabel('修理費'), 8, 0, 1, 1)
         group_layout.addWidget(self['修理費'], 8, 1, 1, 3)
+        group_layout.addItem(QSpacerItem(1, 1, QSizePolicy.Fixed, QSizePolicy.Expanding), 9, 0, 1, 1)
         group.setLayout(group_layout)
-        group.setFixedSize(249, 294)
         return group
 
     def init_robot_transfer(self):
@@ -177,7 +174,6 @@ class RobotFrame(BackgroundFrame):
         group_layout = QVBoxLayout()
         group_layout.addWidget(self['乗り換え系'])
         group.setLayout(group_layout)
-        group.setFixedWidth(180)
         return group
 
     def init_robot_skill(self):
@@ -187,7 +183,6 @@ class RobotFrame(BackgroundFrame):
         group_layout = QHBoxLayout()
         group_layout.addWidget(self['特性'])
         group.setLayout(group_layout)
-        group.setFixedWidth(200)
         return group
 
     def init_robot_bgm(self):
@@ -195,9 +190,9 @@ class RobotFrame(BackgroundFrame):
         self['機体BGM'] = RadioCombo(self['機体リスト'], '機体BGM', ROBOT_STRUCTURE['機体BGM'],
                                    mapping={k: f'[{k:02X}] {v}' for k, v in EnumData.MUSIC.items()})
         self['機体BGM'].setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
-        group_layout = QHBoxLayout()
-        group_layout.addWidget(QLabel('選択BGM'))
-        group_layout.addWidget(self['機体BGM'])
+        group_layout = QGridLayout()
+        group_layout.addWidget(QLabel('ＢＧＭ'), 0, 0, 1, 1)
+        group_layout.addWidget(self['機体BGM'], 0, 1, 1, 6)
 
         group.setLayout(group_layout)
         return group
@@ -268,7 +263,6 @@ class RobotFrame(BackgroundFrame):
         group_layout.addWidget(self['聖戦士'], 4, 5, 1, 1)
 
         group.setLayout(group_layout)
-        group.setFixedWidth(386)
         return group
 
     def init_weapon_map(self):
@@ -295,7 +289,7 @@ class RobotFrame(BackgroundFrame):
         group_layout.addWidget(self['方向指定型範囲'], 5, 0, 1, 2)
         group_layout.addItem(QSpacerItem(1, 1, QSizePolicy.Fixed, QSizePolicy.Expanding), 6, 0, 1, 2)
         group.setLayout(group_layout)
-        group.setFixedSize(245, 305)
+        # group.setFixedWidth(250)
         return group
 
     def init_weapon_adaptation(self):
@@ -310,7 +304,6 @@ class RobotFrame(BackgroundFrame):
         group_layout.addRow('海適応', self['海'])
         group_layout.addRow('宇適応', self['宇'])
         group.setLayout(group_layout)
-        group.setFixedWidth(135)
         return group
 
     def switch_maptype(self):

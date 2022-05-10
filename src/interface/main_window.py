@@ -32,9 +32,9 @@ class MainWindow(QMainWindow):
             'PRM_GRP.BIN': PrmgrpBIN(),
         }
         self.frames = {
-            '机体': (RobotFrame, 'UNCOMPRESS_ROBOT.RAF',
+            '機体': (RobotFrame, 'UNCOMPRESS_ROBOT.RAF',
                    {'robots': self.roms['UNCOMPRESS_ROBOT.RAF'].robots}),
-            '机师': (PilotFrame, 'PILOT.BIN',),
+            'パイロット': (PilotFrame, 'PILOT.BIN',),
         }
 
         self.init_file_menu()
@@ -43,7 +43,7 @@ class MainWindow(QMainWindow):
 
         self.setWindowTitle('超级机器人大战α 静态修改器')
         self.setWindowIcon(QIcon(':image/icon.png'))
-        self.setFixedSize(1440, 860)
+        self.setMinimumSize(1440, 870)
         self.check_enable()
 
     def init_file_menu(self):
@@ -61,7 +61,7 @@ class MainWindow(QMainWindow):
         self.menuBar().addMenu(file_menu)
 
     def init_edit_menu(self):
-        edit_menu = QMenu('编辑', self)
+        edit_menu = QMenu('編輯', self)
         edit_list = []
         for name, frame_setting in self.frames.items():
             action = self.create_action(name, self.open_frame(*frame_setting))
@@ -74,10 +74,10 @@ class MainWindow(QMainWindow):
         tool_bar.setMovable(False)
 
     def init_option_menu(self):
-        option_menu = QMenu('选项', self)
+        option_menu = QMenu('選項', self)
 
-        style_menu = QMenu('界面主题', self)
-        light_action = self.create_action('浅色', self.charge_style)
+        style_menu = QMenu('界面主題', self)
+        light_action = self.create_action('淺色', self.charge_style)
         dark_action = self.create_action('深色', self.charge_style)
         style_menu.addActions([light_action, dark_action])
 
@@ -122,8 +122,8 @@ class MainWindow(QMainWindow):
     # noinspection PyUnresolvedReferences
     def check_enable(self):
         self.findChild(QAction, '保存').setEnabled(any(map(bool, self.roms.values())))
-        self.findChild(QAction, '机体').setEnabled(bool(self.roms.get('UNCOMPRESS_ROBOT.RAF')))
-        self.findChild(QAction, '机师').setEnabled(bool(self.roms.get('PILOT.BIN')))
+        self.findChild(QAction, '機体').setEnabled(bool(self.roms.get('UNCOMPRESS_ROBOT.RAF')))
+        self.findChild(QAction, 'パイロット').setEnabled(bool(self.roms.get('PILOT.BIN')))
 
     def charge_style(self):
         if self.sender().objectName() == '深色':
@@ -142,15 +142,13 @@ class MainWindow(QMainWindow):
         sheet_expand = [
             'QComboBox QAbstractItemView::item {height: 25px;}',
             'QAbstractItemView RadioCombo {padding: -3px 0px 0px -2px;}',
-            'QAbstractItemView ValueSpin {padding-top: -2px; padding-right: -1px; padding-left: 0px;}',
-            'QAbstractItemView MappingSpin, QAbstractItemView TextLine {padding-top: -2px; padding-right: -1px;}',
+            'QAbstractItemView ValueSpin {padding-top: -2px; padding-right: 0px; padding-left: 0px;}',
+            'QAbstractItemView MappingSpin, QAbstractItemView TextLine {padding-top: -2px; padding-right: 0px;}',
             'RadioCombo, CheckCombo {padding: -2px 0px 0px -2px;}',
             'QAbstractSpinBox::up-button, QAbstractSpinBox::down-button {width: 6px; padding: 3px 1px 3px -1px;}',
             'RangeCombo QAbstractItemView::item {height: 105px;}',
             'QHeaderView::section {padding: -1px -2px 0 3px;}',
-            'ValueSpin, MappingSpin {padding-top: 0px; padding-right: -1px; padding-left: 0px}',
             'CheckCombo QLineEdit {padding: 0px 5px 0px 5px;}',
-            'TransposeTable MappingSpin {padding-top: -2px; padding-right: -1px; padding-left: 0px;}'
         ]
         for expand in sheet_expand:
             style_sheet += expand

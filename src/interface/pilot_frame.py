@@ -4,7 +4,8 @@
 from typing import Optional
 
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QLabel, QLineEdit, QGroupBox, QHBoxLayout, QVBoxLayout, QFormLayout
+from PySide6.QtWidgets import (QLabel, QLineEdit, QPushButton, QGroupBox, QHBoxLayout, QVBoxLayout, QFormLayout,
+                               QGridLayout)
 
 from parameter.enum_data import EnumData
 from structure import PilotBIN
@@ -21,31 +22,44 @@ class PilotFrame(BackgroundFrame):
 
     def init_ui(self):
         pilot_table = self.init_pilot_table()
-        pilot_skill = self.init_pilot_skill()
         skill_table = self.init_skill_table()
+
+        pilot_sprite = self.init_pilot_spirit()
+        pilot_skill = self.init_pilot_skill()
         pilot_transfer = self.init_pilot_transfer()
         pilot_adaptation = self.init_pilot_adaptation()
+        button_layout = self.init_button_layout()
 
-        middle_layout = QVBoxLayout()
-        middle_layout.addWidget(pilot_skill)
-        middle_layout.addWidget(pilot_transfer)
-        corner_layout = QVBoxLayout()
-        corner_layout.addWidget(pilot_adaptation)
-        corner_layout.addStretch()
-
-        bottom_layout = QHBoxLayout()
-        bottom_layout.addLayout(middle_layout)
-        bottom_layout.addLayout(corner_layout)
-
-        right_layout = QVBoxLayout()
-        right_layout.addWidget(skill_table)
-        right_layout.addLayout(bottom_layout)
+        pilot_table.setFixedWidth(1050)
+        skill_table.setFixedHeight(297)
+        pilot_sprite.setFixedHeight(220)
+        pilot_skill.setFixedSize(135, 220)
+        pilot_adaptation.setFixedWidth(135)
 
         main_layout = QHBoxLayout()
         main_layout.addWidget(pilot_table)
-        main_layout.addLayout(right_layout)
+        grid_layout = QGridLayout()
+        grid_layout.addWidget(skill_table, 0, 0, 1, 2)
+        grid_layout.addWidget(pilot_sprite, 1, 0, 1, 1)
+        grid_layout.addWidget(pilot_skill, 1, 1, 1, 1)
+        grid_layout.addWidget(pilot_transfer, 2, 0, 2, 1)
+        grid_layout.addWidget(pilot_adaptation, 2, 1, 1, 1)
+        grid_layout.addLayout(button_layout, 3, 1, 1, 1)
+        main_layout.addLayout(grid_layout)
         main_layout.addStretch()
         self.setLayout(main_layout)
+
+    def init_button_layout(self):
+        layout = QVBoxLayout()
+        parse_button = QPushButton('解析')
+        build_button = QPushButton('構築')
+        parse_button.clicked.connect(self.parse)
+        build_button.clicked.connect(self.build)
+        parse_button.setFixedHeight(40)
+        build_button.setFixedHeight(40)
+        layout.addWidget(parse_button)
+        layout.addWidget(build_button)
+        return layout
 
     def init_pilot_table(self):
         group = QGroupBox('パイロットリスト')
@@ -76,7 +90,6 @@ class PilotFrame(BackgroundFrame):
         group_layout.addLayout(filter_layout)
         group.setLayout(group_layout)
         filter_line.textChanged[str].connect(self['パイロットリスト'].filterChanged)
-        group.setFixedSize(1052, 780)
         return group
 
     def init_skill_table(self):
@@ -108,7 +121,6 @@ class PilotFrame(BackgroundFrame):
         )
         group_layout = QVBoxLayout()
         group_layout.addWidget(self['技能'])
-        group.setFixedSize(360, 297)
         group.setLayout(group_layout)
         return group
 
@@ -119,7 +131,6 @@ class PilotFrame(BackgroundFrame):
         group_layout = QVBoxLayout()
         group_layout.addWidget(self['特殊技能'])
         group.setLayout(group_layout)
-        group.setFixedSize(219, 240)
         return group
 
     def init_pilot_transfer(self):
@@ -129,7 +140,6 @@ class PilotFrame(BackgroundFrame):
         group_layout = QVBoxLayout()
         group_layout.addWidget(self['乗り換え系'])
         group.setLayout(group_layout)
-        group.setFixedSize(219, 236)
         return group
 
     def init_pilot_adaptation(self):
@@ -144,7 +154,19 @@ class PilotFrame(BackgroundFrame):
         group_layout.addRow('海適応', self['海適応'])
         group_layout.addRow('宇適応', self['宇適応'])
         group.setLayout(group_layout)
-        group.setFixedWidth(135)
+        return group
+
+    def init_pilot_spirit(self):
+        group = QGroupBox('精神リスト')
+        self['精神リスト'] = ParallelTable(
+            self['パイロットリスト'], ('精神リスト', '習得リスト'), {
+                '精神': RadioCombo(None, '精神', PILOT_STRUCTURE['精神リスト']['精神'], mapping=EnumData.SPIRIT),
+                '習得': ValueSpin(None, '習得', PILOT_STRUCTURE['習得リスト']['習得'], alignment=Qt.AlignRight),
+            }
+        )
+        group_layout = QVBoxLayout()
+        group_layout.addWidget(self['精神リスト'])
+        group.setLayout(group_layout)
         return group
 
     def set_rom(self, rom: PilotBIN):

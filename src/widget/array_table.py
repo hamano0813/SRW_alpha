@@ -4,7 +4,7 @@
 from collections import deque
 from typing import Optional
 
-from PySide6.QtCore import Qt, QAbstractTableModel, QSortFilterProxyModel, QModelIndex, QRegularExpression, QRect
+from PySide6.QtCore import Qt, QAbstractTableModel, QSortFilterProxyModel, QModelIndex, QRegularExpression
 from PySide6.QtGui import QAction, QCursor, QKeyEvent
 from PySide6.QtWidgets import QApplication, QWidget, QTableView, QMenu, QStyledItemDelegate, QStyleOptionViewItem
 
@@ -104,6 +104,7 @@ class ArrayDelegate(QStyledItemDelegate):
         editor.setGeometry(option.rect.adjusted(-1, -1, 1, 1))
 
 
+# noinspection PyUnresolvedReferences
 class ArrayTable(ControlWidget, QTableView):
     def __init__(self, parent, data_name, columns: dict[str, SingleWidget | QWidget], **kwargs):
         QTableView.__init__(self, parent=None)
@@ -115,7 +116,6 @@ class ArrayTable(ControlWidget, QTableView):
 
         self.check_kwargs()
 
-    # noinspection PyUnresolvedReferences
     def install(self, data_set: dict[str, int | str | SEQUENCE]) -> bool:
         array_model = ArrayModel(self, self.columns)
         array_model.install(data_set.get(self.data_name, list()))

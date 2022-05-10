@@ -36,3 +36,6 @@ class Sequence:
 
     def _idx_range(self, idx: int) -> slice:
         return slice(self.offset + self.length * idx, self.offset + self.length * (idx + 1))
+
+    def __getitem__(self, item: str):
+        return self.structures.get(item)

@@ -136,3 +136,4 @@ class RangeCombo(SingleWidget, QComboBox):
 
     def overwrite(self) -> bool:
         self.data_set[self.data_name] = self.currentIndex()
+        return True
