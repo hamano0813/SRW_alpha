@@ -76,7 +76,7 @@ class PilotFrame(BackgroundFrame):
         group_layout.addLayout(filter_layout)
         group.setLayout(group_layout)
         filter_line.textChanged[str].connect(self['パイロットリスト'].filterChanged)
-        group.setFixedSize(1050, 780)
+        group.setFixedSize(1052, 780)
         return group
 
     def init_skill_table(self):
@@ -129,7 +129,7 @@ class PilotFrame(BackgroundFrame):
         group_layout = QVBoxLayout()
         group_layout.addWidget(self['乗り換え系'])
         group.setLayout(group_layout)
-        group.setFixedSize(219, 230)
+        group.setFixedSize(219, 236)
         return group
 
     def init_pilot_adaptation(self):
