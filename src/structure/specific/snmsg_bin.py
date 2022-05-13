@@ -4,12 +4,12 @@
 from parameter import SNMSG_TEXT_EXTRA
 from structure.generic import Rom, Text, Sequence
 
-SNMSG_STRUCTURE = {'文本': Text(0x0, 0x100, 'shiftjisx0213', SNMSG_TEXT_EXTRA)}
+SNMSG_STRUCTURE = {'メッセージ': Text(0x0, 0x100, 'shiftjisx0213', SNMSG_TEXT_EXTRA)}
 
 
 class SnmsgBIN(Rom):
     def __init__(self):
         super(SnmsgBIN, self).__init__()
         self.structures = {
-            '文本列表': Sequence(SNMSG_STRUCTURE, 0x0, 0x100, 0x7F1F),
+            'メッセージリスト': Sequence(SNMSG_STRUCTURE, 0x0, 0x100, 0x7F1F),
         }

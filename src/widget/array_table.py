@@ -45,7 +45,7 @@ class ArrayModel(QAbstractTableModel):
         if role == Qt.DisplayRole:
             return self.columns[column_name].display(data)
         if role == Qt.TextAlignmentRole:
-            return int(self.columns[column_name].kwargs.get('alignment', Qt.AlignLeft) | Qt.AlignVCenter)
+            return int(self.columns[column_name].kwargs.get('alignment', Qt.AlignLeft) | self.parent().alignment)
         if role == Qt.EditRole:
             return data
         if role == Qt.UserRole:
@@ -123,8 +123,10 @@ class ArrayTable(ControlWidget, QTableView):
         proxy.setSourceModel(array_model)
         self.setModel(proxy)
 
-        self.resizeColumnsToContents()
-        self.resizeRowsToContents()
+        if self.kwargs.get('resizeColumns', True):
+            self.resizeColumnsToContents()
+        if self.kwargs.get('resizeRows', True):
+            self.resizeRowsToContents()
         stretch_columns = self.kwargs.get('stretch', (0,))
         for column in stretch_columns:
             self.horizontalHeader().setSectionResizeMode(column, self.horizontalHeader().Stretch)
@@ -160,6 +162,7 @@ class ArrayTable(ControlWidget, QTableView):
         if self.kwargs.get('copy', True):
             self.setContextMenuPolicy(Qt.CustomContextMenu)
             self.customContextMenuRequested.connect(self.copy_paste)
+        self.alignment = self.kwargs.get('alignment', Qt.AlignVCenter)
 
     def keyPressEvent(self, event: QKeyEvent) -> bool:
         if self.kwargs.get('copy', True):

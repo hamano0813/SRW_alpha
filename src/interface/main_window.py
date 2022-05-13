@@ -10,7 +10,7 @@ from PySide6.QtWidgets import QApplication, QMainWindow, QMenu, QFileDialog
 
 from structure import Rom, RobotRAF, PilotBIN, SnmsgBIN, SndataBIN, EnlistBIN, AiunpBIN, ScriptBIN, PrmgrpBIN
 from widget import BackgroundFrame
-from . import RobotFrame, PilotFrame
+from . import RobotFrame, PilotFrame, SnmsgFrame
 from .resource import *
 
 
@@ -35,6 +35,7 @@ class MainWindow(QMainWindow):
             '機体': (RobotFrame, 'UNCOMPRESS_ROBOT.RAF',
                    {'robots': self.roms['UNCOMPRESS_ROBOT.RAF'].robots}),
             'パイロット': (PilotFrame, 'PILOT.BIN',),
+            'メッセージ': (SnmsgFrame, 'SNMSG.BIN',),
         }
 
         self.init_file_menu()
@@ -124,6 +125,7 @@ class MainWindow(QMainWindow):
         self.findChild(QAction, '保存').setEnabled(any(map(bool, self.roms.values())))
         self.findChild(QAction, '機体').setEnabled(bool(self.roms.get('UNCOMPRESS_ROBOT.RAF')))
         self.findChild(QAction, 'パイロット').setEnabled(bool(self.roms.get('PILOT.BIN')))
+        self.findChild(QAction, 'メッセージ').setEnabled(bool(self.roms.get('SNMSG.BIN')))
 
     def charge_style(self):
         if self.sender().objectName() == '深色':
@@ -142,13 +144,15 @@ class MainWindow(QMainWindow):
         sheet_expand = [
             'QComboBox QAbstractItemView::item {height: 25px;}',
             'QAbstractItemView RadioCombo {padding: -3px 0px 0px -2px;}',
-            'QAbstractItemView ValueSpin {padding-top: -2px; padding-right: 0px; padding-left: 0px;}',
-            'QAbstractItemView MappingSpin, QAbstractItemView TextLine {padding-top: -2px; padding-right: 0px;}',
+            'QAbstractItemView ValueSpin {padding-top: -2px; padding-right: -1px; padding-left: 0px;}',
+            'QAbstractItemView MappingSpin, QAbstractItemView TextLine {padding-top: -2px; padding-right: -1px;}',
             'RadioCombo, CheckCombo {padding: -2px 0px 0px -2px;}',
             'QAbstractSpinBox::up-button, QAbstractSpinBox::down-button {width: 6px; padding: 3px 1px 3px -1px;}',
             'RangeCombo QAbstractItemView::item {height: 105px;}',
             'QHeaderView::section {padding: -1px -2px 0 3px;}',
             'CheckCombo QLineEdit {padding: 0px 5px 0px 5px;}',
+            'QAbstractItemView TextMulti {padding-top: -2px;}'
+            '#MessageList::item {padding-top: 3px;padding-left: 3px;}'
         ]
         for expand in sheet_expand:
             style_sheet += expand
