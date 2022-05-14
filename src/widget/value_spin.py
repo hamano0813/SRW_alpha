@@ -10,10 +10,10 @@ from .abstract_widget import SingleWidget
 
 
 class ValueSpin(SingleWidget, QSpinBox):
-    def __init__(self, parent, data_name: str, structure: Value, multiple: int = 1, **kwargs):
+    def __init__(self, parent, data_name: str, structure: Value, **kwargs):
         QSpinBox.__init__(self, parent)
         SingleWidget.__init__(self, parent, data_name, structure, **kwargs)
-        self.multiple = multiple
+        self.multiple = self.kwargs.get('multiple', 1)
         if alignment := self.kwargs.get('alignment', Qt.AlignRight):
             self.setAlignment(alignment)
         if font := self.kwargs.get('font'):
@@ -61,7 +61,7 @@ class ValueSpin(SingleWidget, QSpinBox):
         return True
 
     def display(self, value: int) -> str:
-        return self.textFromValue(value) + '   '
+        return self.textFromValue(value * self.multiple) + '   '
 
     def interpret(self, text: str) -> int:
         return self.valueFromText(text) // self.multiple

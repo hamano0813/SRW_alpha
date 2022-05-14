@@ -10,7 +10,7 @@ from PySide6.QtWidgets import QApplication, QMainWindow, QMenu, QFileDialog
 
 from structure import Rom, RobotRAF, PilotBIN, SnmsgBIN, SndataBIN, EnlistBIN, AiunpBIN, ScriptBIN, PrmgrpBIN
 from widget import BackgroundFrame
-from . import RobotFrame, PilotFrame, SnmsgFrame
+from . import RobotFrame, PilotFrame, SnmsgFrame, PrmgrpFrame
 from .resource import *
 
 
@@ -36,6 +36,7 @@ class MainWindow(QMainWindow):
                    {'robots': self.roms['UNCOMPRESS_ROBOT.RAF'].robots}),
             'パイロット': (PilotFrame, 'PILOT.BIN',),
             'メッセージ': (SnmsgFrame, 'SNMSG.BIN',),
+            'その他': (PrmgrpFrame, 'PRM_GRP.BIN',),
         }
 
         self.init_file_menu()
@@ -126,6 +127,7 @@ class MainWindow(QMainWindow):
         self.findChild(QAction, '機体').setEnabled(bool(self.roms.get('UNCOMPRESS_ROBOT.RAF')))
         self.findChild(QAction, 'パイロット').setEnabled(bool(self.roms.get('PILOT.BIN')))
         self.findChild(QAction, 'メッセージ').setEnabled(bool(self.roms.get('SNMSG.BIN')))
+        self.findChild(QAction, 'その他').setEnabled(bool(self.roms.get('PRM_GRP.BIN')))
 
     def charge_style(self):
         if self.sender().objectName() == '深色':
@@ -156,5 +158,5 @@ class MainWindow(QMainWindow):
         ]
         for expand in sheet_expand:
             style_sheet += expand
-        print(style_sheet)
+        # print(style_sheet)
         QApplication.instance().setStyleSheet(style_sheet)
