@@ -337,8 +337,8 @@ class RobotFrame(BackgroundFrame):
             self['着弾点指定型攻撃半径'].setHidden(False)
             self['方向指定型範囲'].setHidden(True)
 
-    def set_rom(self, rom: RobotRAF):
-        self.rom = rom
+    def set_roms(self, roms: list[RobotRAF]):
+        self.rom = roms[0]
         self.parse()
 
     def parse(self):

@@ -169,8 +169,8 @@ class PilotFrame(BackgroundFrame):
         group.setLayout(group_layout)
         return group
 
-    def set_rom(self, rom: PilotBIN):
-        self.rom = rom
+    def set_roms(self, roms: list[PilotBIN]):
+        self.rom = roms[0]
         self.parse()
 
     def parse(self):

@@ -32,11 +32,11 @@ class MainWindow(QMainWindow):
             'PRM_GRP.BIN': PrmgrpBIN(),
         }
         self.frames = {
-            '機体': (RobotFrame, 'UNCOMPRESS_ROBOT.RAF',
+            '機体': (RobotFrame, ('UNCOMPRESS_ROBOT.RAF',),
                    {'robots': self.roms['UNCOMPRESS_ROBOT.RAF'].robots}),
-            'パイロット': (PilotFrame, 'PILOT.BIN',),
-            'メッセージ': (SnmsgFrame, 'SNMSG.BIN',),
-            'その他': (PrmgrpFrame, 'PRM_GRP.BIN',),
+            'パイロット': (PilotFrame, ('PILOT.BIN',),),
+            'メッセージ': (SnmsgFrame, ('SNMSG.BIN',),),
+            'その他': (PrmgrpFrame, ('PRM_GRP.BIN',),),
         }
 
         self.init_file_menu()
@@ -106,14 +106,14 @@ class MainWindow(QMainWindow):
 
         return wrapper
 
-    def open_frame(self, frame_class: type(BackgroundFrame), rom_name: str, parameter: dict[str, callable] = None):
+    def open_frame(self, frame_class: type(BackgroundFrame), rom_names: tuple[str], parameter: dict[str, callable] = None):
         def wrapper():
             if parameter:
                 kwargs = {k: v() for k, v in parameter.items()}
             else:
                 kwargs = dict()
             frame = frame_class(**kwargs)
-            frame.set_rom(self.roms[rom_name])
+            frame.set_roms([self.roms[name] for name in rom_names])
             self.setCentralWidget(frame)
 
         return wrapper
@@ -153,8 +153,9 @@ class MainWindow(QMainWindow):
             'RangeCombo QAbstractItemView::item {height: 105px;}',
             'QHeaderView::section {padding: -1px -2px 0 3px;}',
             'CheckCombo QLineEdit {padding: 0px 5px 0px 5px;}',
-            'QAbstractItemView TextMulti {padding-top: -2px;}'
-            '#MessageList::item {padding-top: 3px;padding-left: 3px;}'
+            'QAbstractItemView TextMulti {padding-top: -2px;}',
+            '#MessageList::item {padding-top: 3px;padding-left: 3px;}',
+            '#Corner::section {padding-top: 5px;padding-left: 5px;}',
         ]
         for expand in sheet_expand:
             style_sheet += expand

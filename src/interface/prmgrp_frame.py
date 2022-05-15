@@ -9,64 +9,161 @@ from PySide6.QtWidgets import QGroupBox, QHBoxLayout, QLabel, QVBoxLayout, QTabW
 
 from parameter.enum_data import EnumData
 from structure import PrmgrpBIN
-from structure.specific.prmgrp_bin import (SPECIAL_STRUCTURE, ZODIAC_STRUCTURE, BLOOD_STRUCTURE, PART_STRUCTURE)
+from structure.specific.prmgrp_bin import (SPECIAL_STRUCTURE, ZODIAC_STRUCTURE, BLOOD_STRUCTURE, PART_STRUCTURE,
+                                           UPGRADE_STRUCTURE)
 from widget import *
-
 
 
 class PrmgrpFrame(BackgroundFrame):
     def __init__(self, parent=None, **kwargs):
         super(PrmgrpFrame, self).__init__(parent, **kwargs)
         self.rom: Optional[PrmgrpBIN] = None
-        self.skill = {idx: f'{idx:02d}.{skill}' for idx, skill in enumerate(EnumData.PILOT['特殊技能'][:8])}
+        self.skill = {idx: f' {idx:02d}.{skill}' for idx, skill in enumerate(EnumData.PILOT['特殊技能'][:8])}
         self.spirit = [{'精神': spirit} for spirit in EnumData.SPIRIT.values()][:-1]
         self.part = [{'パーツ': part} for part in EnumData.PART.values()][1:]
         self.init_ui()
 
     # noinspection PyAttributeOutsideInit
     def init_ui(self):
-        spirit_group = self.init_spirit_group()
-        part_group = self.init_part_group()
-        constellation_group = self.init_constellation_group()
-        special_group = self.init_special_group()
-
-        spirit_group.setFixedWidth(226)
-        part_group.setFixedWidth(710)
-
         tab_widget = QTabWidget()
 
-        self.sppart_tab = QFrame()
-        sppart_layout = QHBoxLayout()
-        sppart_layout.addWidget(spirit_group)
-        sppart_layout.addWidget(part_group)
-        sppart_layout.addStretch()
-        self.sppart_tab.setLayout(sppart_layout)
+        self.upgrade_frame = self.init_upgrade_frame()
+        self.birthday_frame = self.init_birthday_frame()
+        self.sppart_frame = self.init_sppart_frame()
 
-        self.birthday_tab = QFrame()
-        birthday_layout = QHBoxLayout()
-        birthday_layout.addWidget(special_group)
-        birthday_layout.addWidget(constellation_group)
-        birthday_layout.addStretch()
-        self.birthday_tab.setLayout(birthday_layout)
-
-        tab_widget.addTab(self.birthday_tab, '誕生日')
-        tab_widget.addTab(self.sppart_tab, '精神消費＆パーツ属性')
+        tab_widget.addTab(self.upgrade_frame, '改造')
+        tab_widget.addTab(self.birthday_frame, '誕生日')
+        tab_widget.addTab(self.sppart_frame, '精神消費＆パーツ属性')
 
         main_layout = QVBoxLayout()
         main_layout.addWidget(tab_widget)
-
         self.setLayout(main_layout)
 
-    def init_special_group(self):
-        group = QGroupBox('特殊誕生日')
+    def init_upgrade_frame(self):
+        frame = QFrame()
+
+        robot_group = QGroupBox('機体改造')
+
+        self['ＨＰ改造'] = ArrayTable(
+            self, 'ＨＰ改造', {
+                '費用': ValueSpin(None, '費用', UPGRADE_STRUCTURE['ＨＰ改造']['費用'], alignment=Qt.AlignRight),
+                '上昇値': ValueSpin(None, '上昇値', UPGRADE_STRUCTURE['ＨＰ改造']['上昇値'], alignment=Qt.AlignRight),
+            }, sortable=False, stretch=tuple(), corner='   ＨＰ',
+        )
+        self['ＨＰ改造'].verticalHeader().setFixedWidth(60)
+        self['ＨＰ改造'].setFixedSize(206, 293)
+
+        self['ＥＮ改造'] = ArrayTable(
+            self, 'ＥＮ改造', {
+                '費用': ValueSpin(None, '費用', UPGRADE_STRUCTURE['ＥＮ改造']['費用'], alignment=Qt.AlignRight),
+                '上昇値': ValueSpin(None, '上昇値', UPGRADE_STRUCTURE['ＥＮ改造']['上昇値'], alignment=Qt.AlignRight),
+            }, sortable=False, stretch=tuple(), corner='   ＥＮ',
+        )
+        self['ＥＮ改造'].verticalHeader().setFixedWidth(60)
+        self['ＥＮ改造'].setFixedSize(206, 293)
+
+        self['運動改造'] = ArrayTable(
+            self, '運動改造', {
+                '費用': ValueSpin(None, '費用', UPGRADE_STRUCTURE['運動改造']['費用'], alignment=Qt.AlignRight),
+                '上昇値': ValueSpin(None, '上昇値', UPGRADE_STRUCTURE['運動改造']['上昇値'], alignment=Qt.AlignRight),
+            }, sortable=False, stretch=tuple(), corner='   運動',
+        )
+        self['運動改造'].verticalHeader().setFixedWidth(60)
+        self['運動改造'].setFixedSize(206, 293)
+
+        self['装甲改造'] = ArrayTable(
+            self, '装甲改造', {
+                '費用': ValueSpin(None, '費用', UPGRADE_STRUCTURE['装甲改造']['費用'], alignment=Qt.AlignRight),
+                '上昇値': ValueSpin(None, '上昇値', UPGRADE_STRUCTURE['装甲改造']['上昇値'], alignment=Qt.AlignRight),
+            }, sortable=False, stretch=tuple(), corner='   装甲',
+        )
+        self['装甲改造'].verticalHeader().setFixedWidth(60)
+        self['装甲改造'].setFixedSize(206, 293)
+
+        self['限界改造'] = ArrayTable(
+            self, '限界改造', {
+                '費用': ValueSpin(None, '費用', UPGRADE_STRUCTURE['限界改造']['費用'], alignment=Qt.AlignRight),
+                '上昇値': ValueSpin(None, '上昇値', UPGRADE_STRUCTURE['限界改造']['上昇値'], alignment=Qt.AlignRight),
+            }, sortable=False, stretch=tuple(), corner='   限界',
+        )
+        self['限界改造'].verticalHeader().setFixedWidth(60)
+        self['限界改造'].setFixedSize(206, 293)
+
+        robot_layout = QHBoxLayout()
+        robot_layout.addWidget(self['ＨＰ改造'])
+        robot_layout.addWidget(self['ＥＮ改造'])
+        robot_layout.addWidget(self['運動改造'])
+        robot_layout.addWidget(self['装甲改造'])
+        robot_layout.addWidget(self['限界改造'])
+        robot_group.setLayout(robot_layout)
+
+        weapon_group = QGroupBox('武器改造')
+
+        self['タイプ[A]'] = ArrayTable(
+            self, 'タイプ[A]', {
+                '費用': ValueSpin(None, '費用', UPGRADE_STRUCTURE['タイプ[A]']['費用'],
+                                multiple=10, alignment=Qt.AlignRight),
+                '上昇値': ValueSpin(None, '上昇値', UPGRADE_STRUCTURE['タイプ[A]']['上昇値'], alignment=Qt.AlignRight),
+            }, sortable=False, stretch=tuple(), corner='タイプ[A]',
+        )
+        self['タイプ[A]'].verticalHeader().setFixedWidth(60)
+        self['タイプ[A]'].setFixedSize(206, 293)
+
+        self['タイプ[B]'] = ArrayTable(
+            self, 'タイプ[B]', {
+                '費用': ValueSpin(None, '費用', UPGRADE_STRUCTURE['タイプ[B]']['費用'],
+                                multiple=10, alignment=Qt.AlignRight),
+                '上昇値': ValueSpin(None, '上昇値', UPGRADE_STRUCTURE['タイプ[B]']['上昇値'], alignment=Qt.AlignRight),
+            }, sortable=False, stretch=tuple(), corner='タイプ[B]',
+        )
+        self['タイプ[B]'].verticalHeader().setFixedWidth(60)
+        self['タイプ[B]'].setFixedSize(206, 293)
+
+        self['タイプ[C]'] = ArrayTable(
+            self, 'タイプ[C]', {
+                '費用': ValueSpin(None, '費用', UPGRADE_STRUCTURE['タイプ[C]']['費用'],
+                                multiple=10, alignment=Qt.AlignRight),
+                '上昇値': ValueSpin(None, '上昇値', UPGRADE_STRUCTURE['タイプ[C]']['上昇値'], alignment=Qt.AlignRight),
+            }, sortable=False, stretch=tuple(), corner='タイプ[C]',
+        )
+        self['タイプ[C]'].verticalHeader().setFixedWidth(60)
+        self['タイプ[C]'].setFixedSize(206, 293)
+
+        self['タイプ[D]'] = ArrayTable(
+            self, 'タイプ[D]', {
+                '費用': ValueSpin(None, '費用', UPGRADE_STRUCTURE['タイプ[D]']['費用'],
+                                multiple=10, alignment=Qt.AlignRight),
+                '上昇値': ValueSpin(None, '上昇値', UPGRADE_STRUCTURE['タイプ[D]']['上昇値'], alignment=Qt.AlignRight),
+            }, sortable=False, stretch=tuple(), corner='タイプ[D]',
+        )
+        self['タイプ[D]'].verticalHeader().setFixedWidth(60)
+        self['タイプ[D]'].setFixedSize(206, 293)
+
+        weapon_layout = QHBoxLayout()
+        weapon_layout.addWidget(self['タイプ[A]'])
+        weapon_layout.addWidget(self['タイプ[B]'])
+        weapon_layout.addWidget(self['タイプ[C]'])
+        weapon_layout.addWidget(self['タイプ[D]'])
+        weapon_group.setLayout(weapon_layout)
+
+        frame_layout = QVBoxLayout()
+        frame_layout.addWidget(robot_group, alignment=Qt.AlignLeft)
+        frame_layout.addWidget(weapon_group, alignment=Qt.AlignLeft)
+        frame_layout.addStretch()
+        frame.setLayout(frame_layout)
+        return frame
+
+    def init_birthday_frame(self):
+        frame = QFrame()
+
+        special_group = QGroupBox('特殊誕生日')
         self['特殊誕生日'] = ArrayTable(
             self, '特殊誕生日', {
                 '誕生月': ValueSpin(None, '誕生月', SPECIAL_STRUCTURE['誕生月'], alignment=Qt.AlignRight),
                 '誕生日': ValueSpin(None, '誕生日', SPECIAL_STRUCTURE['誕生日'], alignment=Qt.AlignRight),
                 '血液型': MappingSpin(None, '血液型', SPECIAL_STRUCTURE['血液型'],
                                    mapping={0: 'A', 1: 'B', 2: 'AB', 3: 'O'}, alignment=Qt.AlignRight),
-            },
-            stretch=tuple(), single=True,
+            }, sortable=False, stretch=tuple(), single=True,
         )
         self['特殊精神'] = ParallelTable(
             self['特殊誕生日'], ('精神リスト', '習得リスト'), {
@@ -82,20 +179,17 @@ class PrmgrpFrame(BackgroundFrame):
         self['特殊誕生日'].verticalHeader().setHidden(True)
         self['特殊精神'].setFixedSize(148, 189)
 
-        group_layout = QHBoxLayout()
+        special_layout = QHBoxLayout()
 
         spirit_layout = QVBoxLayout()
         spirit_layout.addWidget(self['特殊精神'])
         spirit_layout.addWidget(self['特殊スキル'])
         spirit_layout.addStretch()
+        special_layout.addWidget(self['特殊誕生日'])
+        special_layout.addLayout(spirit_layout)
+        special_group.setLayout(special_layout)
 
-        group_layout.addWidget(self['特殊誕生日'])
-        group_layout.addLayout(spirit_layout)
-        group.setLayout(group_layout)
-        return group
-
-    def init_constellation_group(self):
-        group = QGroupBox('星座誕生日')
+        constellation_group = QGroupBox('星座誕生日')
         self['星座範囲'] = ArrayTable(
             self, '星座範囲', {
                 '開始月': ValueSpin(None, '開始月', ZODIAC_STRUCTURE['開始月'], alignment=Qt.AlignRight),
@@ -150,7 +244,7 @@ class PrmgrpFrame(BackgroundFrame):
         self['血液型B精神'].setFixedSize(148, 189)
         self['血液型AB精神'].setFixedSize(148, 189)
         self['血液型O精神'].setFixedSize(148, 189)
-        group_layout = QHBoxLayout()
+        constellation_layout = QHBoxLayout()
 
         birth_layout = QVBoxLayout()
         birth_layout.addWidget(QLabel('星座範囲'))
@@ -161,50 +255,50 @@ class PrmgrpFrame(BackgroundFrame):
         a_layout.addWidget(QLabel('血液型A'))
         a_layout.addWidget(self['血液型A精神'])
         a_layout.addWidget(self['血液型Aスキル'])
-        a_layout.addStretch()
 
         b_layout = QVBoxLayout()
         b_layout.addWidget(QLabel('血液型B'))
         b_layout.addWidget(self['血液型B精神'])
         b_layout.addWidget(self['血液型Bスキル'])
+
+        a_layout.addWidget(QLabel('血液型AB'))
+        a_layout.addWidget(self['血液型AB精神'])
+        a_layout.addWidget(self['血液型ABスキル'])
+        a_layout.addStretch()
+
+        b_layout.addWidget(QLabel('血液型O'))
+        b_layout.addWidget(self['血液型O精神'])
+        b_layout.addWidget(self['血液型Oスキル'])
         b_layout.addStretch()
 
-        ab_layout = QVBoxLayout()
-        ab_layout.addWidget(QLabel('血液型AB'))
-        ab_layout.addWidget(self['血液型AB精神'])
-        ab_layout.addWidget(self['血液型ABスキル'])
-        ab_layout.addStretch()
+        constellation_layout.addLayout(birth_layout)
+        constellation_layout.addLayout(a_layout)
+        constellation_layout.addLayout(b_layout)
 
-        o_layout = QVBoxLayout()
-        o_layout.addWidget(QLabel('血液型O'))
-        o_layout.addWidget(self['血液型O精神'])
-        o_layout.addWidget(self['血液型Oスキル'])
-        o_layout.addStretch()
+        constellation_group.setLayout(constellation_layout)
 
-        group_layout.addLayout(birth_layout)
-        group_layout.addLayout(a_layout)
-        group_layout.addLayout(b_layout)
-        group_layout.addLayout(ab_layout)
-        group_layout.addLayout(o_layout)
+        frame_layout = QHBoxLayout()
+        frame_layout.addWidget(special_group)
+        frame_layout.addWidget(constellation_group)
+        frame_layout.addStretch()
+        frame.setLayout(frame_layout)
+        return frame
 
-        group.setLayout(group_layout)
-        return group
+    def init_sppart_frame(self):
+        frame = QFrame()
 
-    def init_spirit_group(self):
-        group = QGroupBox('精神消費')
+        sp_group = QGroupBox('精神消費')
         self['精神消費'] = ArrayTable(
             self, '精神消費', {
                 '精神': TextLine(None, '精神', PrmgrpBIN().structures['精神名前'].structures['名称']),
                 'SP': ValueSpin(None, 'SP', PrmgrpBIN().structures['精神消費']['SP'], alignment=Qt.AlignRight),
-            }
+            }, sortable=False,
         )
-        group_layout = QHBoxLayout()
-        group_layout.addWidget(self['精神消費'])
-        group.setLayout(group_layout)
-        return group
+        sp_layout = QHBoxLayout()
+        sp_layout.addWidget(self['精神消費'])
+        sp_group.setLayout(sp_layout)
 
-    def init_part_group(self):
-        group = QGroupBox('パーツ属性')
+        part_group = QGroupBox('パーツ属性')
         self['パーツ属性'] = ArrayTable(
             self, 'パーツ属性', {
                 'パーツ': TextLine(None, 'パーツ', PrmgrpBIN().structures['パーツ名前'].structures['名称']),
@@ -219,12 +313,21 @@ class PrmgrpFrame(BackgroundFrame):
                 '空A': MappingSpin(None, '空A', PART_STRUCTURE['空A'],
                                   mapping={0: '', 0x1: '⚪'},
                                   alignment=Qt.AlignLeft),
-            }, stretch=(6,),
+            }, sortable=False, stretch=(6,),
         )
-        group_layout = QHBoxLayout()
-        group_layout.addWidget(self['パーツ属性'])
-        group.setLayout(group_layout)
-        return group
+        part_layout = QHBoxLayout()
+        part_layout.addWidget(self['パーツ属性'])
+        part_group.setLayout(part_layout)
+
+        sp_group.setFixedWidth(226)
+        part_group.setFixedWidth(710)
+
+        frame_layout = QHBoxLayout()
+        frame_layout.addWidget(sp_group)
+        frame_layout.addWidget(part_group)
+        frame_layout.addStretch()
+        frame.setLayout(frame_layout)
+        return frame
 
     def control_blood(self, index: QModelIndex):
         if not index.isValid():
@@ -236,12 +339,23 @@ class PrmgrpFrame(BackgroundFrame):
         self['血液型O'].control_child(row)
         return True
 
-    def set_rom(self, rom: PrmgrpBIN):
-        self.rom = rom
+    def set_roms(self, roms: list[PrmgrpBIN]):
+        self.rom = roms[0]
         self.parse()
 
     def parse(self):
         self.rom.parse()
+
+        self['ＨＰ改造'].install(self.rom['改造設定'][0])
+        self['ＥＮ改造'].install(self.rom['改造設定'][0])
+        self['運動改造'].install(self.rom['改造設定'][0])
+        self['装甲改造'].install(self.rom['改造設定'][0])
+        self['限界改造'].install(self.rom['改造設定'][0])
+        self['タイプ[A]'].install(self.rom['改造設定'][0])
+        self['タイプ[B]'].install(self.rom['改造設定'][0])
+        self['タイプ[C]'].install(self.rom['改造設定'][0])
+        self['タイプ[D]'].install(self.rom['改造設定'][0])
+
         for idx, spirit in enumerate(self.spirit):
             self.rom['精神消費'][idx] |= spirit
         self['精神消費'].install(self.rom.data)

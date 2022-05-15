@@ -47,8 +47,8 @@ class SnmsgFrame(BackgroundFrame):
         filter_line.textChanged[str].connect(self['メッセージリスト'].filterChanged)
         return group
 
-    def set_rom(self, rom: SnmsgBIN):
-        self.rom = rom
+    def set_roms(self, roms: list[SnmsgBIN]):
+        self.rom = roms[0]
         self.parse()
 
     def parse(self):

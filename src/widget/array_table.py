@@ -4,9 +4,10 @@
 from collections import deque
 from typing import Optional
 
-from PySide6.QtCore import Qt, QAbstractTableModel, QSortFilterProxyModel, QModelIndex, QRegularExpression
+from PySide6.QtCore import Qt, QAbstractTableModel, QSortFilterProxyModel, QModelIndex, QRegularExpression, QEvent
 from PySide6.QtGui import QAction, QCursor, QKeyEvent
-from PySide6.QtWidgets import QApplication, QWidget, QTableView, QMenu, QStyledItemDelegate, QStyleOptionViewItem
+from PySide6.QtWidgets import (QApplication, QWidget, QTableView, QMenu, QAbstractButton, QStyle, QStylePainter,
+                               QStyledItemDelegate, QStyleOptionViewItem, QStyleOptionHeader)
 
 from structure.generic import SEQUENCE
 from .abstract_widget import ControlWidget, SingleWidget
@@ -154,7 +155,7 @@ class ArrayTable(ControlWidget, QTableView):
         self.control_child(self.model().mapToSource(index).row())
         return True
 
-    # noinspection PyUnresolvedReferences
+    # noinspection PyUnresolvedReferences,PyAttributeOutsideInit
     def check_kwargs(self):
         if self.kwargs.get('single', False):
             self.setSelectionMode(QTableView.SingleSelection)
@@ -162,6 +163,8 @@ class ArrayTable(ControlWidget, QTableView):
         if self.kwargs.get('copy', True):
             self.setContextMenuPolicy(Qt.CustomContextMenu)
             self.customContextMenuRequested.connect(self.copy_paste)
+        if corner := self.kwargs.get('corner', False):
+            self.set_corner(corner)
         self.alignment = self.kwargs.get('alignment', Qt.AlignVCenter)
 
     def keyPressEvent(self, event: QKeyEvent) -> bool:
@@ -227,4 +230,33 @@ class ArrayTable(ControlWidget, QTableView):
                 source_index = self.model().mapToSource(index)
                 self.model().sourceModel().setData(source_index, text, Qt.UserRole)
         self.reset()
+        return True
+
+    def set_corner(self, text: str):
+        # noinspection PyTypeChecker
+        corner_button: QAbstractButton = self.findChild(QAbstractButton)
+        corner_button.setText(text)
+        corner_button.setObjectName('Corner')
+        corner_button.installEventFilter(self)
+        option = QStyleOptionHeader()
+        option.text = corner_button.text()
+
+    def eventFilter(self, obj, event):
+        if event.type() != QEvent.Paint or not isinstance(obj, QAbstractButton):
+            return False
+        option: QStyleOptionHeader = QStyleOptionHeader()
+        option.initFrom(obj)
+        style_state = QStyle.State_None
+        if obj.isEnabled():
+            style_state |= QStyle.State_Enabled
+        if obj.isActiveWindow():
+            style_state |= QStyle.State_Active
+        if obj.isDown():
+            style_state |= QStyle.State_Sunken
+        option.state = style_state
+        option.rect = obj.rect()
+        option.text = obj.text()
+        option.position = QStyleOptionHeader.OnlyOneSection
+        painter = QStylePainter(obj)
+        painter.drawControl(QStyle.CE_Header, option)
         return True
