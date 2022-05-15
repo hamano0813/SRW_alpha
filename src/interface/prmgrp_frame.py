@@ -18,9 +18,9 @@ class PrmgrpFrame(BackgroundFrame):
     def __init__(self, parent=None, **kwargs):
         super(PrmgrpFrame, self).__init__(parent, **kwargs)
         self.rom: Optional[PrmgrpBIN] = None
-        self.skill = {idx: f' {idx:02d}.{skill}' for idx, skill in enumerate(EnumData.PILOT['特殊技能'][:8])}
-        self.spirit = [{'精神': spirit} for spirit in EnumData.SPIRIT.values()][:-1]
-        self.part = [{'パーツ': part} for part in EnumData.PART.values()][1:]
+        self.skill_mapping = {idx: f' {idx:02d}.{skill}' for idx, skill in enumerate(EnumData.PILOT['特殊技能'][:8])}
+        self.spirit_sequence = [{'精神': spirit} for spirit in EnumData.SPIRIT.values()][:-1]
+        self.part_sequence = [{'パーツ': part} for part in EnumData.PART.values()][1:]
         self.init_ui()
 
     # noinspection PyAttributeOutsideInit
@@ -172,7 +172,7 @@ class PrmgrpFrame(BackgroundFrame):
             }
         )
         self['特殊スキル'] = RadioCombo(self['特殊誕生日'], 'スキル', SPECIAL_STRUCTURE['スキル'],
-                                   mapping=self.skill,
+                                   mapping=self.skill_mapping,
                                    alignment=Qt.AlignRight)
 
         self['特殊誕生日'].setFixedWidth(231)
@@ -229,13 +229,13 @@ class PrmgrpFrame(BackgroundFrame):
             }
         )
         self['血液型Aスキル'] = RadioCombo(self['血液型A'], 'スキル', BLOOD_STRUCTURE['スキル'],
-                                     mapping=self.skill, alignment=Qt.AlignRight)
+                                     mapping=self.skill_mapping, alignment=Qt.AlignRight)
         self['血液型Bスキル'] = RadioCombo(self['血液型B'], 'スキル', BLOOD_STRUCTURE['スキル'],
-                                     mapping=self.skill, alignment=Qt.AlignRight)
+                                     mapping=self.skill_mapping, alignment=Qt.AlignRight)
         self['血液型ABスキル'] = RadioCombo(self['血液型AB'], 'スキル', BLOOD_STRUCTURE['スキル'],
-                                      mapping=self.skill, alignment=Qt.AlignRight)
+                                      mapping=self.skill_mapping, alignment=Qt.AlignRight)
         self['血液型Oスキル'] = RadioCombo(self['血液型O'], 'スキル', BLOOD_STRUCTURE['スキル'],
-                                     mapping=self.skill, alignment=Qt.AlignRight)
+                                     mapping=self.skill_mapping, alignment=Qt.AlignRight)
         self['星座範囲'].clicked[QModelIndex].connect(self.control_blood)
 
         self['星座範囲'].verticalHeader().setHidden(True)
@@ -356,12 +356,13 @@ class PrmgrpFrame(BackgroundFrame):
         self['タイプ[C]'].install(self.rom['改造設定'][0])
         self['タイプ[D]'].install(self.rom['改造設定'][0])
 
-        for idx, spirit in enumerate(self.spirit):
+        for idx, spirit in enumerate(self.spirit_sequence):
             self.rom['精神消費'][idx] |= spirit
         self['精神消費'].install(self.rom.data)
-        for idx, part in enumerate(self.part):
+        for idx, part in enumerate(self.part_sequence):
             self.rom['パーツ属性'][idx] |= part
         self['パーツ属性'].install(self.rom.data)
+
         self['特殊誕生日'].install(self.rom.data)
         self['星座範囲'].install(self.rom.data)
         self['血液型A'].install(self.rom.data)
