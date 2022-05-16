@@ -3,10 +3,11 @@
 
 import os
 import sys
+from typing import Optional
 
 import qdarktheme
 from PySide6.QtGui import QIcon, QAction
-from PySide6.QtWidgets import QApplication, QMainWindow, QMenu, QFileDialog
+from PySide6.QtWidgets import QApplication, QMainWindow, QMenu, QFileDialog, QToolBar, QPushButton
 
 from structure import Rom, RobotRAF, PilotBIN, SnmsgBIN, SndataBIN, EnlistBIN, AiunpBIN, ScriptBIN, PrmgrpBIN
 from widget import BackgroundFrame
@@ -19,6 +20,7 @@ class MainWindow(QMainWindow):
 
     def __init__(self, parent=None, flags=QtCore.Qt.WindowCloseButtonHint):
         super(MainWindow, self).__init__(parent, flags)
+        self.tool_bar: Optional[QToolBar] = None
 
         self.roms = {
             'UNCOMPRESS_ROBOT.RAF': RobotRAF(),
@@ -41,6 +43,7 @@ class MainWindow(QMainWindow):
         self.init_file_menu()
         self.init_edit_menu()
         self.init_option_menu()
+        self.init_menu_action()
 
         self.setWindowTitle('超级机器人大战α 静态修改器')
         self.setWindowIcon(QIcon(':image/icon.png'))
@@ -70,9 +73,9 @@ class MainWindow(QMainWindow):
         edit_menu.addActions(edit_list)
         self.menuBar().addMenu(edit_menu)
 
-        tool_bar = self.addToolBar('')
-        tool_bar.addActions(edit_list)
-        tool_bar.setMovable(False)
+        self.tool_bar = self.addToolBar('')
+        self.tool_bar.addActions(edit_list)
+        self.tool_bar.setMovable(False)
 
     def init_option_menu(self):
         option_menu = QMenu('選項', self)
@@ -85,6 +88,20 @@ class MainWindow(QMainWindow):
         option_menu.addMenu(style_menu)
         self.menuBar().addMenu(option_menu)
         dark_action.trigger()
+
+    def init_menu_action(self):
+        corner_button = QPushButton('∧', self.menuBar())
+        corner_button.setFixedHeight(28)
+        corner_button.setObjectName('ConnerButton')
+        style = '''
+        #ConnerButton,#ConnerButton:hover,#ConnerButton:pressed
+        {font: 10pt 900 "MS Gothic";border: 0; background: transparent;}
+        '''
+
+        corner_button.setStyleSheet(style)
+        corner_button.clicked.connect(self.charge_toolbar)
+        self.menuBar().setCornerWidget(corner_button)
+        corner_button.click()
 
     def create_action(self, name: str, slot: callable = None) -> QAction:
         action = QAction(name, self)
@@ -132,6 +149,14 @@ class MainWindow(QMainWindow):
         self.findChild(QAction, 'メッセージ').setEnabled(bool(self.roms.get('SNMSG.BIN')))
         self.findChild(QAction, 'その他').setEnabled(bool(self.roms.get('PRM_GRP.BIN')))
 
+    def charge_toolbar(self):
+        if self.sender().text() == '∧':
+            self.sender().setText('∨')
+            self.tool_bar.setVisible(False)
+        else:
+            self.sender().setText('∧')
+            self.tool_bar.setVisible(True)
+
     def charge_style(self):
         if self.sender().objectName() == '深色':
             style_sheet = qdarktheme.load_stylesheet('dark', 'sharp')
@@ -162,5 +187,5 @@ class MainWindow(QMainWindow):
         ]
         for expand in sheet_expand:
             style_sheet += expand
-        # print(style_sheet)
+        print(style_sheet)
         QApplication.instance().setStyleSheet(style_sheet)
