@@ -3,6 +3,7 @@
 
 from .array_table import ArrayTable
 from .background_frame import BackgroundFrame
+from .button_layout import ButtonLayout
 from .check_combo import CheckCombo
 from .check_list import CheckList
 from .mapping_spin import MappingSpin

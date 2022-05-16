@@ -4,8 +4,7 @@
 from typing import Optional
 
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import (QLabel, QLineEdit, QPushButton, QGroupBox, QHBoxLayout, QVBoxLayout, QFormLayout,
-                               QGridLayout)
+from PySide6.QtWidgets import QLabel, QLineEdit, QGroupBox, QHBoxLayout, QVBoxLayout, QFormLayout, QGridLayout
 
 from parameter.enum_data import EnumData
 from structure import PilotBIN
@@ -13,7 +12,6 @@ from structure.specific.pilot_bin import PILOT_STRUCTURE, SKILL_STRUCTURE
 from widget import *
 
 
-# noinspection PyUnresolvedReferences
 class PilotFrame(BackgroundFrame):
     def __init__(self, parent=None, **kwargs):
         super(PilotFrame, self).__init__(parent, **kwargs)
@@ -28,7 +26,6 @@ class PilotFrame(BackgroundFrame):
         pilot_skill = self.init_pilot_skill()
         pilot_transfer = self.init_pilot_transfer()
         pilot_adaptation = self.init_pilot_adaptation()
-        button_layout = self.init_button_layout()
 
         pilot_table.setFixedWidth(1070)
         skill_table.setFixedHeight(297)
@@ -44,22 +41,10 @@ class PilotFrame(BackgroundFrame):
         grid_layout.addWidget(pilot_skill, 1, 1, 1, 1)
         grid_layout.addWidget(pilot_transfer, 2, 0, 2, 1)
         grid_layout.addWidget(pilot_adaptation, 2, 1, 1, 1)
-        grid_layout.addLayout(button_layout, 3, 1, 1, 1)
+        grid_layout.addLayout(ButtonLayout(self), 3, 1, 1, 1)
         main_layout.addLayout(grid_layout)
         main_layout.addStretch()
         self.setLayout(main_layout)
-
-    def init_button_layout(self):
-        layout = QVBoxLayout()
-        parse_button = QPushButton('解析')
-        build_button = QPushButton('構築')
-        parse_button.clicked.connect(self.parse)
-        build_button.clicked.connect(self.build)
-        parse_button.setFixedHeight(40)
-        build_button.setFixedHeight(40)
-        layout.addWidget(parse_button)
-        layout.addWidget(build_button)
-        return layout
 
     def init_pilot_table(self):
         group = QGroupBox('パイロットリスト')
@@ -89,6 +74,7 @@ class PilotFrame(BackgroundFrame):
         group_layout.addWidget(self['パイロットリスト'])
         group_layout.addLayout(filter_layout)
         group.setLayout(group_layout)
+        # noinspection PyUnresolvedReferences
         filter_line.textChanged[str].connect(self['パイロットリスト'].filterChanged)
         return group
 

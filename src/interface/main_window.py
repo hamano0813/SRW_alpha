@@ -14,7 +14,6 @@ from . import RobotFrame, PilotFrame, SnmsgFrame, PrmgrpFrame
 from .resource import *
 
 
-# noinspection PyTypeChecker
 class MainWindow(QMainWindow):
     folder: str = ''
 
@@ -65,8 +64,8 @@ class MainWindow(QMainWindow):
     def init_edit_menu(self):
         edit_menu = QMenu('編輯', self)
         edit_list = []
-        for name, frame_setting in self.frames.items():
-            action = self.create_action(name, self.open_frame(*frame_setting))
+        for frame_name, frame_setting in self.frames.items():
+            action = self.create_action(frame_name, self.open_frame(*frame_setting))
             edit_list.append(action)
         edit_menu.addActions(edit_list)
         self.menuBar().addMenu(edit_menu)
@@ -106,15 +105,19 @@ class MainWindow(QMainWindow):
 
         return wrapper
 
-    def open_frame(self, frame_class: type(BackgroundFrame), rom_names: tuple[str], parameter: dict[str, callable] = None):
+    def open_frame(self, frame_class: type(BackgroundFrame), roms: tuple[str], parameter: dict[str, callable] = None):
         def wrapper():
             if parameter:
                 kwargs = {k: v() for k, v in parameter.items()}
             else:
                 kwargs = dict()
-            frame = frame_class(**kwargs)
-            frame.set_roms([self.roms[name] for name in rom_names])
-            self.setCentralWidget(frame)
+            if not isinstance(self.centralWidget(), frame_class):
+                frame = frame_class(**kwargs)
+                frame.set_roms([self.roms[name] for name in roms])
+                self.setCentralWidget(frame)
+            else:
+                # noinspection PyUnresolvedReferences
+                self.centralWidget().parse()
 
         return wrapper
 

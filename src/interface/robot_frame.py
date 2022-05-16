@@ -5,7 +5,7 @@ from typing import Optional
 
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (QLabel, QLineEdit, QGroupBox, QHBoxLayout, QVBoxLayout, QFormLayout, QGridLayout,
-                               QSizePolicy, QPushButton, QSpacerItem)
+                               QSizePolicy, QSpacerItem)
 
 from parameter.enum_data import EnumData
 from structure import RobotRAF
@@ -13,7 +13,6 @@ from structure.specific.robot_raf import ROBOT_STRUCTURE, WEAPON_STRUCTURE
 from widget import *
 
 
-# noinspection PyUnresolvedReferences
 class RobotFrame(BackgroundFrame):
     def __init__(self, parent=None, **kwargs):
         super(RobotFrame, self).__init__(parent, **kwargs)
@@ -32,7 +31,6 @@ class RobotFrame(BackgroundFrame):
         weapon_data = self.init_weapon_data()
         weapon_map = self.init_weapon_map()
         weapon_adaptation = self.init_weapon_adaptation()
-        button_layout = self.init_button_layout()
 
         robot_table.setFixedWidth(630)
         robot_data.setFixedWidth(135)
@@ -51,7 +49,7 @@ class RobotFrame(BackgroundFrame):
         bottom_right_layout.addWidget(weapon_data, 0, 0, 1, 2)
         bottom_right_layout.addWidget(weapon_map, 1, 0, 2, 1)
         bottom_right_layout.addWidget(weapon_adaptation, 1, 1, 1, 1)
-        bottom_right_layout.addLayout(button_layout, 2, 1, 1, 1)
+        bottom_right_layout.addLayout(ButtonLayout(self), 2, 1, 1, 1)
 
         main_layout = QHBoxLayout()
         grid_layout = QGridLayout()
@@ -64,18 +62,6 @@ class RobotFrame(BackgroundFrame):
         main_layout.addStretch()
 
         self.setLayout(main_layout)
-
-    def init_button_layout(self):
-        layout = QVBoxLayout()
-        parse_button = QPushButton('解析')
-        build_button = QPushButton('構築')
-        parse_button.clicked.connect(self.parse)
-        build_button.clicked.connect(self.build)
-        parse_button.setFixedHeight(40)
-        build_button.setFixedHeight(40)
-        layout.addWidget(parse_button)
-        layout.addWidget(build_button)
-        return layout
 
     def init_robot_table(self):
         group = QGroupBox('機体リスト')
@@ -97,6 +83,7 @@ class RobotFrame(BackgroundFrame):
         group_layout.addWidget(self['機体リスト'])
         group_layout.addLayout(filter_layout)
         group.setLayout(group_layout)
+        # noinspection PyUnresolvedReferences
         filter_line.textChanged[str].connect(self['機体リスト'].filterChanged)
         return group
 
@@ -273,6 +260,7 @@ class RobotFrame(BackgroundFrame):
         self['着弾点指定型攻撃半径'] = ValueSpin(self['武器リスト'], '着弾点指定型攻撃半径', WEAPON_STRUCTURE['着弾点指定型攻撃半径'])
         self['方向指定型範囲'] = RangeCombo(self['武器リスト'], '方向指定型範囲', WEAPON_STRUCTURE['方向指定型範囲'])
 
+        # noinspection PyUnresolvedReferences
         self['マップ分類'].currentIndexChanged.connect(self.switch_maptype)
         self['マップ演出'].setFixedSize(60, 28)
         self['着弾点指定型攻撃半径'].setFixedSize(60, 28)
@@ -289,7 +277,6 @@ class RobotFrame(BackgroundFrame):
         group_layout.addWidget(self['方向指定型範囲'], 5, 0, 1, 2)
         group_layout.addItem(QSpacerItem(1, 1, QSizePolicy.Fixed, QSizePolicy.Expanding), 6, 0, 1, 2)
         group.setLayout(group_layout)
-        # group.setFixedWidth(250)
         return group
 
     def init_weapon_adaptation(self):
@@ -307,7 +294,8 @@ class RobotFrame(BackgroundFrame):
         return group
 
     def switch_maptype(self):
-        layout = self.findChild(QGridLayout, 'weapon_map')
+        # noinspection PyTypeChecker
+        layout: QGridLayout = self.findChild(QGridLayout, 'weapon_map')
         if self['マップ分類'].currentIndex() == 0:
             layout.itemAtPosition(2, 0).widget().setHidden(True)
             layout.itemAtPosition(3, 0).widget().setHidden(True)
@@ -343,6 +331,7 @@ class RobotFrame(BackgroundFrame):
 
     def parse(self):
         self.rom.parse()
+        # noinspection PyUnresolvedReferences
         self['分離機体'].init_mapping(self.rom.robots() | {0xFFFF: 'ーー'})
         self['機体リスト'].install(self.rom.data)
         self.switch_maptype()
