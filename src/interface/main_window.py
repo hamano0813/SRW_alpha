@@ -80,7 +80,7 @@ class MainWindow(QMainWindow):
     def init_option_menu(self):
         option_menu = QMenu('選項', self)
 
-        style_menu = QMenu('界面主題', self)
+        style_menu = QMenu('主題', self)
         light_action = self.create_action('淺色', self.charge_style)
         dark_action = self.create_action('深色', self.charge_style)
         style_menu.addActions([light_action, dark_action])
@@ -90,15 +90,15 @@ class MainWindow(QMainWindow):
         dark_action.trigger()
 
     def init_menu_action(self):
-        corner_button = QPushButton('∧', self.menuBar())
-        corner_button.setFixedHeight(28)
+        corner_button = QPushButton('', self.menuBar())
         corner_button.setObjectName('ConnerButton')
         style = '''
         #ConnerButton,#ConnerButton:hover,#ConnerButton:pressed
-        {font: 10pt 900 "MS Gothic";border: 0; background: transparent;}
+        {padding-top:-32px;font:30pt;border:0;background:transparent;}
         '''
 
         corner_button.setStyleSheet(style)
+        # noinspection PyUnresolvedReferences
         corner_button.clicked.connect(self.charge_toolbar)
         self.menuBar().setCornerWidget(corner_button)
         corner_button.click()
@@ -150,12 +150,12 @@ class MainWindow(QMainWindow):
         self.findChild(QAction, 'その他').setEnabled(bool(self.roms.get('PRM_GRP.BIN')))
 
     def charge_toolbar(self):
-        if self.sender().text() == '∧':
-            self.sender().setText('∨')
-            self.tool_bar.setVisible(False)
-        else:
-            self.sender().setText('∧')
+        if self.sender().text() == '˯':
+            self.sender().setText('˰')
             self.tool_bar.setVisible(True)
+        else:
+            self.sender().setText('˯')
+            self.tool_bar.setVisible(False)
 
     def charge_style(self):
         if self.sender().objectName() == '深色':
@@ -187,5 +187,5 @@ class MainWindow(QMainWindow):
         ]
         for expand in sheet_expand:
             style_sheet += expand
-        print(style_sheet)
+        # print(style_sheet)
         QApplication.instance().setStyleSheet(style_sheet)
