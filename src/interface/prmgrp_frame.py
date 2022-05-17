@@ -27,13 +27,9 @@ class PrmgrpFrame(BackgroundFrame):
     def init_ui(self):
         tab_widget = QTabWidget()
 
-        self.upgrade_frame = self.init_upgrade_frame()
-        self.birthday_frame = self.init_birthday_frame()
-        self.sppart_frame = self.init_sppart_frame()
-
-        tab_widget.addTab(self.upgrade_frame, '改造')
-        tab_widget.addTab(self.birthday_frame, '誕生日')
-        tab_widget.addTab(self.sppart_frame, '精神消費＆パーツ属性')
+        tab_widget.addTab(self.init_upgrade_frame(), '改造')
+        tab_widget.addTab(self.init_birthday_frame(), '誕生日')
+        tab_widget.addTab(self.init_sppart_frame(), '精神消費＆パーツ属性')
 
         main_layout = QHBoxLayout()
         main_layout.addWidget(tab_widget)
@@ -200,10 +196,10 @@ class PrmgrpFrame(BackgroundFrame):
             },
             sortable=False, stretch=tuple(), single=True,
         )
-        self['血液型A'] = ArrayTable(self, '血液型A', {'スキル': ValueSpin(None, 'スキル', BLOOD_STRUCTURE['スキル'])})
-        self['血液型B'] = ArrayTable(self, '血液型B', {'スキル': ValueSpin(None, 'スキル', BLOOD_STRUCTURE['スキル'])})
-        self['血液型AB'] = ArrayTable(self, '血液型AB', {'スキル': ValueSpin(None, 'スキル', BLOOD_STRUCTURE['スキル'])})
-        self['血液型O'] = ArrayTable(self, '血液型O', {'スキル': ValueSpin(None, 'スキル', BLOOD_STRUCTURE['スキル'])})
+        self['血液型A'] = ArrayTable(self, '血液型A', {}, stretch=tuple())
+        self['血液型B'] = ArrayTable(self, '血液型B', {}, stretch=tuple())
+        self['血液型AB'] = ArrayTable(self, '血液型AB', {}, stretch=tuple())
+        self['血液型O'] = ArrayTable(self, '血液型O', {}, stretch=tuple())
 
         self['血液型A精神'] = ParallelTable(
             self['血液型A'], ('精神リスト', '習得リスト'), {

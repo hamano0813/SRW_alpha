@@ -49,3 +49,8 @@ class PilotBIN(Rom):
         self.structures = {
             'パイロットリスト': Sequence(PILOT_STRUCTURE, 0x4, 0x70, 0x1D5),
         }
+
+    def pilots(self) -> dict[int, str]:
+        if not self.data:
+            return dict()
+        return {idx: f"[{idx:03X}]{node['パイロット']}" for idx, node in enumerate(self.data['パイロットリスト'])}

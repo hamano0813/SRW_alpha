@@ -11,7 +11,7 @@ from PySide6.QtWidgets import QApplication, QMainWindow, QMenu, QFileDialog, QTo
 
 from structure import Rom, RobotRAF, PilotBIN, SnmsgBIN, SndataBIN, EnlistBIN, AiunpBIN, ScriptBIN, PrmgrpBIN
 from widget import BackgroundFrame
-from . import RobotFrame, PilotFrame, SnmsgFrame, PrmgrpFrame
+from . import RobotFrame, PilotFrame, SnmsgFrame, ScenarioFrame, PrmgrpFrame
 from .resource import *
 
 
@@ -28,7 +28,7 @@ class MainWindow(QMainWindow):
             'SNMSG.BIN': SnmsgBIN(),
             'SNDATA.BIN': SndataBIN(),
             'ENLIST.BIN': EnlistBIN(),
-            'AINUP.BIN': AiunpBIN(),
+            'AIUNP.BIN': AiunpBIN(),
             'SCRIPT.BIN': ScriptBIN(),
             'PRM_GRP.BIN': PrmgrpBIN(),
         }
@@ -37,6 +37,11 @@ class MainWindow(QMainWindow):
                    {'robots': self.roms['UNCOMPRESS_ROBOT.RAF'].robots}),
             'パイロット': (PilotFrame, ('PILOT.BIN',),),
             'メッセージ': (SnmsgFrame, ('SNMSG.BIN',),),
+            'シナリオ': (ScenarioFrame, ('SNDATA.BIN', 'ENLIST.BIN', 'AIUNP.BIN'),
+                     {'robots': self.roms['UNCOMPRESS_ROBOT.RAF'].robots,
+                      'pilots': self.roms['PILOT.BIN'].pilots,
+                      'messages': self.roms['SNMSG.BIN'].messages},
+                     ),
             'その他': (PrmgrpFrame, ('PRM_GRP.BIN',),),
         }
 
@@ -48,6 +53,7 @@ class MainWindow(QMainWindow):
         self.setWindowTitle('超级机器人大战α 静态修改器')
         self.setWindowIcon(QIcon(':image/icon.png'))
         self.setMinimumSize(1440, 870)
+        self.test_load()
         self.check_enable()
 
     def init_file_menu(self):
@@ -147,6 +153,14 @@ class MainWindow(QMainWindow):
         self.findChild(QAction, '機体').setEnabled(bool(self.roms.get('UNCOMPRESS_ROBOT.RAF')))
         self.findChild(QAction, 'パイロット').setEnabled(bool(self.roms.get('PILOT.BIN')))
         self.findChild(QAction, 'メッセージ').setEnabled(bool(self.roms.get('SNMSG.BIN')))
+        self.findChild(QAction, 'シナリオ').setEnabled(all(map(bool,
+                                                           (self.roms.get('UNCOMPRESS_ROBOT.RAF'),
+                                                            self.roms.get('PILOT.BIN'),
+                                                            self.roms.get('SNMSG.BIN'),
+                                                            self.roms.get('SNDATA.BIN'),
+                                                            self.roms.get('ENLIST.BIN'),
+                                                            self.roms.get('AIUNP.BIN'),
+                                                            ))))
         self.findChild(QAction, 'その他').setEnabled(bool(self.roms.get('PRM_GRP.BIN')))
 
     def charge_toolbar(self):
@@ -184,8 +198,19 @@ class MainWindow(QMainWindow):
             'QAbstractItemView TextMulti {padding-top: -2px;}',
             '#MessageList::item {padding-top: 3px;padding-left: 3px;}',
             '#Corner::section {padding-top: 5px;padding-left: 5px;}',
+            '#ENLIST::section {padding: -1px -15px 0px 0px;}',
         ]
         for expand in sheet_expand:
             style_sheet += expand
         # print(style_sheet)
         QApplication.instance().setStyleSheet(style_sheet)
+
+    def test_load(self):
+        self.roms['UNCOMPRESS_ROBOT.RAF'].load(r'D:\Python\SRWα\resource\bin\UNCOMPRESS_ROBOT.RAF')
+        self.roms['PILOT.BIN'].load(r'D:\Python\SRWα\resource\bin\PILOT.BIN')
+        self.roms['SNMSG.BIN'].load(r'D:\Python\SRWα\resource\bin\SNMSG.BIN')
+        self.roms['SNDATA.BIN'].load(r'D:\Python\SRWα\resource\bin\SNDATA.BIN')
+        self.roms['ENLIST.BIN'].load(r'D:\Python\SRWα\resource\bin\ENLIST.BIN')
+        self.roms['AIUNP.BIN'].load(r'D:\Python\SRWα\resource\bin\AIUNP.BIN')
+        self.roms['SCRIPT.BIN'].load(r'D:\Python\SRWα\resource\bin\SCRIPT.BIN')
+        self.roms['PRM_GRP.BIN'].load(r'D:\Python\SRWα\resource\bin\PRM_GRP.BIN')

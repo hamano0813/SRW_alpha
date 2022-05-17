@@ -241,7 +241,7 @@ class ArrayTable(ControlWidget, QTableView):
         option = QStyleOptionHeader()
         option.text = corner_button.text()
 
-    def eventFilter(self, obj, event):
+    def eventFilter(self, obj: QWidget, event: QEvent) -> bool:
         if event.type() != QEvent.Paint or not isinstance(obj, QAbstractButton):
             return False
         option: QStyleOptionHeader = QStyleOptionHeader()

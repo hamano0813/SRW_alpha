@@ -18,14 +18,14 @@ paths = {
 }
 
 roms = {
-    'ROBOT': RobotRAF,
-    'PILOT': PilotBIN,
-    'SNMSG': SnmsgBIN,
+    # 'ROBOT': RobotRAF,
+    # 'PILOT': PilotBIN,
+    # 'SNMSG': SnmsgBIN,
     'SNDATA': SndataBIN,
-    'ENLIST': EnlistBIN,
-    'AIUNP': AiunpBIN,
-    'SCRIPT': ScriptBIN,
-    'PRMGRP': PrmgrpBIN,
+    # 'ENLIST': EnlistBIN,
+    # 'AIUNP': AiunpBIN,
+    # 'SCRIPT': ScriptBIN,
+    # 'PRMGRP': PrmgrpBIN,
 }
 
 if __name__ == '__main__':
@@ -52,3 +52,4 @@ if __name__ == '__main__':
         parse_time = parse_end - parse_start
         build_time = build_end - build_start
         print(f'{r.__name__:<10s} {result:<12s}  parse time {parse_time:.3f}s, build time {build_time:.3f}s')
+        print(rom.data.keys())

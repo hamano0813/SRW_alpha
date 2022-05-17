@@ -13,3 +13,8 @@ class SnmsgBIN(Rom):
         self.structures = {
             'メッセージリスト': Sequence(SNMSG_STRUCTURE, 0x0, 0x100, 0x7F1F),
         }
+
+    def messages(self):
+        if not self.data:
+            return dict()
+        return {idx: f"[{idx:04X}] {node['メッセージ']}" for idx, node in enumerate(self.data['メッセージリスト'])}

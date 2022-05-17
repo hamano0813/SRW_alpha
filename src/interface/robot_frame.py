@@ -18,6 +18,7 @@ class RobotFrame(BackgroundFrame):
         super(RobotFrame, self).__init__(parent, **kwargs)
         self.rom: Optional[RobotRAF] = None
         self.init_ui()
+        self.robots = kwargs.get('robots', dict())
 
     def init_ui(self):
         robot_table = self.init_robot_table()
@@ -332,7 +333,7 @@ class RobotFrame(BackgroundFrame):
     def parse(self):
         self.rom.parse()
         # noinspection PyUnresolvedReferences
-        self['分離機体'].init_mapping(self.rom.robots() | {0xFFFF: 'ーー'})
+        self['分離機体'].init_mapping(self.robots | {0xFFFF: 'ーー'})
         self['機体リスト'].install(self.rom.data)
         self.switch_maptype()
 

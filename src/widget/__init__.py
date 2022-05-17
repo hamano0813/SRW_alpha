@@ -11,6 +11,7 @@ from .parallel_table import ParallelTable
 from .parallel_table import ParallelTable
 from .radio_combo import RadioCombo
 from .range_combo import RangeCombo
+from .scenario_table import ScenarioTable
 from .text_line import TextLine
 from .text_multi import TextMulti
 from .transpose_table import TransposeTable
