@@ -5,12 +5,12 @@
 from typing import Optional
 
 from PySide6.QtCore import Qt, QModelIndex
-from PySide6.QtWidgets import QGroupBox, QHBoxLayout, QTabWidget, QFormLayout, QFrame
+from PySide6.QtWidgets import QGroupBox, QHBoxLayout, QTabWidget, QFrame, QGridLayout, QLabel, QVBoxLayout
 
+from parameter import EnumData
 from structure import SndataBIN, EnlistBIN, AiunpBIN
 from structure.specific.enlist_bin import ENLIST_STRUCTURE, ENEMY_STRUCTURE
 from widget import *
-from parameter import EnumData
 
 
 class ScenarioFrame(BackgroundFrame):
@@ -54,58 +54,62 @@ class ScenarioFrame(BackgroundFrame):
         self['敵設定'] = ArrayTable(self, '敵設定', {}, stretch=tuple())
 
         quantity_group = QGroupBox('数量設定')
-        self['敵合計'] = ValueSpin(self['敵設定'], '敵合計', ENLIST_STRUCTURE['敵合計'], alignment=Qt.AlignRight)
-        self['バッチ数'] = ValueSpin(self['敵設定'], 'バッチ数', ENLIST_STRUCTURE['バッチ数'], alignment=Qt.AlignRight)
-        self['バッチ00'] = ValueSpin(self['敵設定'], 'バッチ00', ENLIST_STRUCTURE['バッチ00'], alignment=Qt.AlignRight)
-        self['バッチ01'] = ValueSpin(self['敵設定'], 'バッチ01', ENLIST_STRUCTURE['バッチ01'], alignment=Qt.AlignRight)
-        self['バッチ02'] = ValueSpin(self['敵設定'], 'バッチ02', ENLIST_STRUCTURE['バッチ02'], alignment=Qt.AlignRight)
-        self['バッチ03'] = ValueSpin(self['敵設定'], 'バッチ03', ENLIST_STRUCTURE['バッチ03'], alignment=Qt.AlignRight)
-        self['バッチ04'] = ValueSpin(self['敵設定'], 'バッチ04', ENLIST_STRUCTURE['バッチ04'], alignment=Qt.AlignRight)
-        self['バッチ05'] = ValueSpin(self['敵設定'], 'バッチ05', ENLIST_STRUCTURE['バッチ05'], alignment=Qt.AlignRight)
-        self['バッチ06'] = ValueSpin(self['敵設定'], 'バッチ06', ENLIST_STRUCTURE['バッチ06'], alignment=Qt.AlignRight)
-        self['バッチ07'] = ValueSpin(self['敵設定'], 'バッチ07', ENLIST_STRUCTURE['バッチ07'], alignment=Qt.AlignRight)
-        self['バッチ08'] = ValueSpin(self['敵設定'], 'バッチ08', ENLIST_STRUCTURE['バッチ08'], alignment=Qt.AlignRight)
-        self['バッチ09'] = ValueSpin(self['敵設定'], 'バッチ09', ENLIST_STRUCTURE['バッチ09'], alignment=Qt.AlignRight)
-        self['バッチ10'] = ValueSpin(self['敵設定'], 'バッチ10', ENLIST_STRUCTURE['バッチ10'], alignment=Qt.AlignRight)
-        self['バッチ11'] = ValueSpin(self['敵設定'], 'バッチ11', ENLIST_STRUCTURE['バッチ11'], alignment=Qt.AlignRight)
-        self['バッチ12'] = ValueSpin(self['敵設定'], 'バッチ12', ENLIST_STRUCTURE['バッチ12'], alignment=Qt.AlignRight)
-        self['バッチ13'] = ValueSpin(self['敵設定'], 'バッチ13', ENLIST_STRUCTURE['バッチ13'], alignment=Qt.AlignRight)
-        self['バッチ14'] = ValueSpin(self['敵設定'], 'バッチ14', ENLIST_STRUCTURE['バッチ14'], alignment=Qt.AlignRight)
-        self['バッチ15'] = ValueSpin(self['敵設定'], 'バッチ15', ENLIST_STRUCTURE['バッチ15'], alignment=Qt.AlignRight)
-        quantity_layout = QFormLayout()
-        quantity_layout.addRow('敵合計', self['敵合計'])
-        quantity_layout.addRow('バッチ数', self['バッチ数'])
-        for idx in range(0, 16):
-            quantity_layout.addRow(f'バッチ{idx:02d}', self[f'バッチ{idx:02d}'])
-        quantity_group.setLayout(quantity_layout)
-        quantity_group.setFixedWidth(120)
+        self['合計'] = ValueSpin(self['敵設定'], '合計', ENLIST_STRUCTURE['合計'], alignment=Qt.AlignRight)
+        self['隊数'] = ValueSpin(self['敵設定'], '隊数', ENLIST_STRUCTURE['隊数'], alignment=Qt.AlignRight)
+        quantity_layout = QGridLayout()
+        quantity_layout.addWidget(QLabel('合計'), 0, 0, 1, 1)
+        quantity_layout.addWidget(self['合計'], 0, 1, 1, 1)
+        quantity_layout.addWidget(QLabel('隊数'), 1, 0, 1, 1)
+        quantity_layout.addWidget(self['隊数'], 1, 1, 1, 1)
 
-        enemy_group = QGroupBox('敵リスト')
+        self['合計'].setReadOnly(True)
+        self['隊数'].setReadOnly(True)
+        for idx in range(0, 16):
+            self[f'隊{idx:02d}'] = ValueSpin(self['敵設定'], f'隊{idx:02d}', ENLIST_STRUCTURE[f'隊{idx:02d}'],
+                                            alignment=Qt.AlignRight)
+            quantity_layout.addWidget(QLabel(f'隊{idx:02d}'), 0 + idx // 8, 2 + idx % 8 * 2, 1, 1)
+            quantity_layout.addWidget(self[f'隊{idx:02d}'], 0 + idx // 8, 3 + idx % 8 * 2, 1, 1)
+            self[f'隊{idx:02d}'].valueChanged.connect(self.reset_count)
+        quantity_group.setLayout(quantity_layout)
+
         self['敵リスト'] = ArrayTable(
             self['敵設定'], '敵リスト', {
+                'パイロット': RadioCombo(None, 'パイロット', ENEMY_STRUCTURE['パイロット'], mapping=self.pilots),
                 '機体': RadioCombo(None, '機体', ENEMY_STRUCTURE['機体'], mapping=self.robots),
+                '隊号': ValueSpin(None, '隊号', ENEMY_STRUCTURE['隊号'], alignment=Qt.AlignRight),
+                'レベル': ValueSpin(None, 'レベル', ENEMY_STRUCTURE['レベル'], alignment=Qt.AlignRight),
                 '機改': ValueSpin(None, '機改', ENEMY_STRUCTURE['機改'], alignment=Qt.AlignRight),
                 '武改': ValueSpin(None, '武改', ENEMY_STRUCTURE['武改'], alignment=Qt.AlignRight),
-                'パイロット': RadioCombo(None, 'パイロット', ENEMY_STRUCTURE['パイロット'], mapping=self.pilots),
-                'レベル': ValueSpin(None, 'レベル', ENEMY_STRUCTURE['レベル'], alignment=Qt.AlignRight),
                 '座標X': ValueSpin(None, '座標X', ENEMY_STRUCTURE['座標X'], alignment=Qt.AlignRight),
                 '座標Y': ValueSpin(None, '座標Y', ENEMY_STRUCTURE['座標Y'], alignment=Qt.AlignRight),
                 'パーツ': RadioCombo(None, 'パーツ', ENEMY_STRUCTURE['パーツ'], mapping=EnumData.PART),
-                'バッチ': ValueSpin(None, 'バッチ', ENEMY_STRUCTURE['バッチ'], alignment=Qt.AlignRight),
-            }, sortable=False, resizeRows=True, resizeColumns=False, stretch=tuple(),
+            }, sortable=False, stretch=(0, 1, 8),
         )
         self['敵リスト'].horizontalHeader().setObjectName('ENLIST')
         self['敵リスト'].horizontalHeader().setMinimumSectionSize(40)
 
-        enemy_layout = QHBoxLayout()
-        enemy_layout.addWidget(self['敵リスト'])
-        enemy_group.setLayout(enemy_layout)
+        enemy_tab = QTabWidget()
+        enemy_tab.setTabPosition(QTabWidget.South)
+        enemy_tab.addTab(self['敵リスト'], '敵リスト')
 
-        frame_layout = QHBoxLayout()
-        frame_layout.addWidget(quantity_group)
-        frame_layout.addWidget(enemy_group)
+        bottom_layout = QHBoxLayout()
+        bottom_layout.addWidget(quantity_group)
+        bottom_layout.addLayout(ButtonLayout(self))
+
+        frame_layout = QVBoxLayout()
+        frame_layout.addWidget(enemy_tab)
+        frame_layout.addLayout(bottom_layout)
         enemy_frame.setLayout(frame_layout)
         return enemy_frame
+
+    def reset_count(self):
+        amout = count = 0
+        for idx in range(0, 16):
+            if (value := self[f'隊{idx:02d}'].value()) > 0:
+                amout += value
+                count += 1
+        self['合計'].setValue(amout)
+        self['隊数'].setValue(count)
 
     def control_scenario(self, index: QModelIndex):
         if not index.isValid():
@@ -122,11 +126,15 @@ class ScenarioFrame(BackgroundFrame):
         self.parse()
 
         self['敵設定'].install(self.enlist_rom.data)
+
         self['シナリオリスト'].install(EnumData.SCENARIO)
+        self['シナリオリスト'].setRowHidden(0x7E, True)
+        self['シナリオリスト'].setRowHidden(0x82, True)
+        self['シナリオリスト'].setRowHidden(0x83, True)
+        self['シナリオリスト'].setRowHidden(0x84, True)
+        self['シナリオリスト'].setRowHidden(0x85, True)
         self['シナリオリスト'].clicked[QModelIndex].connect(self.control_scenario)
         self['シナリオリスト'].selectionModel().currentChanged[QModelIndex, QModelIndex].connect(self.control_scenario)
-        for idx, width in enumerate([210, 40, 40, 150, 40, 40, 40, 130, 40]):
-            self['敵リスト'].setColumnWidth(idx, width)
 
     def parse(self):
         self.sndata_rom.parse()

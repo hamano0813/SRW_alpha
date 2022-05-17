@@ -135,7 +135,7 @@ class MainWindow(QMainWindow):
             else:
                 kwargs = dict()
             if not isinstance(self.centralWidget(), frame_class):
-                frame = frame_class(**kwargs)
+                frame = frame_class(self, **kwargs)
                 frame.set_roms([self.roms[name] for name in roms])
                 self.setCentralWidget(frame)
             else:

@@ -20,9 +20,12 @@ class SnmsgFrame(BackgroundFrame):
 
     def init_ui(self):
         snmsg_table = self.init_snmsg_table()
+        b_layout = QVBoxLayout()
+        b_layout.addStretch()
+        b_layout.addLayout(ButtonLayout(self))
         main_layout = QHBoxLayout()
         main_layout.addWidget(snmsg_table)
-        main_layout.addLayout(ButtonLayout(self), Qt.AlignBottom)
+        main_layout.addLayout(b_layout)
         self.setLayout(main_layout)
 
     def init_snmsg_table(self):

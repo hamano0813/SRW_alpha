@@ -31,9 +31,13 @@ class PrmgrpFrame(BackgroundFrame):
         tab_widget.addTab(self.init_birthday_frame(), '誕生日')
         tab_widget.addTab(self.init_sppart_frame(), '精神消費＆パーツ属性')
 
+        b_layout = QVBoxLayout()
+        b_layout.addStretch()
+        b_layout.addLayout(ButtonLayout(self))
+
         main_layout = QHBoxLayout()
         main_layout.addWidget(tab_widget)
-        main_layout.addLayout(ButtonLayout(self))
+        main_layout.addLayout(b_layout)
         self.setLayout(main_layout)
 
     def init_upgrade_frame(self):

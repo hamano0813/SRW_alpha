@@ -14,6 +14,5 @@ class ButtonLayout(QVBoxLayout):
         build_button.clicked.connect(frame.build)
         parse_button.setFixedSize(135, 40)
         build_button.setFixedSize(135, 40)
-        self.addStretch()
         self.addWidget(parse_button)
         self.addWidget(build_button)
