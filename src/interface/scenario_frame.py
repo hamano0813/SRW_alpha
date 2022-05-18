@@ -4,13 +4,13 @@
 
 from typing import Optional
 
-from PySide6.QtCore import Qt, QModelIndex
-from PySide6.QtWidgets import QGroupBox, QHBoxLayout, QTabWidget, QFrame, QGridLayout, QLabel, QVBoxLayout
+from PySide6.QtCore import Qt
+from PySide6.QtWidgets import QHBoxLayout, QTabWidget, QFrame, QVBoxLayout, QFormLayout
 
 from parameter import EnumData
 from structure import SndataBIN, EnlistBIN, AiunpBIN
-from structure.specific.enlist_bin import ENLIST_STRUCTURE, ENEMY_STRUCTURE
 from structure.specific.aiunp_bin import AI_STRUCTURE
+from structure.specific.enlist_bin import ENLIST_STRUCTURE, ENEMY_STRUCTURE
 from widget import *
 
 
@@ -28,6 +28,7 @@ class ScenarioFrame(BackgroundFrame):
         self.lv_mapping = {lv: f'{lv}' for lv in range(1, 100)}
         self.upgrade_mapping = {upgrade: f'{upgrade}' for upgrade in range(1, 11)} | {0: '一'}
         self.pos_mapping = {pos: f'{pos}' for pos in range(1, 40)} | {0xFF: '一'}
+        self.round_mapping = {round: f'{round}' for round in range(1, 20)} | {0: '一'}
 
         self.init_ui()
 
@@ -35,48 +36,43 @@ class ScenarioFrame(BackgroundFrame):
     def init_ui(self):
         scenario = self.init_scenario_table()
 
-        tab_widget = QTabWidget()
-        tab_widget.addTab(self.init_enemy_frame(), '敵設定')
+        self.tab_widget = QTabWidget()
+        self.tab_widget.addTab(self.init_enemy_frame(), '敵設定')
+        self.tab_widget.addTab(self.init_ai_frame(), 'AI設定')
 
-        main_layout = QHBoxLayout()
-        main_layout.addWidget(scenario)
-        main_layout.addWidget(tab_widget)
+        main_layout = QVBoxLayout()
+        main_layout.addLayout(scenario)
+        main_layout.addWidget(self.tab_widget)
         self.setLayout(main_layout)
 
     def init_scenario_table(self):
-        group = QGroupBox('シナリオリスト')
-        self['シナリオリスト'] = ScenarioTable(self, ('ルート', '話数', '[ステージ]タイトル'))
-        self['シナリオリスト'].verticalHeader().setHidden(True)
-        group_layout = QHBoxLayout()
-        group_layout.addWidget(self['シナリオリスト'])
-        group.setLayout(group_layout)
-        group.setFixedWidth(447)
-        return group
+        # noinspection PyTypeChecker
+        self['シナリオリスト'] = ScenarioCombo(self)
+        self['シナリオリスト'].setFixedWidth(1420)
+        layout = QHBoxLayout()
+        # layout.addWidget(QLabel('シナリオ'))
+        layout.addWidget(self['シナリオリスト'])
+        return layout
 
     def init_enemy_frame(self):
         enemy_frame = QFrame()
 
         self['敵設定'] = ArrayTable(self, '敵設定', {}, stretch=tuple())
 
-        quantity_group = QGroupBox('数量設定')
         self['合計'] = ValueSpin(self['敵設定'], '合計', ENLIST_STRUCTURE['合計'], alignment=Qt.AlignRight)
         self['隊数'] = ValueSpin(self['敵設定'], '隊数', ENLIST_STRUCTURE['隊数'], alignment=Qt.AlignRight)
-        quantity_layout = QGridLayout()
-        quantity_layout.addWidget(QLabel('合計'), 0, 0, 1, 1)
-        quantity_layout.addWidget(self['合計'], 0, 1, 1, 1)
-        quantity_layout.addWidget(QLabel('隊数'), 1, 0, 1, 1)
-        quantity_layout.addWidget(self['隊数'], 1, 1, 1, 1)
+        quantity_layout = QFormLayout()
+        quantity_layout.addRow('合計', self['合計'])
+        quantity_layout.addRow('隊数', self['隊数'])
 
         self['合計'].setReadOnly(True)
         self['隊数'].setReadOnly(True)
         for idx in range(0, 16):
             self[f'隊{idx:02d}'] = ValueSpin(self['敵設定'], f'隊{idx:02d}', ENLIST_STRUCTURE[f'隊{idx:02d}'],
                                             alignment=Qt.AlignRight)
-            quantity_layout.addWidget(QLabel(f'隊{idx:02d}'), 0 + idx // 8, 2 + idx % 8 * 2, 1, 1)
-            quantity_layout.addWidget(self[f'隊{idx:02d}'], 0 + idx // 8, 3 + idx % 8 * 2, 1, 1)
+            quantity_layout.addRow(f'隊{idx:02d}', self[f'隊{idx:02d}'])
             # noinspection PyUnresolvedReferences
             self[f'隊{idx:02d}'].valueChanged.connect(self.reset_count)
-        quantity_group.setLayout(quantity_layout)
 
         self['敵リスト'] = ArrayTable(
             self['敵設定'], '敵リスト', {
@@ -86,18 +82,24 @@ class ScenarioFrame(BackgroundFrame):
                 '隊号': MappingSpin(None, '隊号', ENEMY_STRUCTURE['隊号'],
                                   mapping=self.group_mapping, alignment=Qt.AlignRight),
                 'レベル': ValueSpin(None, 'レベル', ENEMY_STRUCTURE['レベル'], alignment=Qt.AlignRight),
-                '機改': MappingSpin(None, '機改', ENEMY_STRUCTURE['機改'],
-                                  mapping=self.upgrade_mapping, alignment=Qt.AlignRight),
-                '武改': MappingSpin(None, '武改', ENEMY_STRUCTURE['武改'],
-                                  mapping=self.upgrade_mapping, alignment=Qt.AlignRight),
+                '機体改造': MappingSpin(None, '機体改造', ENEMY_STRUCTURE['機体改造'],
+                                    mapping=self.upgrade_mapping, alignment=Qt.AlignRight),
+                '武器改造': MappingSpin(None, '武器改造', ENEMY_STRUCTURE['武器改造'],
+                                    mapping=self.upgrade_mapping, alignment=Qt.AlignRight),
                 '座標X': ValueSpin(None, '座標X', ENEMY_STRUCTURE['座標X'], alignment=Qt.AlignRight),
                 '座標Y': ValueSpin(None, '座標Y', ENEMY_STRUCTURE['座標Y'], alignment=Qt.AlignRight),
                 'パーツ': RadioCombo(None, 'パーツ', ENEMY_STRUCTURE['パーツ'], mapping=EnumData.PART),
             }, sortable=False, stretch=(0, 1, 8),
         )
         self['敵リスト'].horizontalHeader().setObjectName('ENLIST')
-        self['敵リスト'].horizontalHeader().setMinimumSectionSize(42)
 
+        enemy_layout = QHBoxLayout()
+        enemy_layout.addWidget(self['敵リスト'])
+        enemy_layout.addLayout(quantity_layout)
+        enemy_frame.setLayout(enemy_layout)
+        return enemy_frame
+
+    def init_ai_frame(self):
         ai_frame = QFrame()
         self['AI設定'] = ArrayTable(self, 'AI設定', {}, stretch=tuple())
         self['AIリスト'] = AiTable(self['AI設定'], 'AIリスト', {
@@ -108,36 +110,34 @@ class ScenarioFrame(BackgroundFrame):
                                mapping=self.pos_mapping, alignment=Qt.AlignRight),
             '目標Y': MappingSpin(None, '目標Y', AI_STRUCTURE['目標Y'],
                                mapping=self.pos_mapping, alignment=Qt.AlignRight),
-
-            '開始': ValueSpin(None, '開始', AI_STRUCTURE['開始'], alignment=Qt.AlignRight),
-            '不明1': ValueSpin(None, '不明1', AI_STRUCTURE['不明1'], alignment=Qt.AlignRight),
-            '不明2': ValueSpin(None, '不明2', AI_STRUCTURE['不明2'], alignment=Qt.AlignRight),
-            '不明3': ValueSpin(None, '不明3', AI_STRUCTURE['不明3'], alignment=Qt.AlignRight),
-            '不明4': ValueSpin(None, '不明4', AI_STRUCTURE['不明4'], alignment=Qt.AlignRight),
+            '行動開始': MappingSpin(None, '行動開始', AI_STRUCTURE['行動開始'],
+                                mapping=self.round_mapping, alignment=Qt.AlignRight),
+            '不明1_0': ValueSpin(None, '不明1_0', AI_STRUCTURE['不明1_0'], alignment=Qt.AlignRight),
+            '不明1_2': ValueSpin(None, '不明1_2', AI_STRUCTURE['不明1_2'], alignment=Qt.AlignRight),
+            '不明1_3': ValueSpin(None, '不明1_3', AI_STRUCTURE['不明1_3'], alignment=Qt.AlignRight),
+            '不明1_4': ValueSpin(None, '不明1_4', AI_STRUCTURE['不明1_4'], alignment=Qt.AlignRight),
+            '不明1_5': ValueSpin(None, '不明1_5', AI_STRUCTURE['不明1_5'], alignment=Qt.AlignRight),
+            '不明1_6': ValueSpin(None, '不明1_6', AI_STRUCTURE['不明1_6'], alignment=Qt.AlignRight),
+            '不明1_7': ValueSpin(None, '不明1_7', AI_STRUCTURE['不明1_7'], alignment=Qt.AlignRight),
+            '不明3_0': ValueSpin(None, '不明3_0', AI_STRUCTURE['不明3_0'], alignment=Qt.AlignRight),
+            '不明3_1': ValueSpin(None, '不明3_1', AI_STRUCTURE['不明3_1'], alignment=Qt.AlignRight),
+            '不明3_2': ValueSpin(None, '不明3_2', AI_STRUCTURE['不明3_2'], alignment=Qt.AlignRight),
+            '不明3_4': ValueSpin(None, '不明3_4', AI_STRUCTURE['不明3_4'], alignment=Qt.AlignRight),
+            '不明4_4': ValueSpin(None, '不明4_4', AI_STRUCTURE['不明4_4'], alignment=Qt.AlignRight),
+            '不明4_5': ValueSpin(None, '不明4_5', AI_STRUCTURE['不明4_5'], alignment=Qt.AlignRight),
+            '不明4_6': ValueSpin(None, '不明4_6', AI_STRUCTURE['不明4_6'], alignment=Qt.AlignRight),
+            '不明4_7': ValueSpin(None, '不明4_7', AI_STRUCTURE['不明4_7'], alignment=Qt.AlignRight),
             '有効': ValueSpin(None, '有効', AI_STRUCTURE['有効'], alignment=Qt.AlignRight),
-        }, sortable=False, stretch=(0, 1), check=(9,))
+        }, check=(5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20),
+                                sortable=False, stretch=(0, 1), )
+
         self['AIリスト'].horizontalHeader().setObjectName('ENLIST')
-        # self['AIリスト'].horizontalHeader().setMinimumSectionSize(57)
+        self['AIリスト'].horizontalHeader().setMinimumSectionSize(56)
 
         ai_layout = QHBoxLayout()
         ai_layout.addWidget(self['AIリスト'])
-        ai_layout.setContentsMargins(0, 0, 0, 0)
         ai_frame.setLayout(ai_layout)
-
-        enemy_tab = QTabWidget()
-        enemy_tab.setTabPosition(QTabWidget.South)
-        enemy_tab.addTab(ai_frame, '敵AI')
-        enemy_tab.addTab(self['敵リスト'], '敵リスト')
-
-        bottom_layout = QHBoxLayout()
-        bottom_layout.addWidget(quantity_group)
-        bottom_layout.addLayout(ButtonLayout(self))
-
-        frame_layout = QVBoxLayout()
-        frame_layout.addWidget(enemy_tab)
-        frame_layout.addLayout(bottom_layout)
-        enemy_frame.setLayout(frame_layout)
-        return enemy_frame
+        return ai_frame
 
     def reset_count(self):
         amout = count = 0
@@ -148,13 +148,9 @@ class ScenarioFrame(BackgroundFrame):
         self['合計'].setValue(amout)
         self['隊数'].setValue(count)
 
-    def control_scenario(self, index: QModelIndex):
-        if not index.isValid():
-            return False
-        row = index.row()
-
-        self['AI設定'].control_child(row)
-        self['敵設定'].control_child(row)
+    def control_scenario(self, index: int):
+        self['敵設定'].control_child(index)
+        self['AI設定'].control_child(index)
 
         return True
 
@@ -163,18 +159,10 @@ class ScenarioFrame(BackgroundFrame):
         self.sndata_rom, self.enlist_rom, self.aiunp_rom = roms
         self.parse()
 
+        self['敵設定'].install(self.enlist_rom.data)
         self['AI設定'].install(self.aiunp_rom.data)
 
-        self['敵設定'].install(self.enlist_rom.data)
-
-        self['シナリオリスト'].install(EnumData.SCENARIO)
-        self['シナリオリスト'].setRowHidden(0x7E, True)
-        self['シナリオリスト'].setRowHidden(0x82, True)
-        self['シナリオリスト'].setRowHidden(0x83, True)
-        self['シナリオリスト'].setRowHidden(0x84, True)
-        self['シナリオリスト'].setRowHidden(0x85, True)
-        self['シナリオリスト'].clicked[QModelIndex].connect(self.control_scenario)
-        self['シナリオリスト'].selectionModel().currentChanged[QModelIndex, QModelIndex].connect(self.control_scenario)
+        self['シナリオリスト'].currentIndexChanged[int].connect(self.control_scenario)
 
     def parse(self):
         self.sndata_rom.parse()

@@ -5,8 +5,8 @@ from structure.generic import Rom, Value, Sequence
 
 ENEMY_STRUCTURE = {
     '機体': Value(0x0, 0x2),
-    '機改': Value(0x2, 0x1),
-    '武改': Value(0x3, 0x1),
+    '機体改造': Value(0x2, 0x1),
+    '武器改造': Value(0x3, 0x1),
     'パイロット': Value(0x4, 0x2),
     'レベル': Value(0x6, 0x2),
     '座標X': Value(0x8, -0x1),
