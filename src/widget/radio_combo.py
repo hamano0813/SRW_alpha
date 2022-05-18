@@ -18,6 +18,7 @@ class RadioCombo(SingleWidget, QComboBox):
             self.setFont(font)
             self.lineEdit().setFont(font)
         self.init_mapping(mapping)
+        self.wheelEvent = lambda x: None
 
     def init_mapping(self, mapping: dict[int, str]):
         if mapping:

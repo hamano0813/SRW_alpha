@@ -16,6 +16,8 @@ class PilotFrame(BackgroundFrame):
     def __init__(self, parent=None, **kwargs):
         super(PilotFrame, self).__init__(parent, **kwargs)
         self.rom: Optional[PilotBIN] = None
+        self.lv_mapping = {lv: f'{lv}' for lv in range(1, 100)}
+
         self.init_ui()
 
     def init_ui(self):
@@ -80,29 +82,28 @@ class PilotFrame(BackgroundFrame):
 
     def init_skill_table(self):
         group = QGroupBox('レベルアップ技能')
-        lv_mapping = {lv: f'{lv}' for lv in range(1, 100)} | {0xFF: 'ー'}
         self['技能'] = TransposeTable(
             self['パイロットリスト'], '技能リスト', {
                 '技能': RadioCombo(None, '技能', SKILL_STRUCTURE['技能'],
                                  mapping=EnumData.PILOT['技能'], alignment=Qt.AlignLeft),
                 'L1': MappingSpin(None, 'L1', SKILL_STRUCTURE['L1'],
-                                  mapping=lv_mapping, readonly=False, alignment=Qt.AlignRight),
+                                  mapping=self.lv_mapping | {0xFF: '一'}, readonly=False, alignment=Qt.AlignRight),
                 'L2': MappingSpin(None, 'L2', SKILL_STRUCTURE['L2'],
-                                  mapping=lv_mapping, readonly=False, alignment=Qt.AlignRight),
+                                  mapping=self.lv_mapping | {0xFF: '一'}, readonly=False, alignment=Qt.AlignRight),
                 'L3': MappingSpin(None, 'L3', SKILL_STRUCTURE['L3'],
-                                  mapping=lv_mapping, readonly=False, alignment=Qt.AlignRight),
+                                  mapping=self.lv_mapping | {0xFF: '一'}, readonly=False, alignment=Qt.AlignRight),
                 'L4': MappingSpin(None, 'L4', SKILL_STRUCTURE['L4'],
-                                  mapping=lv_mapping, readonly=False, alignment=Qt.AlignRight),
+                                  mapping=self.lv_mapping | {0xFF: '一'}, readonly=False, alignment=Qt.AlignRight),
                 'L5': MappingSpin(None, 'L5', SKILL_STRUCTURE['L5'],
-                                  mapping=lv_mapping, readonly=False, alignment=Qt.AlignRight),
+                                  mapping=self.lv_mapping | {0xFF: '一'}, readonly=False, alignment=Qt.AlignRight),
                 'L6': MappingSpin(None, 'L6', SKILL_STRUCTURE['L6'],
-                                  mapping=lv_mapping, readonly=False, alignment=Qt.AlignRight),
+                                  mapping=self.lv_mapping | {0xFF: '一'}, readonly=False, alignment=Qt.AlignRight),
                 'L7': MappingSpin(None, 'L7', SKILL_STRUCTURE['L7'],
-                                  mapping=lv_mapping, readonly=False, alignment=Qt.AlignRight),
+                                  mapping=self.lv_mapping | {0xFF: '一'}, readonly=False, alignment=Qt.AlignRight),
                 'L8': MappingSpin(None, 'L8', SKILL_STRUCTURE['L8'],
-                                  mapping=lv_mapping, readonly=False, alignment=Qt.AlignRight),
+                                  mapping=self.lv_mapping | {0xFF: '一'}, readonly=False, alignment=Qt.AlignRight),
                 'L9': MappingSpin(None, 'L9', SKILL_STRUCTURE['L9'],
-                                  mapping=lv_mapping, readonly=False, alignment=Qt.AlignRight),
+                                  mapping=self.lv_mapping | {0xFF: '一'}, readonly=False, alignment=Qt.AlignRight),
             }
         )
         group_layout = QVBoxLayout()
@@ -147,7 +148,8 @@ class PilotFrame(BackgroundFrame):
         self['精神リスト'] = ParallelTable(
             self['パイロットリスト'], ('精神リスト', '習得リスト'), {
                 '精神': RadioCombo(None, '精神', PILOT_STRUCTURE['精神リスト']['精神'], mapping=EnumData.SPIRIT),
-                '習得': ValueSpin(None, '習得', PILOT_STRUCTURE['習得リスト']['習得'], alignment=Qt.AlignRight),
+                '習得': MappingSpin(None, '習得', PILOT_STRUCTURE['習得リスト']['習得'],
+                                  mapping=self.lv_mapping | {0xFF: '一'}, readonly=False, alignment=Qt.AlignRight),
             }
         )
         group_layout = QVBoxLayout()

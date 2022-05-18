@@ -20,6 +20,7 @@ class MappingSpin(SingleWidget, QSpinBox):
         if readonly := self.kwargs.get('readonly', True):
             self.lineEdit().setReadOnly(readonly)
         self.init_mapping()
+        self.wheelEvent = lambda x: None
 
     def init_mapping(self) -> bool:
         self.setRange(min(self.mapping), max(self.mapping))

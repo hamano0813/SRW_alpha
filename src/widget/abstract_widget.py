@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from PySide6.QtWidgets import QWidget, QTableView
+from PySide6.QtWidgets import QWidget, QTableView, QSpinBox
 
 from structure.generic import Value, Text, SEQUENCE
 
@@ -71,7 +71,7 @@ class BackgroundWidget:
         self.widgets: dict[str, AbstractWidget] = dict()
         self.kwargs = kwargs
 
-    def __getitem__(self, widget_name: str) -> AbstractWidget | ControlWidget | QWidget | QTableView:
+    def __getitem__(self, widget_name: str) -> AbstractWidget | ControlWidget | QWidget | QTableView | QSpinBox:
         return self.widgets.get(widget_name)
 
     def __setitem__(self, widget_name: str, child_widget: AbstractWidget) -> bool:

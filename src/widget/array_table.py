@@ -105,7 +105,6 @@ class ArrayDelegate(QStyledItemDelegate):
         editor.setGeometry(option.rect.adjusted(-1, -1, 1, 1))
 
 
-# noinspection PyUnresolvedReferences
 class ArrayTable(ControlWidget, QTableView):
     def __init__(self, parent, data_name, columns: dict[str, SingleWidget | QWidget], **kwargs):
         QTableView.__init__(self, parent=None)
@@ -117,6 +116,7 @@ class ArrayTable(ControlWidget, QTableView):
 
         self.check_kwargs()
 
+    # noinspection PyUnresolvedReferences
     def install(self, data_set: dict[str, int | str | SEQUENCE]) -> bool:
         array_model = ArrayModel(self, self.columns)
         array_model.install(data_set.get(self.data_name, list()))

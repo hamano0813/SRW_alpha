@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from .array_table import ArrayTable
+from .ai_table import AiTable
 from .background_frame import BackgroundFrame
 from .button_layout import ButtonLayout
 from .check_combo import CheckCombo

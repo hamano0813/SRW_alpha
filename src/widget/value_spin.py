@@ -19,6 +19,7 @@ class ValueSpin(SingleWidget, QSpinBox):
         if font := self.kwargs.get('font'):
             self.setFont(font)
         self.init_range()
+        self.wheelEvent = lambda x: None
 
     def init_range(self) -> bool:
         if (length := self.structure.length) > 0:
@@ -27,11 +28,15 @@ class ValueSpin(SingleWidget, QSpinBox):
             maximum = 0x100 ** abs(length) // 2
         minimum = maximum - 0x100 ** abs(length)
         if self.structure.bit is not None:
-            minimum = 0
-            if isinstance(self.structure, int):
-                maximum = 2
+            if isinstance(self.structure.bit, int):
+                minimum = 0
+                maximum = 1
             else:
-                maximum = (1 << (self.structure.bit[1] - self.structure.bit[0]))
+                minimum = 0
+                if isinstance(self.structure, int):
+                    maximum = 2
+                else:
+                    maximum = (1 << (self.structure.bit[1] - self.structure.bit[0]))
         maximum -= 1
         minimum *= self.multiple
         maximum *= self.multiple
