@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from structure.generic import Rom
-from .scenario import Scenario, SCENARIO_STRUCTURE
+from structure.specific.sndata_bin.scenario import Scenario, SCENARIO_STRUCTURE
 
 
 class SndataBIN(Rom):

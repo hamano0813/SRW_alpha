@@ -75,7 +75,6 @@ class PilotFrame(BackgroundFrame):
         group_layout.addWidget(self['パイロットリスト'])
         group_layout.addLayout(filter_layout)
         group.setLayout(group_layout)
-        # noinspection PyUnresolvedReferences
         filter_line.textChanged[str].connect(self['パイロットリスト'].filterChanged)
         return group
 

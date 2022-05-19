@@ -4,7 +4,7 @@
 from PySide6.QtWidgets import QLineEdit
 
 from structure.generic import Text
-from .abstract_widget import SingleWidget
+from widget.abstract_widget import SingleWidget
 
 
 class TextLine(SingleWidget, QLineEdit):
@@ -24,7 +24,6 @@ class TextLine(SingleWidget, QLineEdit):
         text = self.data_set.get(self.data_name)
         self.setText(self.display(text))
         if not delegate:
-            # noinspection PyUnresolvedReferences
             self.editingFinished.connect(self.overwrite)
         return True
 

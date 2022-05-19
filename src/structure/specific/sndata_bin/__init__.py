@@ -1,4 +1,4 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from .sndata import SndataBIN
+from structure.specific.sndata_bin.sndata import SndataBIN

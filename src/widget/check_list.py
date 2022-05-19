@@ -3,7 +3,7 @@
 
 from PySide6.QtWidgets import QCheckBox, QListWidget, QListWidgetItem
 
-from .abstract_widget import SingleWidget
+from widget.abstract_widget import SingleWidget
 
 
 class CheckList(SingleWidget, QListWidget):
@@ -30,7 +30,6 @@ class CheckList(SingleWidget, QListWidget):
         for bit, check_box in enumerate(self.check_list):
             check_box.disconnect(check_box)
             check_box.setChecked((value & 1 << bit) >> bit)
-            # noinspection PyUnresolvedReferences
             check_box.stateChanged.connect(self.overwrite)
         return True
 

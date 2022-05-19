@@ -9,7 +9,7 @@ from PySide6.QtGui import QKeyEvent, QAction, QCursor
 from PySide6.QtWidgets import QWidget, QTableView, QStyledItemDelegate, QStyleOptionViewItem, QMenu, QApplication
 
 from structure.generic import SEQUENCE
-from .abstract_widget import ControlWidget, SingleWidget
+from widget.abstract_widget import ControlWidget, SingleWidget
 
 
 class ParallelModel(QAbstractTableModel):

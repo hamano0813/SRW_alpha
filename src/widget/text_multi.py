@@ -4,7 +4,7 @@
 from PySide6.QtWidgets import QPlainTextEdit
 
 from structure.generic import Text
-from .abstract_widget import SingleWidget
+from widget.abstract_widget import SingleWidget
 
 
 class TextMulti(SingleWidget, QPlainTextEdit):
@@ -22,7 +22,6 @@ class TextMulti(SingleWidget, QPlainTextEdit):
         text = self.data_set.get(self.data_name)
         self.setPlainText(self.display(text))
         if not delegate:
-            # noinspection PyUnresolvedReferences
             self.editingFinished.connect(self.overwrite)
         return True
 

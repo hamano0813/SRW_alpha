@@ -68,12 +68,12 @@ class ControlWidget(AbstractWidget):
 
 class BackgroundWidget:
     def __init__(self, **kwargs):
-        self.widgets: dict[str, AbstractWidget | any] = dict()
+        self.widgets: dict[str, AbstractWidget] = dict()
         self.kwargs = kwargs
 
-    def __getitem__(self, widget_name: str) -> AbstractWidget | ControlWidget | QWidget | QTableView | QSpinBox | any:
+    def __getitem__(self, widget_name: str) -> AbstractWidget | ControlWidget | QWidget | QTableView | QSpinBox:
         return self.widgets.get(widget_name)
 
-    def __setitem__(self, widget_name: str, child_widget: AbstractWidget | any) -> bool:
+    def __setitem__(self, widget_name: str, child_widget: AbstractWidget) -> bool:
         self.widgets[widget_name] = child_widget
         return True

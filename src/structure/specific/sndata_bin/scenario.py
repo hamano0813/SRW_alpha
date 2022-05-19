@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from structure.generic import Value, Sequence, SEQUENCE
-from .command import Command
+from structure.specific.sndata_bin.command import Command
 
 SCENARIO_STRUCTURE = {
     '指针数量': Value(0x0, 0x4),

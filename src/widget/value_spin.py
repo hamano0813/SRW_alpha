@@ -6,7 +6,7 @@ from PySide6.QtGui import QIntValidator
 from PySide6.QtWidgets import QSpinBox
 
 from structure.generic import Value
-from .abstract_widget import SingleWidget
+from widget.abstract_widget import SingleWidget
 
 
 class ValueSpin(SingleWidget, QSpinBox):
@@ -61,7 +61,6 @@ class ValueSpin(SingleWidget, QSpinBox):
         value = self.data_set.get(self.data_name, 0)
         self.setValue(value * self.multiple)
         if not delegate:
-            # noinspection PyUnresolvedReferences
             self.valueChanged.connect(self.overwrite)
         return True
 

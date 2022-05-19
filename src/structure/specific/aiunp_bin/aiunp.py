@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from structure.generic import Rom, Value, Sequence
-from .ai import AiSetting, SETTING_STRUCTURE
+from structure.specific.aiunp_bin.ai import AiSetting, SETTING_STRUCTURE
 
 
 class AiunpBIN(Rom):

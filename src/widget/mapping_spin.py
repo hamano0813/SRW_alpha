@@ -5,7 +5,7 @@ from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QSpinBox
 
 from structure.generic import Value
-from .abstract_widget import SingleWidget
+from widget.abstract_widget import SingleWidget
 
 
 class MappingSpin(SingleWidget, QSpinBox):
@@ -39,7 +39,6 @@ class MappingSpin(SingleWidget, QSpinBox):
         value = self.data_set.get(self.data_name, 0)
         self.setValue(value)
         if not delegate:
-            # noinspection PyUnresolvedReferences
             self.valueChanged.connect(self.overwrite)
         return True
 

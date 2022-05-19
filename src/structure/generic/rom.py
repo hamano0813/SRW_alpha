@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from .sequence import Value, Sequence, SEQUENCE
+import os
+
+from structure.generic.sequence import Value, Sequence, SEQUENCE
 
 
 class Rom:
@@ -12,7 +14,7 @@ class Rom:
         self.data: dict = dict()
 
     def load(self, path: str = None) -> bool:
-        if path:
+        if os.path.exists(path):
             self.path = path
         if not self.path:
             return False

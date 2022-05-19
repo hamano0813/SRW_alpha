@@ -6,7 +6,7 @@ from PySide6.QtGui import QAction, QCursor, QKeyEvent
 from PySide6.QtWidgets import QMenu
 
 from structure.generic import SEQUENCE
-from .array_table import ArrayModel, ArrayTable
+from widget.array_table import ArrayModel, ArrayTable
 
 
 class AiModel(ArrayModel):

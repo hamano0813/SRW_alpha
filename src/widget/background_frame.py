@@ -4,7 +4,7 @@
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QFrame
 
-from .abstract_widget import BackgroundWidget
+from widget.abstract_widget import BackgroundWidget
 
 
 class BackgroundFrame(BackgroundWidget, QFrame):

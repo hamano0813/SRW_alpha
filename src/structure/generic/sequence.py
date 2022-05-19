@@ -3,8 +3,8 @@
 
 from typing import Optional
 
-from .text import Text
-from .value import Value
+from structure.generic.text import Text
+from structure.generic.value import Value
 
 SEQUENCE = list[dict[str, int | str | Optional["SEQUENCE"]]]
 

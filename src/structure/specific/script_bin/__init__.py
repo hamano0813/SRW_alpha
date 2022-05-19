@@ -1,4 +1,4 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from .script import ScriptBIN
+from structure.specific.script_bin.script import ScriptBIN

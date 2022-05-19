@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from .rom import Rom
-from .sequence import Sequence, SEQUENCE
-from .text import Text
-from .value import Value
+from structure.generic.rom import Rom
+from structure.generic.sequence import Sequence, SEQUENCE
+from structure.generic.text import Text
+from structure.generic.value import Value

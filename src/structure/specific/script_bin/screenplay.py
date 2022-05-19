@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from structure.generic import Value, Sequence, SEQUENCE
-from .instruction import Instruction, INSTRUCTION_STRUCTURE
+from structure.specific.script_bin.instruction import Instruction, INSTRUCTION_STRUCTURE
 
 SCREENPLAY_STRUCTURE = {
     '指令数量': Value(0x0, 0x4),

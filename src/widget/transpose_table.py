@@ -9,7 +9,7 @@ from PySide6.QtGui import QAction, QCursor, QKeyEvent
 from PySide6.QtWidgets import QApplication, QWidget, QTableView, QMenu, QStyledItemDelegate, QStyleOptionViewItem
 
 from structure.generic import SEQUENCE
-from .abstract_widget import ControlWidget, SingleWidget
+from widget.abstract_widget import ControlWidget, SingleWidget
 
 
 class TransposeModel(QAbstractTableModel):

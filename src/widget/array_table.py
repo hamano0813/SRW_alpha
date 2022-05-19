@@ -11,7 +11,7 @@ from PySide6.QtWidgets import (QApplication, QWidget, QTableView, QMenu, QAbstra
                                QStyleOptionButton)
 
 from structure.generic import SEQUENCE
-from .abstract_widget import ControlWidget, SingleWidget
+from widget.abstract_widget import ControlWidget, SingleWidget
 
 
 class ArrayModel(QAbstractTableModel):

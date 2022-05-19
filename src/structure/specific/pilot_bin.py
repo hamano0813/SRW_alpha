@@ -20,8 +20,8 @@ SKILL_STRUCTURE = {
 PILOT_STRUCTURE = {
     'コード': Value(0x0, 0x2),
     '乗り換え系': Value(0x2, 0x2, bit=(0, 10)),
-    '名前': Text(0x4, 0x14, 'shiftjisx0213', HALF_TEXT_EXTRA),
-    'パイロット': Text(0x29, 0xC, 'shiftjisx0213', HALF_TEXT_EXTRA),
+    '名前': Text(0x4, 0x25, 'shiftjisx0213', HALF_TEXT_EXTRA),
+    'パイロット': Text(0x29, 0xD, 'shiftjisx0213', HALF_TEXT_EXTRA),
     '格闘': Value(0x36, 0x1),
     '射撃': Value(0x37, 0x1),
     '回避': Value(0x38, 0x1),

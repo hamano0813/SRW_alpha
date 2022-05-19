@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from structure.generic import Rom, Value, Sequence
-from .screenplay import ScreenPlay, SCREENPLAY_STRUCTURE
+from structure.specific.script_bin.screenplay import ScreenPlay, SCREENPLAY_STRUCTURE
 
 
 class ScriptBIN(Rom):

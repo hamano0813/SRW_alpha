@@ -11,8 +11,8 @@ from PySide6.QtWidgets import QApplication, QMainWindow, QMenu, QFileDialog, QTo
 
 from structure import Rom, RobotRAF, PilotBIN, SnmsgBIN, SndataBIN, EnlistBIN, AiunpBIN, ScriptBIN, PrmgrpBIN
 from widget import BackgroundFrame
-from . import RobotFrame, PilotFrame, SnmsgFrame, ScenarioFrame, PrmgrpFrame
-from .resource import *
+from interface import RobotFrame, PilotFrame, SnmsgFrame, ScenarioFrame, PrmgrpFrame
+from interface.resource import *
 
 
 class MainWindow(QMainWindow):
