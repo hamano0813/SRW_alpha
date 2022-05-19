@@ -28,7 +28,6 @@ class RadioCombo(SingleWidget, QComboBox):
             for data, text in self.mapping.items():
                 self.addItem(text, data)
 
-    # noinspection PyUnresolvedReferences
     def install(self, data_set: dict[str, int | str], delegate: bool = False) -> bool:
         self.disconnect(self)
         self.data_set = data_set

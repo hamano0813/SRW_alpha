@@ -21,36 +21,34 @@ class ScenarioFrame(BackgroundFrame):
         self.enlist_rom: Optional[EnlistBIN] = None
         self.aiunp_rom: Optional[AiunpBIN] = None
 
+        self.scenario_tab = QTabWidget()
+
         self.robot_mapping = kwargs.get('robots', dict()) | {0x0: '一一'}
         self.pilot_mapping = kwargs.get('pilots', dict()) | {0x7D0: '[7D0]主人公', 0x7D1: '[7D1]恋人', 0x7FA: '[7FA]？？？'}
         self.message_mapping = kwargs.get('messages', dict())
         self.group_mapping = {group: f'{group}' for group in range(0, 16)}
         self.lv_mapping = {lv: f'{lv}' for lv in range(1, 100)}
         self.upgrade_mapping = {upgrade: f'{upgrade}' for upgrade in range(1, 11)} | {0: '一'}
-        self.pos_mapping = {pos: f'{pos}' for pos in range(1, 40)} | {0xFF: '一'}
-        self.round_mapping = {round: f'{round}' for round in range(1, 20)} | {0: '一'}
+        self.pos_mapping = {p: f'{p}' for p in range(1, 40)} | {101: '北', 102: '東', 103: '南', 104: '西', 0xFF: '一'}
+        self.phase_mapping = {phase: f'{phase}' for phase in range(1, 20)} | {0: '一'}
 
         self.init_ui()
 
-    # noinspection PyAttributeOutsideInit
     def init_ui(self):
         scenario = self.init_scenario_table()
 
-        self.tab_widget = QTabWidget()
-        self.tab_widget.addTab(self.init_enemy_frame(), '敵設定')
-        self.tab_widget.addTab(self.init_ai_frame(), 'AI設定')
+        self.scenario_tab.addTab(self.init_enemy_frame(), '敵設定')
+        self.scenario_tab.addTab(self.init_ai_frame(), 'AI設定')
 
         main_layout = QVBoxLayout()
         main_layout.addLayout(scenario)
-        main_layout.addWidget(self.tab_widget)
+        main_layout.addWidget(self.scenario_tab)
         self.setLayout(main_layout)
 
     def init_scenario_table(self):
-        # noinspection PyTypeChecker
         self['シナリオリスト'] = ScenarioCombo(self)
         self['シナリオリスト'].setFixedWidth(1420)
         layout = QHBoxLayout()
-        # layout.addWidget(QLabel('シナリオ'))
         layout.addWidget(self['シナリオリスト'])
         return layout
 
@@ -71,7 +69,6 @@ class ScenarioFrame(BackgroundFrame):
             self[f'隊{idx:02d}'] = ValueSpin(self['敵設定'], f'隊{idx:02d}', ENLIST_STRUCTURE[f'隊{idx:02d}'],
                                             alignment=Qt.AlignRight)
             quantity_layout.addRow(f'隊{idx:02d}', self[f'隊{idx:02d}'])
-            # noinspection PyUnresolvedReferences
             self[f'隊{idx:02d}'].valueChanged.connect(self.reset_count)
 
         self['敵リスト'] = ArrayTable(
@@ -106,12 +103,12 @@ class ScenarioFrame(BackgroundFrame):
             'AI': RadioCombo(None, 'AI', AI_STRUCTURE['AI'], mapping=self.pilot_mapping | {0x0: '一一'}),
             'ターゲット': RadioCombo(None, 'ターゲット', AI_STRUCTURE['ターゲット'],
                                 mapping=self.pilot_mapping | {0xFFFF: '一一'}),
-            '目標X': MappingSpin(None, '目標X', AI_STRUCTURE['目標X'],
-                               mapping=self.pos_mapping, alignment=Qt.AlignRight),
-            '目標Y': MappingSpin(None, '目標Y', AI_STRUCTURE['目標Y'],
-                               mapping=self.pos_mapping, alignment=Qt.AlignRight),
-            '行動開始': MappingSpin(None, '行動開始', AI_STRUCTURE['行動開始'],
-                                mapping=self.round_mapping, alignment=Qt.AlignRight),
+            '目標X': RadioCombo(None, '目標X', AI_STRUCTURE['目標X'],
+                              mapping=self.pos_mapping, alignment=Qt.AlignLeft),
+            '目標Y': RadioCombo(None, '目標Y', AI_STRUCTURE['目標Y'],
+                              mapping=self.pos_mapping, alignment=Qt.AlignLeft),
+            '移動開始': MappingSpin(None, '移動開始', AI_STRUCTURE['移動開始'],
+                                mapping=self.phase_mapping, alignment=Qt.AlignRight),
             '不明1_0': ValueSpin(None, '不明1_0', AI_STRUCTURE['不明1_0'], alignment=Qt.AlignRight),
             '不明1_2': ValueSpin(None, '不明1_2', AI_STRUCTURE['不明1_2'], alignment=Qt.AlignRight),
             '不明1_3': ValueSpin(None, '不明1_3', AI_STRUCTURE['不明1_3'], alignment=Qt.AlignRight),
@@ -124,12 +121,11 @@ class ScenarioFrame(BackgroundFrame):
             '不明3_2': ValueSpin(None, '不明3_2', AI_STRUCTURE['不明3_2'], alignment=Qt.AlignRight),
             '不明3_4': ValueSpin(None, '不明3_4', AI_STRUCTURE['不明3_4'], alignment=Qt.AlignRight),
             '不明4_4': ValueSpin(None, '不明4_4', AI_STRUCTURE['不明4_4'], alignment=Qt.AlignRight),
-            '不明4_5': ValueSpin(None, '不明4_5', AI_STRUCTURE['不明4_5'], alignment=Qt.AlignRight),
+            '自律移動': ValueSpin(None, '自律移動', AI_STRUCTURE['自律移動'], alignment=Qt.AlignRight),
             '不明4_6': ValueSpin(None, '不明4_6', AI_STRUCTURE['不明4_6'], alignment=Qt.AlignRight),
-            '不明4_7': ValueSpin(None, '不明4_7', AI_STRUCTURE['不明4_7'], alignment=Qt.AlignRight),
+            '自律攻撃': ValueSpin(None, '自律攻撃', AI_STRUCTURE['自律攻撃'], alignment=Qt.AlignRight),
             '有効': ValueSpin(None, '有効', AI_STRUCTURE['有効'], alignment=Qt.AlignRight),
-        }, check=(5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20),
-                                sortable=False, stretch=(0, 1), )
+        }, check=tuple(range(5, 21)), sortable=False, stretch=(0, 1), )
 
         self['AIリスト'].horizontalHeader().setObjectName('ENLIST')
         self['AIリスト'].horizontalHeader().setMinimumSectionSize(56)
@@ -154,20 +150,18 @@ class ScenarioFrame(BackgroundFrame):
 
         return True
 
-    # noinspection PyUnresolvedReferences
     def set_roms(self, roms: list[SndataBIN, EnlistBIN, AiunpBIN]):
         self.sndata_rom, self.enlist_rom, self.aiunp_rom = roms
         self.parse()
-
-        self['敵設定'].install(self.enlist_rom.data)
-        self['AI設定'].install(self.aiunp_rom.data)
-
-        self['シナリオリスト'].currentIndexChanged[int].connect(self.control_scenario)
 
     def parse(self):
         self.sndata_rom.parse()
         self.enlist_rom.parse()
         self.aiunp_rom.parse()
+        self['敵設定'].install(self.enlist_rom.data)
+        self['AI設定'].install(self.aiunp_rom.data)
+
+        self['シナリオリスト'].currentIndexChanged[int].connect(self.control_scenario)
 
     def build(self):
         self.sndata_rom.build()

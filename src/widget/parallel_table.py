@@ -6,7 +6,7 @@ from typing import Optional
 
 from PySide6.QtCore import Qt, QAbstractTableModel, QModelIndex
 from PySide6.QtGui import QKeyEvent, QAction, QCursor
-from PySide6.QtWidgets import QWidget, QTableView, QStyledItemDelegate, QStyleOptionViewItem, QMenu
+from PySide6.QtWidgets import QWidget, QTableView, QStyledItemDelegate, QStyleOptionViewItem, QMenu, QApplication
 
 from structure.generic import SEQUENCE
 from .abstract_widget import ControlWidget, SingleWidget
@@ -104,7 +104,6 @@ class ParallelDelegate(QStyledItemDelegate):
         editor.setGeometry(option.rect.adjusted(-1, -1, 1, 1))
 
 
-# noinspection PyUnresolvedReferences
 class ParallelTable(ControlWidget, QTableView):
     def __init__(self, parent, data_name: tuple, columns: dict[str, SingleWidget | QWidget], **kwargs):
         ControlWidget.__init__(self, parent, data_name, **kwargs)

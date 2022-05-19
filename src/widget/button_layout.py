@@ -4,7 +4,6 @@
 from PySide6.QtWidgets import QPushButton, QVBoxLayout
 
 
-# noinspection PyUnresolvedReferences
 class ButtonLayout(QVBoxLayout):
     def __init__(self, frame, parent=None):
         super(ButtonLayout, self).__init__(parent)

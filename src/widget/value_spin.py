@@ -55,7 +55,6 @@ class ValueSpin(SingleWidget, QSpinBox):
             return int(text)
         return self.value()
 
-    # noinspection PyUnresolvedReferences
     def install(self, data_set: dict[str, int | str], delegate: bool = False) -> bool:
         self.disconnect(self)
         self.data_set = data_set

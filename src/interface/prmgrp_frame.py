@@ -27,7 +27,6 @@ class PrmgrpFrame(BackgroundFrame):
 
         self.init_ui()
 
-    # noinspection PyAttributeOutsideInit
     def init_ui(self):
         tab_widget = QTabWidget()
 
@@ -35,13 +34,8 @@ class PrmgrpFrame(BackgroundFrame):
         tab_widget.addTab(self.init_birthday_frame(), '誕生日')
         tab_widget.addTab(self.init_sppart_frame(), '精神消費＆パーツ属性')
 
-        b_layout = QVBoxLayout()
-        b_layout.addStretch()
-        b_layout.addLayout(ButtonLayout(self))
-
         main_layout = QHBoxLayout()
         main_layout.addWidget(tab_widget)
-        main_layout.addLayout(b_layout)
         self.setLayout(main_layout)
 
     def init_upgrade_frame(self):
@@ -165,9 +159,9 @@ class PrmgrpFrame(BackgroundFrame):
         self['特殊誕生日'] = ArrayTable(
             self, '特殊誕生日', {
                 '誕生月': MappingSpin(None, '誕生月', SPECIAL_STRUCTURE['誕生月'],
-                                   mapping=self.month_mapping, readonly=False, alignment=Qt.AlignRight),
+                                   mapping=self.month_mapping, alignment=Qt.AlignRight),
                 '誕生日': MappingSpin(None, '誕生日', SPECIAL_STRUCTURE['誕生日'],
-                                   mapping=self.day_mapping, readonly=False, alignment=Qt.AlignRight),
+                                   mapping=self.day_mapping, alignment=Qt.AlignRight),
                 '血液型': MappingSpin(None, '血液型', SPECIAL_STRUCTURE['血液型'],
                                    mapping={0: 'A', 1: 'B', 2: 'AB', 3: 'O'}, alignment=Qt.AlignRight),
             }, sortable=False, stretch=tuple(), single=True,
@@ -176,7 +170,7 @@ class PrmgrpFrame(BackgroundFrame):
             self['特殊誕生日'], ('精神リスト', '習得リスト'), {
                 '精神': RadioCombo(None, '精神', SPECIAL_STRUCTURE['精神リスト']['精神'], mapping=EnumData.SPIRIT),
                 '習得': MappingSpin(None, '習得', SPECIAL_STRUCTURE['習得リスト']['習得'],
-                                  mapping=self.lv_mapping, readonly=False, alignment=Qt.AlignRight),
+                                  mapping=self.lv_mapping, alignment=Qt.AlignRight),
             }
         )
         self['特殊スキル'] = RadioCombo(self['特殊誕生日'], 'スキル', SPECIAL_STRUCTURE['スキル'],
@@ -201,13 +195,13 @@ class PrmgrpFrame(BackgroundFrame):
         self['星座範囲'] = ArrayTable(
             self, '星座範囲', {
                 '開始月': MappingSpin(None, '開始月', ZODIAC_STRUCTURE['開始月'],
-                                   mapping=self.month_mapping, readonly=False, alignment=Qt.AlignRight),
+                                   mapping=self.month_mapping, alignment=Qt.AlignRight),
                 '開始日': MappingSpin(None, '開始日', ZODIAC_STRUCTURE['開始日'],
-                                   mapping=self.day_mapping, readonly=False, alignment=Qt.AlignRight),
+                                   mapping=self.day_mapping, alignment=Qt.AlignRight),
                 '終了月': MappingSpin(None, '終了月', ZODIAC_STRUCTURE['終了月'],
-                                   mapping=self.month_mapping, readonly=False, alignment=Qt.AlignRight),
+                                   mapping=self.month_mapping, alignment=Qt.AlignRight),
                 '終了日': MappingSpin(None, '終了日', ZODIAC_STRUCTURE['終了日'],
-                                   mapping=self.day_mapping, readonly=False, alignment=Qt.AlignRight),
+                                   mapping=self.day_mapping, alignment=Qt.AlignRight),
             },
             sortable=False, stretch=tuple(), single=True,
         )
@@ -220,28 +214,28 @@ class PrmgrpFrame(BackgroundFrame):
             self['血液型A'], ('精神リスト', '習得リスト'), {
                 '精神': RadioCombo(None, '精神', BLOOD_STRUCTURE['精神リスト']['精神'], mapping=EnumData.SPIRIT),
                 '習得': MappingSpin(None, '習得', BLOOD_STRUCTURE['習得リスト']['習得'],
-                                  mapping=self.lv_mapping, readonly=False, alignment=Qt.AlignRight),
+                                  mapping=self.lv_mapping, alignment=Qt.AlignRight),
             }
         )
         self['血液型B精神'] = ParallelTable(
             self['血液型B'], ('精神リスト', '習得リスト'), {
                 '精神': RadioCombo(None, '精神', BLOOD_STRUCTURE['精神リスト']['精神'], mapping=EnumData.SPIRIT),
                 '習得': MappingSpin(None, '習得', BLOOD_STRUCTURE['習得リスト']['習得'],
-                                  mapping=self.lv_mapping, readonly=False, alignment=Qt.AlignRight),
+                                  mapping=self.lv_mapping, alignment=Qt.AlignRight),
             }
         )
         self['血液型AB精神'] = ParallelTable(
             self['血液型AB'], ('精神リスト', '習得リスト'), {
                 '精神': RadioCombo(None, '精神', BLOOD_STRUCTURE['精神リスト']['精神'], mapping=EnumData.SPIRIT),
                 '習得': MappingSpin(None, '習得', BLOOD_STRUCTURE['習得リスト']['習得'],
-                                  mapping=self.lv_mapping, readonly=False, alignment=Qt.AlignRight),
+                                  mapping=self.lv_mapping, alignment=Qt.AlignRight),
             }
         )
         self['血液型O精神'] = ParallelTable(
             self['血液型O'], ('精神リスト', '習得リスト'), {
                 '精神': RadioCombo(None, '精神', BLOOD_STRUCTURE['精神リスト']['精神'], mapping=EnumData.SPIRIT),
                 '習得': MappingSpin(None, '習得', BLOOD_STRUCTURE['習得リスト']['習得'],
-                                  mapping=self.lv_mapping, readonly=False, alignment=Qt.AlignRight),
+                                  mapping=self.lv_mapping, alignment=Qt.AlignRight),
             }
         )
         self['血液型Aスキル'] = RadioCombo(self['血液型A'], 'スキル', BLOOD_STRUCTURE['スキル'],
@@ -252,7 +246,6 @@ class PrmgrpFrame(BackgroundFrame):
                                       mapping=self.skill_mapping, alignment=Qt.AlignRight)
         self['血液型Oスキル'] = RadioCombo(self['血液型O'], 'スキル', BLOOD_STRUCTURE['スキル'],
                                      mapping=self.skill_mapping, alignment=Qt.AlignRight)
-        # noinspection PyUnresolvedReferences
         self['星座範囲'].clicked[QModelIndex].connect(self.control_blood)
 
         self['星座範囲'].verticalHeader().setHidden(True)
@@ -326,9 +319,8 @@ class PrmgrpFrame(BackgroundFrame):
                 '移動力': ValueSpin(None, '移動力', PART_STRUCTURE['移動力'], alignment=Qt.AlignRight),
                 '射程命中': RadioCombo(None, '射程命中', PART_STRUCTURE['射程命中'],
                                    mapping={0: '', 0b1: '射程+1', 0b11: '命中+30%'}, alignment=Qt.AlignLeft),
-                '空A': MappingSpin(None, '空A', PART_STRUCTURE['空A'],
-                                  mapping={0: '', 1: '⚪'}, alignment=Qt.AlignLeft),
-            }, sortable=False, stretch=(6,),
+                '空A': ValueSpin(None, '空A', PART_STRUCTURE['空A'], alignment=Qt.AlignLeft),
+            }, sortable=False, stretch=(6,), check=(7,)
         )
         part_layout = QHBoxLayout()
         part_layout.addWidget(self['パーツ属性'])
@@ -384,7 +376,6 @@ class PrmgrpFrame(BackgroundFrame):
         self['血液型B'].install(self.rom.data)
         self['血液型AB'].install(self.rom.data)
         self['血液型O'].install(self.rom.data)
-        # noinspection PyUnresolvedReferences
         self['星座範囲'].selectionModel().currentChanged[QModelIndex, QModelIndex].connect(self.control_blood)
 
     def build(self):

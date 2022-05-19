@@ -17,7 +17,7 @@ class MappingSpin(SingleWidget, QSpinBox):
             self.setAlignment(alignment)
         if font := self.kwargs.get('font'):
             self.setFont(font)
-        if readonly := self.kwargs.get('readonly', True):
+        if readonly := self.kwargs.get('readonly', False):
             self.lineEdit().setReadOnly(readonly)
         self.init_mapping()
         self.wheelEvent = lambda x: None
@@ -33,7 +33,6 @@ class MappingSpin(SingleWidget, QSpinBox):
     def valueFromText(self, text: str) -> int:
         return {value: key for key, value in self.mapping.items()}.get(text, self.maximum())
 
-    # noinspection PyUnresolvedReferences
     def install(self, data_set: dict[str, int | str], delegate: bool = False) -> bool:
         self.disconnect(self)
         self.data_set = data_set

@@ -31,7 +31,6 @@ class CheckCombo(SingleWidget, QComboBox):
         self.setModel(list_widget.model())
         self.setView(list_widget)
 
-    # noinspection PyUnresolvedReferences
     def install(self, data_set: dict[str, int | str], delegate: bool = False) -> bool:
         self.disconnect(self)
         self.data_set = data_set

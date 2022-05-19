@@ -64,17 +64,14 @@ class ScenarioCombo(QComboBox):
         self.setView(view)
 
         self.setMaxVisibleItems(20)
-        self.setStyleSheet('* {font-size: 14pt; font-weight: 900;}')
+        self.setStyleSheet('* {font-size: 16pt; font-weight: 900;} QAbstractItemView::item {padding: 0 25px;}')
         self.init_view()
 
-    # noinspection PyUnresolvedReferences
     def init_view(self):
         self.view().resizeColumnsToContents()
         self.view().resizeRowsToContents()
         self.view().verticalHeader().setHidden(True)
-        # self.view().horizontalHeader().setHidden(True)
         self.view().horizontalHeader().setSectionResizeMode(3, self.view().horizontalHeader().Stretch)
-        self.view().horizontalHeader().setMinimumSectionSize(50)
 
         self.view().setRowHidden(0x7E, True)
         self.view().setRowHidden(0x82, True)

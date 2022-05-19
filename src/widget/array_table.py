@@ -5,9 +5,10 @@ from collections import deque
 from typing import Optional
 
 from PySide6.QtCore import Qt, QAbstractTableModel, QSortFilterProxyModel, QModelIndex, QRegularExpression, QEvent
-from PySide6.QtGui import QAction, QCursor, QKeyEvent
+from PySide6.QtGui import QAction, QCursor, QKeyEvent, QPainter
 from PySide6.QtWidgets import (QApplication, QWidget, QTableView, QMenu, QAbstractButton, QStyle, QStylePainter,
-                               QStyledItemDelegate, QStyleOptionViewItem, QStyleOptionHeader)
+                               QStyledItemDelegate, QStyleOptionViewItem, QStyleOptionHeader, QCheckBox,
+                               QStyleOptionButton)
 
 from structure.generic import SEQUENCE
 from .abstract_widget import ControlWidget, SingleWidget
@@ -18,8 +19,8 @@ class ArrayModel(QAbstractTableModel):
         super(ArrayModel, self).__init__(parent)
         self.data_sequence: SEQUENCE = list()
         self.columns = columns
-        self.history = list()
         self.history = deque(maxlen=100)
+        self.check_column = self.parent().kwargs.get('check', tuple())
 
     def install(self, data_sequence: SEQUENCE) -> bool:
         self.beginResetModel()
@@ -89,7 +90,30 @@ class ArrayDelegate(QStyledItemDelegate):
     def __init__(self, parent):
         super(ArrayDelegate, self).__init__(parent)
 
-    def createEditor(self, parent, option: QStyleOptionViewItem, index: QModelIndex) -> SingleWidget:
+    def paint(self, painter: QPainter, option: QStyleOptionViewItem, index: QModelIndex) -> None:
+        if index.column() in index.model().sourceModel().check_column:
+            checkbox_option = QStyleOptionButton()
+            checkbox_option.rect = option.rect
+            checkbox_option.rect.moveLeft(option.rect.x() + option.rect.width() // 2 - 8)
+            checkbox_option.state = QStyle.State_Enabled | QStyle.State_Active
+            if index.data(Qt.EditRole):
+                checkbox_option.state |= QStyle.State_On
+            else:
+                checkbox_option.state |= QStyle.State_Off
+            return QApplication.style().drawControl(QStyle.CE_CheckBox, checkbox_option, painter, QCheckBox())
+        return super(ArrayDelegate, self).paint(painter, option, index)
+
+    def editorEvent(self, event: QEvent, model: ArrayModel | QSortFilterProxyModel, option, index: QModelIndex):
+        if event.type() == QEvent.MouseButtonPress and option.rect.contains(event.pos()):
+            if index.column() in model.sourceModel().check_column:
+                value = index.data(Qt.EditRole)
+                value = False if value else True
+                return model.sourceModel().setData(index, value, Qt.EditRole)
+        return super(ArrayDelegate, self).editorEvent(event, model, option, index)
+
+    def createEditor(self, parent, option: QStyleOptionViewItem, index: QModelIndex) -> Optional[SingleWidget]:
+        if index.column() in index.model().sourceModel().check_column:
+            return None
         editor = index.data(Qt.UserRole)[1].new(parent)
         return editor
 
@@ -115,8 +139,8 @@ class ArrayTable(ControlWidget, QTableView):
         self.horizontalHeader().setMinimumSectionSize(70)
 
         self.check_kwargs()
+        self.alignment = self.kwargs.get('alignment', Qt.AlignVCenter)
 
-    # noinspection PyUnresolvedReferences
     def install(self, data_set: dict[str, int | str | SEQUENCE]) -> bool:
         array_model = ArrayModel(self, self.columns)
         array_model.install(data_set.get(self.data_name, list()))
@@ -155,17 +179,15 @@ class ArrayTable(ControlWidget, QTableView):
         self.control_child(self.model().mapToSource(index).row())
         return True
 
-    # noinspection PyUnresolvedReferences,PyAttributeOutsideInit
     def check_kwargs(self):
         if self.kwargs.get('single', False):
             self.setSelectionMode(QTableView.SingleSelection)
             self.setSelectionBehavior(QTableView.SelectRows)
         if self.kwargs.get('copy', True):
             self.setContextMenuPolicy(Qt.CustomContextMenu)
-            self.customContextMenuRequested.connect(self.copy_paste)
+            self.customContextMenuRequested.connect(self.right_menu)
         if corner := self.kwargs.get('corner', False):
             self.set_corner(corner)
-        self.alignment = self.kwargs.get('alignment', Qt.AlignVCenter)
 
     def keyPressEvent(self, event: QKeyEvent) -> bool:
         if self.kwargs.get('copy', True):
@@ -191,7 +213,7 @@ class ArrayTable(ControlWidget, QTableView):
         else:
             self.model().setFilterRegularExpression('')
 
-    def copy_paste(self) -> None:
+    def right_menu(self) -> None:
         right_click_menu = QMenu()
         copy_action = QAction('複製(C)', self)
         copy_action.triggered.connect(self.copy_range)
@@ -233,7 +255,6 @@ class ArrayTable(ControlWidget, QTableView):
         return True
 
     def set_corner(self, text: str):
-        # noinspection PyTypeChecker
         corner_button: QAbstractButton = self.findChild(QAbstractButton)
         corner_button.setText(text)
         corner_button.setObjectName('Corner')

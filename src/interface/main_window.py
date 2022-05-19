@@ -45,6 +45,7 @@ class MainWindow(QMainWindow):
             'その他': (PrmgrpFrame, ('PRM_GRP.BIN',),),
         }
 
+        self.init_tool_bar()
         self.init_file_menu()
         self.init_edit_menu()
         self.init_option_menu()
@@ -55,6 +56,16 @@ class MainWindow(QMainWindow):
         self.setMinimumSize(1440, 870)
         self.test_load()
         self.check_enable()
+
+    def init_tool_bar(self):
+        self.tool_bar = self.addToolBar('')
+        self.tool_bar.setMovable(False)
+        parse_action = self.create_action('刷新')
+        build_action = self.create_action('写入')
+        parse_action.setEnabled(False)
+        build_action.setEnabled(False)
+        self.tool_bar.addActions([parse_action, build_action])
+        self.tool_bar.addSeparator()
 
     def init_file_menu(self):
         file_menu = QMenu('文件', self)
@@ -79,9 +90,7 @@ class MainWindow(QMainWindow):
         edit_menu.addActions(edit_list)
         self.menuBar().addMenu(edit_menu)
 
-        self.tool_bar = self.addToolBar('')
         self.tool_bar.addActions(edit_list)
-        self.tool_bar.setMovable(False)
 
     def init_option_menu(self):
         option_menu = QMenu('選項', self)
@@ -102,16 +111,16 @@ class MainWindow(QMainWindow):
         #ConnerButton,#ConnerButton:hover,#ConnerButton:pressed
         {padding-top:-32px;font:30pt;border:0;background:transparent;}
         '''
-
         corner_button.setStyleSheet(style)
-        # noinspection PyUnresolvedReferences
         corner_button.clicked.connect(self.charge_toolbar)
         self.menuBar().setCornerWidget(corner_button)
         corner_button.click()
 
-    def create_action(self, name: str, slot: callable = None) -> QAction:
+    def create_action(self, name: str, slot: callable = None, icon=None) -> QAction:
         action = QAction(name, self)
         action.setObjectName(name)
+        if icon:
+            action.setIcon(icon)
         if slot:
             action.triggered.connect(slot)
         return action
@@ -138,8 +147,12 @@ class MainWindow(QMainWindow):
                 frame = frame_class(self, **kwargs)
                 frame.set_roms([self.roms[name] for name in roms])
                 self.setCentralWidget(frame)
+
+                self.findChild(QAction, '刷新').setEnabled(True)
+                self.findChild(QAction, '刷新').triggered.connect(self.centralWidget().parse)
+                self.findChild(QAction, '写入').setEnabled(True)
+                self.findChild(QAction, '写入').triggered.connect(self.centralWidget().build)
             else:
-                # noinspection PyUnresolvedReferences
                 self.centralWidget().parse()
 
         return wrapper
@@ -147,7 +160,6 @@ class MainWindow(QMainWindow):
     def save_file(self):
         pass
 
-    # noinspection PyUnresolvedReferences
     def check_enable(self):
         self.findChild(QAction, '保存').setEnabled(any(map(bool, self.roms.values())))
         self.findChild(QAction, '機体').setEnabled(bool(self.roms.get('UNCOMPRESS_ROBOT.RAF')))

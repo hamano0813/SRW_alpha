@@ -24,7 +24,6 @@ class CheckList(SingleWidget, QListWidget):
                 check_item = QListWidgetItem(self)
                 self.setItemWidget(check_item, check_box)
 
-    # noinspection PyUnresolvedReferences
     def install(self, data_set: dict[str, int | str], delegate: bool = False) -> bool:
         self.data_set = data_set
         value = self.data_set.get(self.data_name, 0)
