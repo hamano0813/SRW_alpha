@@ -61,6 +61,7 @@ class ValueSpin(SingleWidget, QSpinBox):
         value = self.data_set.get(self.data_name, 0)
         self.setValue(value * self.multiple)
         if not delegate:
+            # noinspection PyUnresolvedReferences
             self.valueChanged.connect(self.overwrite)
         return True
 

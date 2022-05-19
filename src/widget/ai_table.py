@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from PySide6.QtCore import Qt, QModelIndex
 from PySide6.QtGui import QAction, QCursor, QKeyEvent
 from PySide6.QtWidgets import QMenu
-from PySide6.QtCore import Qt, QModelIndex
 
 from structure.generic import SEQUENCE
 from .array_table import ArrayModel, ArrayTable

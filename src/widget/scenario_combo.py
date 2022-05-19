@@ -3,7 +3,7 @@
 
 from PySide6.QtCore import Qt, QAbstractTableModel, QModelIndex
 from PySide6.QtGui import QPalette
-from PySide6.QtWidgets import QTableView, QComboBox, QStyle, QStyleOptionComboBox, QStylePainter
+from PySide6.QtWidgets import QTableView, QComboBox, QStyle, QStyleOptionComboBox, QStylePainter, QAbstractItemView
 
 from parameter import EnumData
 from widget.abstract_widget import ControlWidget
@@ -67,6 +67,9 @@ class ScenarioCombo(QComboBox):
         self.setStyleSheet('* {font-size: 16pt; font-weight: 900;} QAbstractItemView::item {padding: 0 25px;}')
         self.init_view()
 
+    def view(self) -> QAbstractItemView | ScenarioTable:
+        return super(ScenarioCombo, self).view()
+
     def init_view(self):
         self.view().resizeColumnsToContents()
         self.view().resizeRowsToContents()
@@ -79,6 +82,7 @@ class ScenarioCombo(QComboBox):
         self.view().setRowHidden(0x84, True)
         self.view().setRowHidden(0x85, True)
 
+        # noinspection PyUnresolvedReferences
         self.currentIndexChanged.connect(self.select_index)
         self.select_index()
 

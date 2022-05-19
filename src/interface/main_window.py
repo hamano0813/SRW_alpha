@@ -7,7 +7,7 @@ from typing import Optional
 
 import qdarktheme
 from PySide6.QtGui import QIcon, QAction
-from PySide6.QtWidgets import QApplication, QMainWindow, QMenu, QFileDialog, QToolBar, QPushButton
+from PySide6.QtWidgets import QApplication, QMainWindow, QMenu, QFileDialog, QToolBar, QPushButton, QWidget
 
 from structure import Rom, RobotRAF, PilotBIN, SnmsgBIN, SndataBIN, EnlistBIN, AiunpBIN, ScriptBIN, PrmgrpBIN
 from widget import BackgroundFrame
@@ -157,8 +157,12 @@ class MainWindow(QMainWindow):
 
         return wrapper
 
+    def centralWidget(self) -> QWidget | RobotFrame | PilotFrame | SnmsgFrame | ScenarioFrame | PrmgrpFrame:
+        return super(MainWindow, self).centralWidget()
+
     def save_file(self):
-        pass
+        for rom in self.roms.values():
+            rom.save()
 
     def check_enable(self):
         self.findChild(QAction, '保存').setEnabled(any(map(bool, self.roms.values())))

@@ -22,6 +22,7 @@ class TextMulti(SingleWidget, QPlainTextEdit):
         text = self.data_set.get(self.data_name)
         self.setPlainText(self.display(text))
         if not delegate:
+            # noinspection PyUnresolvedReferences
             self.editingFinished.connect(self.overwrite)
         return True
 

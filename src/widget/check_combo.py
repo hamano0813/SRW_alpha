@@ -38,6 +38,7 @@ class CheckCombo(SingleWidget, QComboBox):
         for bit, check_box in enumerate(self.check_list):
             check_box.disconnect(check_box)
             check_box.setChecked((value & 1 << bit) >> bit)
+            # noinspection PyUnresolvedReferences
             check_box.stateChanged.connect(self.overwrite)
         self.lineEdit().setText(self.value_text(value))
         self.lineEdit().textChanged.connect(self.overwrite)

@@ -44,6 +44,7 @@ class SnmsgFrame(BackgroundFrame):
         group_layout.addWidget(self['メッセージリスト'])
         group_layout.addLayout(filter_layout)
         group.setLayout(group_layout)
+        # noinspection PyUnresolvedReferences
         filter_line.textChanged[str].connect(self['メッセージリスト'].filterChanged)
         return group
 

@@ -24,6 +24,7 @@ class TextLine(SingleWidget, QLineEdit):
         text = self.data_set.get(self.data_name)
         self.setText(self.display(text))
         if not delegate:
+            # noinspection PyUnresolvedReferences
             self.editingFinished.connect(self.overwrite)
         return True
 
