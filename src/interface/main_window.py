@@ -6,8 +6,8 @@ import sys
 from typing import Optional
 
 import qdarktheme
-from PySide6.QtGui import QIcon, QAction
-from PySide6.QtWidgets import QApplication, QMainWindow, QMenu, QFileDialog, QToolBar, QPushButton, QWidget
+from PySide6.QtGui import QIcon, QAction, QActionGroup
+from PySide6.QtWidgets import QApplication, QMainWindow, QMenu, QFileDialog, QToolBar, QPushButton, QWidget, QMessageBox
 
 from interface import RobotFrame, PilotFrame, SnmsgFrame, ScenarioFrame, PrmgrpFrame
 from interface.resource import *
@@ -84,9 +84,12 @@ class MainWindow(QMainWindow):
     def init_edit_menu(self):
         edit_menu = QMenu('編輯', self)
         edit_list = []
+        edit_group = QActionGroup(self)
         for frame_name, frame_setting in self.frames.items():
             action = self.create_action(frame_name, self.open_frame(*frame_setting))
+            action.setCheckable(True)
             edit_list.append(action)
+            edit_group.addAction(action)
         edit_menu.addActions(edit_list)
         self.menuBar().addMenu(edit_menu)
 
@@ -145,6 +148,8 @@ class MainWindow(QMainWindow):
             else:
                 kwargs = dict()
             if not isinstance(self.centralWidget(), frame_class):
+                if self.centralWidget():
+                    self.centralWidget().close()
                 frame = frame_class(self, **kwargs)
                 frame.set_roms([self.roms[name] for name in roms])
                 self.setCentralWidget(frame)
@@ -164,6 +169,10 @@ class MainWindow(QMainWindow):
     def save_file(self):
         for rom in self.roms.values():
             rom.save()
+        # noinspection PyTypeChecker
+        box = QMessageBox(QMessageBox.Information, '', ' 保存完毕 ', flags=QtCore.Qt.FramelessWindowHint)
+        box.addButton('确定', QMessageBox.YesRole)
+        box.exec()
 
     # noinspection PyUnresolvedReferences
     def check_enable(self):

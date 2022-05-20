@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-
+from copy import deepcopy
 from typing import Optional
 
 from PySide6.QtCore import Qt, QModelIndex
@@ -380,5 +380,12 @@ class PrmgrpFrame(BackgroundFrame):
         # noinspection PyUnresolvedReferences
         self['星座範囲'].selectionModel().currentChanged[QModelIndex, QModelIndex].connect(self.control_blood)
 
+        self.original_data = deepcopy(self.rom.data)
+
     def build(self):
         self.rom.build()
+
+    def builded(self) -> bool:
+        if self.original_data == self.rom.data:
+            return True
+        return False

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-
+from copy import deepcopy
 from typing import Optional
 
 from PySide6.QtCore import Qt
@@ -166,7 +166,20 @@ class ScenarioFrame(BackgroundFrame):
         # noinspection PyUnresolvedReferences
         self['シナリオリスト'].currentIndexChanged[int].connect(self.control_scenario)
 
+        self.original_data = dict()
+        self.original_data['シナリオ'] = deepcopy(self.sndata_rom.data)
+        self.original_data['敵設定'] = deepcopy(self.enlist_rom.data)
+        self.original_data['AI設定'] = deepcopy(self.aiunp_rom.data)
+
     def build(self):
         self.sndata_rom.build()
         self.enlist_rom.build()
         self.aiunp_rom.build()
+
+    def builded(self) -> bool:
+        scenario = self.original_data['シナリオ'] == self.sndata_rom.data
+        enemy = self.original_data['敵設定'] == self.enlist_rom.data
+        ai = self.original_data['AI設定'] == self.aiunp_rom.data
+        if all((scenario, enemy, ai)):
+            return True
+        return False

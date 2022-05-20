@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from copy import deepcopy
 from typing import Optional
 
 from PySide6.QtCore import Qt
@@ -164,5 +165,12 @@ class PilotFrame(BackgroundFrame):
         self.rom.parse()
         self['パイロットリスト'].install(self.rom.data)
 
+        self.original_data = deepcopy(self.rom.data)
+
     def build(self):
         self.rom.build()
+
+    def builded(self) -> bool:
+        if self.original_data == self.rom.data:
+            return True
+        return False
