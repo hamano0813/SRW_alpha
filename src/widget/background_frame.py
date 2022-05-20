@@ -28,7 +28,7 @@ class BackgroundFrame(BackgroundWidget, QFrame):
 
     def closeEvent(self, event: QCloseEvent) -> None:
         if not self.builded():
-            box = QMessageBox(QMessageBox.Question, '', '是否写入修改？', flags=Qt.FramelessWindowHint)
+            box = QMessageBox(QMessageBox.Question, '', '是否写入修改？', parent=self, flags=Qt.FramelessWindowHint)
             accept = box.addButton('写入', QMessageBox.AcceptRole)
             box.addButton('放弃', QMessageBox.RejectRole)
             box.exec()

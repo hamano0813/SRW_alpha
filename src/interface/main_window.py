@@ -170,7 +170,7 @@ class MainWindow(QMainWindow):
         for rom in self.roms.values():
             rom.save()
         # noinspection PyTypeChecker
-        box = QMessageBox(QMessageBox.Information, '', ' 保存完毕 ', flags=QtCore.Qt.FramelessWindowHint)
+        box = QMessageBox(QMessageBox.Information, '', ' 保存完毕 ', parent=self, flags=QtCore.Qt.FramelessWindowHint)
         box.addButton('确定', QMessageBox.YesRole)
         box.exec()
 
