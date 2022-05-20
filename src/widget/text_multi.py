@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
+from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QPlainTextEdit
 
 from structure.generic import Text
@@ -15,6 +15,7 @@ class TextMulti(SingleWidget, QPlainTextEdit):
             self.structure.extra |= extra
         if font := self.kwargs.get('font'):
             self.setFont(font)
+        self.setContextMenuPolicy(Qt.ContextMenuPolicy.NoContextMenu)
 
     def install(self, data_set: dict[str, int | str], delegate: bool = False) -> bool:
         self.disconnect(self)
@@ -22,6 +23,7 @@ class TextMulti(SingleWidget, QPlainTextEdit):
         text = self.data_set.get(self.data_name)
         self.setPlainText(self.display(text))
         if not delegate:
+            # noinspection PyUnresolvedReferences
             self.editingFinished.connect(self.overwrite)
         return True
 

@@ -28,7 +28,7 @@ class Text:
         return buffer
 
     def _decode_text(self, data: bytes) -> str:
-        temp = data.decode(self.code)
+        temp = data.decode(self.code, 'replace')
         if self.extra:
             for old, new in self.extra.items():
                 temp = temp.replace(old, new)

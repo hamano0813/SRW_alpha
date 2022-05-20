@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QComboBox, QCheckBox, QLineEdit, QListWidget, QListWidgetItem
 
 from widget.abstract_widget import SingleWidget
@@ -19,6 +20,7 @@ class CheckCombo(SingleWidget, QComboBox):
         if font := self.kwargs.get('font'):
             self.lineEdit().setFont(font)
         self.init_check()
+        self.setContextMenuPolicy(Qt.ContextMenuPolicy.NoContextMenu)
 
     def init_check(self):
         list_widget = QListWidget()
@@ -38,8 +40,10 @@ class CheckCombo(SingleWidget, QComboBox):
         for bit, check_box in enumerate(self.check_list):
             check_box.disconnect(check_box)
             check_box.setChecked((value & 1 << bit) >> bit)
+            # noinspection PyUnresolvedReferences
             check_box.stateChanged.connect(self.overwrite)
         self.lineEdit().setText(self.value_text(value))
+        # noinspection PyUnresolvedReferences
         self.lineEdit().textChanged.connect(self.overwrite)
         return True
 

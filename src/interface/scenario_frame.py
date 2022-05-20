@@ -69,6 +69,7 @@ class ScenarioFrame(BackgroundFrame):
             self[f'隊{idx:02d}'] = ValueSpin(self['敵設定'], f'隊{idx:02d}', ENLIST_STRUCTURE[f'隊{idx:02d}'],
                                             alignment=Qt.AlignRight)
             quantity_layout.addRow(f'隊{idx:02d}', self[f'隊{idx:02d}'])
+            # noinspection PyUnresolvedReferences
             self[f'隊{idx:02d}'].valueChanged.connect(self.reset_count)
 
         self['敵リスト'] = ArrayTable(
@@ -161,6 +162,7 @@ class ScenarioFrame(BackgroundFrame):
         self['敵設定'].install(self.enlist_rom.data)
         self['AI設定'].install(self.aiunp_rom.data)
 
+        # noinspection PyUnresolvedReferences
         self['シナリオリスト'].currentIndexChanged[int].connect(self.control_scenario)
 
     def build(self):

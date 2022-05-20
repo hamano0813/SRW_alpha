@@ -20,6 +20,7 @@ class ValueSpin(SingleWidget, QSpinBox):
             self.setFont(font)
         self.init_range()
         self.wheelEvent = lambda x: None
+        self.setContextMenuPolicy(Qt.ContextMenuPolicy.NoContextMenu)
 
     def init_range(self) -> bool:
         if (length := self.structure.length) > 0:
@@ -61,6 +62,7 @@ class ValueSpin(SingleWidget, QSpinBox):
         value = self.data_set.get(self.data_name, 0)
         self.setValue(value * self.multiple)
         if not delegate:
+            # noinspection PyUnresolvedReferences
             self.valueChanged.connect(self.overwrite)
         return True
 

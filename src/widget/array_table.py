@@ -159,7 +159,9 @@ class ArrayTable(ControlWidget, QTableView):
         self.data_set = data_set
         self.control_child(0)
 
+        # noinspection PyUnresolvedReferences
         self.clicked[QModelIndex].connect(self.select_index)
+        # noinspection PyUnresolvedReferences
         self.selectionModel().currentChanged[QModelIndex, QModelIndex].connect(self.select_index)
         return True
 
@@ -185,6 +187,7 @@ class ArrayTable(ControlWidget, QTableView):
             self.setSelectionBehavior(QTableView.SelectRows)
         if self.kwargs.get('copy', True):
             self.setContextMenuPolicy(Qt.CustomContextMenu)
+            # noinspection PyUnresolvedReferences
             self.customContextMenuRequested.connect(self.right_menu)
         if corner := self.kwargs.get('corner', False):
             self.set_corner(corner)

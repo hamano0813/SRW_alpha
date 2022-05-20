@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
+from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QComboBox, QLineEdit
 
 from structure.generic import Value
@@ -19,6 +19,7 @@ class RadioCombo(SingleWidget, QComboBox):
             self.lineEdit().setFont(font)
         self.init_mapping(mapping)
         self.wheelEvent = lambda x: None
+        self.setContextMenuPolicy(Qt.ContextMenuPolicy.NoContextMenu)
 
     def init_mapping(self, mapping: dict[int, str]):
         if mapping:

@@ -246,6 +246,7 @@ class PrmgrpFrame(BackgroundFrame):
                                       mapping=self.skill_mapping, alignment=Qt.AlignRight)
         self['血液型Oスキル'] = RadioCombo(self['血液型O'], 'スキル', BLOOD_STRUCTURE['スキル'],
                                      mapping=self.skill_mapping, alignment=Qt.AlignRight)
+        # noinspection PyUnresolvedReferences
         self['星座範囲'].clicked[QModelIndex].connect(self.control_blood)
 
         self['星座範囲'].verticalHeader().setHidden(True)
@@ -376,6 +377,7 @@ class PrmgrpFrame(BackgroundFrame):
         self['血液型B'].install(self.rom.data)
         self['血液型AB'].install(self.rom.data)
         self['血液型O'].install(self.rom.data)
+        # noinspection PyUnresolvedReferences
         self['星座範囲'].selectionModel().currentChanged[QModelIndex, QModelIndex].connect(self.control_blood)
 
     def build(self):

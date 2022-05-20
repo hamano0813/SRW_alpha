@@ -21,6 +21,7 @@ class MappingSpin(SingleWidget, QSpinBox):
             self.lineEdit().setReadOnly(readonly)
         self.init_mapping()
         self.wheelEvent = lambda x: None
+        self.setContextMenuPolicy(Qt.ContextMenuPolicy.NoContextMenu)
 
     def init_mapping(self) -> bool:
         self.setRange(min(self.mapping), max(self.mapping))
@@ -39,6 +40,7 @@ class MappingSpin(SingleWidget, QSpinBox):
         value = self.data_set.get(self.data_name, 0)
         self.setValue(value)
         if not delegate:
+            # noinspection PyUnresolvedReferences
             self.valueChanged.connect(self.overwrite)
         return True
 

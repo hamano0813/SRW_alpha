@@ -39,6 +39,7 @@ class AiTable(ArrayTable):
     def __init__(self, parent, data_name, columns, **kwargs):
         super(AiTable, self).__init__(parent, data_name, columns, **kwargs)
         self.setContextMenuPolicy(Qt.CustomContextMenu)
+        # noinspection PyUnresolvedReferences
         self.customContextMenuRequested.connect(self.right_menu)
         self.setSelectionMode(ArrayTable.SingleSelection)
         self.setSelectionBehavior(ArrayTable.SelectRows)

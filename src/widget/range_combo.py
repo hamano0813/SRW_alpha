@@ -110,7 +110,6 @@ class RangeCombo(SingleWidget, QComboBox):
         for key, rect_list in self.MAP_RANGE.items():
             img = self.create_img(rect_list)
             self.addItem(QIcon(img), f'[0x{key:02X}]', key)
-        self.currentIndexChanged.connect(self.overwrite)
 
     @staticmethod
     def create_img(rect_list: tuple[tuple[int, int]]):
@@ -129,6 +128,7 @@ class RangeCombo(SingleWidget, QComboBox):
         self.data_set = data_set
         value = self.data_set.get(self.data_name, 0)
         self.setCurrentIndex(value)
+        # noinspection PyUnresolvedReferences
         self.currentIndexChanged.connect(self.overwrite)
         return True
 

@@ -9,10 +9,10 @@ import qdarktheme
 from PySide6.QtGui import QIcon, QAction
 from PySide6.QtWidgets import QApplication, QMainWindow, QMenu, QFileDialog, QToolBar, QPushButton, QWidget
 
-from structure import Rom, RobotRAF, PilotBIN, SnmsgBIN, SndataBIN, EnlistBIN, AiunpBIN, ScriptBIN, PrmgrpBIN
-from widget import BackgroundFrame
 from interface import RobotFrame, PilotFrame, SnmsgFrame, ScenarioFrame, PrmgrpFrame
 from interface.resource import *
+from structure import Rom, RobotRAF, PilotBIN, SnmsgBIN, SndataBIN, EnlistBIN, AiunpBIN, ScriptBIN, PrmgrpBIN
+from widget import BackgroundFrame
 
 
 class MainWindow(QMainWindow):
@@ -54,7 +54,7 @@ class MainWindow(QMainWindow):
         self.setWindowTitle('超级机器人大战α 静态修改器')
         self.setWindowIcon(QIcon(':image/icon.png'))
         self.setMinimumSize(1440, 870)
-        self.test_load()
+        self.test_load('zh')
         self.check_enable()
 
     def init_tool_bar(self):
@@ -138,6 +138,7 @@ class MainWindow(QMainWindow):
         return wrapper
 
     def open_frame(self, frame_class: type(BackgroundFrame), roms: tuple[str], parameter: dict[str, callable] = None):
+        # noinspection PyUnresolvedReferences
         def wrapper():
             if parameter:
                 kwargs = {k: v() for k, v in parameter.items()}
@@ -164,6 +165,7 @@ class MainWindow(QMainWindow):
         for rom in self.roms.values():
             rom.save()
 
+    # noinspection PyUnresolvedReferences
     def check_enable(self):
         self.findChild(QAction, '保存').setEnabled(any(map(bool, self.roms.values())))
         self.findChild(QAction, '機体').setEnabled(bool(self.roms.get('UNCOMPRESS_ROBOT.RAF')))
@@ -221,12 +223,12 @@ class MainWindow(QMainWindow):
         # print(style_sheet)
         QApplication.instance().setStyleSheet(style_sheet)
 
-    def test_load(self):
-        self.roms['UNCOMPRESS_ROBOT.RAF'].load(r'D:\Python\SRWα\resource\bin\UNCOMPRESS_ROBOT.RAF')
-        self.roms['PILOT.BIN'].load(r'D:\Python\SRWα\resource\bin\PILOT.BIN')
-        self.roms['SNMSG.BIN'].load(r'D:\Python\SRWα\resource\bin\SNMSG.BIN')
-        self.roms['SNDATA.BIN'].load(r'D:\Python\SRWα\resource\bin\SNDATA.BIN')
-        self.roms['ENLIST.BIN'].load(r'D:\Python\SRWα\resource\bin\ENLIST.BIN')
-        self.roms['AIUNP.BIN'].load(r'D:\Python\SRWα\resource\bin\AIUNP.BIN')
-        self.roms['SCRIPT.BIN'].load(r'D:\Python\SRWα\resource\bin\SCRIPT.BIN')
-        self.roms['PRM_GRP.BIN'].load(r'D:\Python\SRWα\resource\bin\PRM_GRP.BIN')
+    def test_load(self, lang: str = 'jp'):
+        self.roms['UNCOMPRESS_ROBOT.RAF'].load(rf'D:\Python\SRWα\resource\bin\{lang}\UNCOMPRESS_ROBOT.RAF')
+        self.roms['PILOT.BIN'].load(rf'D:\Python\SRWα\resource\bin\{lang}\PILOT.BIN')
+        self.roms['SNMSG.BIN'].load(rf'D:\Python\SRWα\resource\bin\{lang}\SNMSG.BIN')
+        self.roms['SNDATA.BIN'].load(rf'D:\Python\SRWα\resource\bin\{lang}\SNDATA.BIN')
+        self.roms['ENLIST.BIN'].load(rf'D:\Python\SRWα\resource\bin\{lang}\ENLIST.BIN')
+        self.roms['AIUNP.BIN'].load(rf'D:\Python\SRWα\resource\bin\{lang}\AIUNP.BIN')
+        self.roms['SCRIPT.BIN'].load(rf'D:\Python\SRWα\resource\bin\{lang}\SCRIPT.BIN')
+        self.roms['PRM_GRP.BIN'].load(rf'D:\Python\SRWα\resource\bin\{lang}\PRM_GRP.BIN')

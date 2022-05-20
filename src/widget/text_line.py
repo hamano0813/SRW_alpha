@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
+from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QLineEdit
 
 from structure.generic import Text
@@ -17,6 +17,7 @@ class TextLine(SingleWidget, QLineEdit):
             self.setAlignment(alignment)
         if font := self.kwargs.get('font'):
             self.setFont(font)
+        self.setContextMenuPolicy(Qt.ContextMenuPolicy.NoContextMenu)
 
     def install(self, data_set: dict[str, int | str], delegate: bool = False) -> bool:
         self.disconnect(self)
@@ -24,6 +25,7 @@ class TextLine(SingleWidget, QLineEdit):
         text = self.data_set.get(self.data_name)
         self.setText(self.display(text))
         if not delegate:
+            # noinspection PyUnresolvedReferences
             self.editingFinished.connect(self.overwrite)
         return True
 

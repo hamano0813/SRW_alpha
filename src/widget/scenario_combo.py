@@ -82,6 +82,7 @@ class ScenarioCombo(QComboBox):
         self.view().setRowHidden(0x84, True)
         self.view().setRowHidden(0x85, True)
 
+        # noinspection PyUnresolvedReferences
         self.currentIndexChanged.connect(self.select_index)
         self.select_index()
 

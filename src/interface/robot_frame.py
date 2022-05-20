@@ -83,6 +83,7 @@ class RobotFrame(BackgroundFrame):
         group_layout.addWidget(self['機体リスト'])
         group_layout.addLayout(filter_layout)
         group.setLayout(group_layout)
+        # noinspection PyUnresolvedReferences
         filter_line.textChanged[str].connect(self['機体リスト'].filterChanged)
         return group
 
@@ -259,6 +260,7 @@ class RobotFrame(BackgroundFrame):
         self['着弾点指定型攻撃半径'] = ValueSpin(self['武器リスト'], '着弾点指定型攻撃半径', WEAPON_STRUCTURE['着弾点指定型攻撃半径'])
         self['方向指定型範囲'] = RangeCombo(self['武器リスト'], '方向指定型範囲', WEAPON_STRUCTURE['方向指定型範囲'])
 
+        # noinspection PyUnresolvedReferences
         self['マップ分類'].currentIndexChanged.connect(self.switch_maptype)
         self['マップ演出'].setFixedSize(60, 28)
         self['着弾点指定型攻撃半径'].setFixedSize(60, 28)
@@ -328,6 +330,7 @@ class RobotFrame(BackgroundFrame):
 
     def parse(self):
         self.rom.parse()
+        # noinspection PyUnresolvedReferences
         self['分離機体'].init_mapping(self.robots | {0xFFFF: 'ーー'})
         self['機体リスト'].install(self.rom.data)
         self.switch_maptype()

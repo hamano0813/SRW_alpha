@@ -130,6 +130,7 @@ class TransposeTable(ControlWidget, QTableView):
             self.setSelectionBehavior(QTableView.SelectColumns)
         if self.kwargs.get('copy', True):
             self.setContextMenuPolicy(Qt.CustomContextMenu)
+            # noinspection PyUnresolvedReferences
             self.customContextMenuRequested.connect(self.copy_paste)
 
     def keyPressEvent(self, event: QKeyEvent) -> bool:

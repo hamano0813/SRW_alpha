@@ -19,11 +19,12 @@ class SnmsgFrame(BackgroundFrame):
         self.init_ui()
 
     def init_ui(self):
-        snmsg_table = self.init_snmsg_table()
+        snmsg_table = self.init_snmsg_table
         main_layout = QHBoxLayout()
         main_layout.addWidget(snmsg_table)
         self.setLayout(main_layout)
 
+    @property
     def init_snmsg_table(self):
         group = QGroupBox('シナリオメッセージ')
         self['メッセージリスト'] = ArrayTable(
@@ -44,6 +45,7 @@ class SnmsgFrame(BackgroundFrame):
         group_layout.addWidget(self['メッセージリスト'])
         group_layout.addLayout(filter_layout)
         group.setLayout(group_layout)
+        # noinspection PyUnresolvedReferences
         filter_line.textChanged[str].connect(self['メッセージリスト'].filterChanged)
         return group
 
