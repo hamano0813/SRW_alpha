@@ -1,11 +1,17 @@
 ### 超级机器人大战α静态修改器项目
-[![python](https://img.shields.io/badge/Python-3.10.4-darkcyan?logo=python&style=flat&labelColor=013243)](https://www.python.org/)
-[![PySide6](https://img.shields.io/badge/PySide6-6.3.0-darkcyan?logo=qt&style=flat&labelColor=013243)](https://doc.qt.io/qtforpython/)
-[![Pillow](https://img.shields.io/badge/Pillow-9.1.0-darkcyan?logo=nintendogamecube&style=flat&labelColor=013243)](https://python-pillow.org/)
-[![pyqtdarktheme](https://img.shields.io/badge/pyqtdarktheme-1.1.0-darkcyan?style=flat&labelColor=013243)](https://pypi.org/project/pyqtdarktheme/)
+[![python](https://img.shields.io/badge/Python-≥3.8-darkcyan?logo=python&style=flat&labelColor=013243)](https://www.python.org/)
+[![PySide6](https://img.shields.io/badge/PySide6-6.3-darkcyan?logo=qt&style=flat&labelColor=013243)](https://doc.qt.io/qtforpython/)
+[![Pillow](https://img.shields.io/badge/Pillow-9.1-darkcyan?logo=nintendogamecube&style=flat&labelColor=013243)](https://python-pillow.org/)
+[![pyqtdarktheme](https://img.shields.io/badge/pyqtdarktheme-1.1-darkcyan?style=flat&labelColor=013243)](https://pypi.org/project/pyqtdarktheme/)
+[![pyinstaller](https://img.shields.io/badge/pyinstaller-5.1-darkcyan?style=flat&labelColor=013243)](https://pyinstaller.org/en/stable/)
 #### 项目说明
 用于修改机战α的静态修改器，为了弥补luxiwen版本修改器部分不能改或无法直观修改的数据而写的，所谓自己动手丰衣足食是也。
 主要特点是可以修改战场的剧情配置和幕间剧情配置，同时明确熟练度和隐藏的获得条件等。
+#### 构建EXE步骤
+1. 下载完整代码
+2. 安装适合自身操作系统版本的CPython解释器，教程自寻，要求3.8或更高版本。[Python官网下载页面](https://www.python.org/downloads/)
+3. 双击所需bat等待构建完成，one_file为单文件好管理，one_folder为文件夹启动快
+4. 在dist文件夹内找到修改器，程序入口SRWα.exe
 #### 主要实现功能
 - [x] 机体属性
 - [x] 武器属性

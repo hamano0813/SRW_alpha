@@ -115,6 +115,7 @@ class MainWindow(QMainWindow):
         {padding-top:-32px;font:30pt;border:0;background:transparent;}
         '''
         corner_button.setStyleSheet(style)
+        # noinspection PyUnresolvedReferences
         corner_button.clicked.connect(self.charge_toolbar)
         self.menuBar().setCornerWidget(corner_button)
         corner_button.click()
@@ -233,11 +234,11 @@ class MainWindow(QMainWindow):
         QApplication.instance().setStyleSheet(style_sheet)
 
     def test_load(self, lang: str = 'jp'):
-        self.roms['UNCOMPRESS_ROBOT.RAF'].load(rf'D:\Python\SRWα\resource\bin\{lang}\UNCOMPRESS_ROBOT.RAF')
-        self.roms['PILOT.BIN'].load(rf'D:\Python\SRWα\resource\bin\{lang}\PILOT.BIN')
-        self.roms['SNMSG.BIN'].load(rf'D:\Python\SRWα\resource\bin\{lang}\SNMSG.BIN')
-        self.roms['SNDATA.BIN'].load(rf'D:\Python\SRWα\resource\bin\{lang}\SNDATA.BIN')
-        self.roms['ENLIST.BIN'].load(rf'D:\Python\SRWα\resource\bin\{lang}\ENLIST.BIN')
-        self.roms['AIUNP.BIN'].load(rf'D:\Python\SRWα\resource\bin\{lang}\AIUNP.BIN')
-        self.roms['SCRIPT.BIN'].load(rf'D:\Python\SRWα\resource\bin\{lang}\SCRIPT.BIN')
-        self.roms['PRM_GRP.BIN'].load(rf'D:\Python\SRWα\resource\bin\{lang}\PRM_GRP.BIN')
+        self.roms['UNCOMPRESS_ROBOT.RAF'].load(rf'..\resource\bin\{lang}\UNCOMPRESS_ROBOT.RAF')
+        self.roms['PILOT.BIN'].load(rf'..\resource\bin\{lang}\PILOT.BIN')
+        self.roms['SNMSG.BIN'].load(rf'..\resource\bin\{lang}\SNMSG.BIN')
+        self.roms['SNDATA.BIN'].load(rf'..\resource\bin\{lang}\SNDATA.BIN')
+        self.roms['ENLIST.BIN'].load(rf'..\resource\bin\{lang}\ENLIST.BIN')
+        self.roms['AIUNP.BIN'].load(rf'..\resource\bin\{lang}\AIUNP.BIN')
+        self.roms['SCRIPT.BIN'].load(rf'..\resource\bin\{lang}\SCRIPT.BIN')
+        self.roms['PRM_GRP.BIN'].load(rf'..\resource\bin\{lang}\PRM_GRP.BIN')

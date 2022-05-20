@@ -35,6 +35,7 @@ class RadioCombo(SingleWidget, QComboBox):
         value = self.data_set.get(self.data_name, 0)
         self.setCurrentIndex(list(self.mapping.keys()).index(value))
         if not delegate:
+            # noinspection PyUnresolvedReferences
             self.currentIndexChanged.connect(self.overwrite)
         return True
 
