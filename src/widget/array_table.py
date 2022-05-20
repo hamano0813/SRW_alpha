@@ -258,6 +258,7 @@ class ArrayTable(ControlWidget, QTableView):
         return True
 
     def set_corner(self, text: str):
+        # noinspection PyTypeChecker
         corner_button: QAbstractButton = self.findChild(QAbstractButton)
         corner_button.setText(text)
         corner_button.setObjectName('Corner')

@@ -30,7 +30,8 @@ class Sequence:
         for idx, record in enumerate(sequence):
             _buffer = buffer[self._idx_range(idx)]
             for key, data in record.items():
-                self.structures[key].build(data, _buffer)
+                if structure := self.structures.get(key):
+                    structure.build(data, _buffer)
             buffer[self._idx_range(idx)] = _buffer
         return buffer
 

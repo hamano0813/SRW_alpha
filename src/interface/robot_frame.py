@@ -294,6 +294,7 @@ class RobotFrame(BackgroundFrame):
         return group
 
     def switch_maptype(self):
+        # noinspection PyTypeChecker
         layout: QGridLayout = self.findChild(QGridLayout, 'weapon_map')
         if self['マップ分類'].currentIndex() == 0:
             layout.itemAtPosition(2, 0).widget().setHidden(True)

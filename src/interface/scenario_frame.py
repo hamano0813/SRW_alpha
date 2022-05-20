@@ -46,6 +46,7 @@ class ScenarioFrame(BackgroundFrame):
         self.setLayout(main_layout)
 
     def init_scenario_table(self):
+        # noinspection PyTypeChecker
         self['シナリオリスト'] = ScenarioCombo(self)
         self['シナリオリスト'].setFixedWidth(1420)
         layout = QHBoxLayout()
