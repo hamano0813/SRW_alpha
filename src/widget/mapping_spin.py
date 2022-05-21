@@ -20,7 +20,8 @@ class MappingSpin(SingleWidget, QSpinBox):
         if readonly := self.kwargs.get('readonly', False):
             self.lineEdit().setReadOnly(readonly)
         self.init_mapping()
-        self.wheelEvent = lambda x: None
+        if not self.kwargs.get('wheel', False):
+            self.wheelEvent = lambda x: None
         self.setContextMenuPolicy(Qt.ContextMenuPolicy.NoContextMenu)
 
     def init_mapping(self) -> bool:
@@ -56,4 +57,4 @@ class MappingSpin(SingleWidget, QSpinBox):
         return max(self.mapping.keys())
 
     def new(self, parent):
-        return self.__class__(parent, self.data_name, self.structure, self.mapping, **self.kwargs)
+        return self.__class__(parent, self.data_name, self.structure, self.mapping, wheel=True, **self.kwargs)

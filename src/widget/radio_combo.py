@@ -18,7 +18,8 @@ class RadioCombo(SingleWidget, QComboBox):
             self.setFont(font)
             self.lineEdit().setFont(font)
         self.init_mapping(mapping)
-        self.wheelEvent = lambda x: None
+        if not self.kwargs.get('wheel', False):
+            self.wheelEvent = lambda x: None
         self.setContextMenuPolicy(Qt.ContextMenuPolicy.NoContextMenu)
 
     def init_mapping(self, mapping: dict[int, str]):
@@ -50,4 +51,4 @@ class RadioCombo(SingleWidget, QComboBox):
         return self.interpret(self.currentText())
 
     def new(self, parent):
-        return self.__class__(parent, self.data_name, self.structure, self.mapping, **self.kwargs)
+        return self.__class__(parent, self.data_name, self.structure, self.mapping, wheel=True, **self.kwargs)

@@ -19,7 +19,8 @@ class ValueSpin(SingleWidget, QSpinBox):
         if font := self.kwargs.get('font'):
             self.setFont(font)
         self.init_range()
-        self.wheelEvent = lambda x: None
+        if not self.kwargs.get('wheel', False):
+            self.wheelEvent = lambda x: None
         self.setContextMenuPolicy(Qt.ContextMenuPolicy.NoContextMenu)
 
     def init_range(self) -> bool:
@@ -74,3 +75,6 @@ class ValueSpin(SingleWidget, QSpinBox):
 
     def delegate(self) -> int:
         return self.value() // self.multiple
+
+    def new(self, parent):
+        return self.__class__(parent, self.data_name, self.structure, wheel=True, **self.kwargs)
