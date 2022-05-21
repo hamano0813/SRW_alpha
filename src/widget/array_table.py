@@ -253,7 +253,7 @@ class ArrayTable(ControlWidget, QTableView):
             for cid, text in enumerate(row):
                 index = self.model().createIndex(min_row + rid, min_col + cid, internal_id)
                 source_index = self.model().mapToSource(index)
-                self.model().sourceModel().setData(source_index, text, Qt.UserRole)
+                self.model().sourceModel().setData(source_index, text.strip(), Qt.UserRole)
         self.reset()
         return True
 
