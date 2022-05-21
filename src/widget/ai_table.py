@@ -41,8 +41,6 @@ class AiTable(ArrayTable):
         self.setContextMenuPolicy(Qt.CustomContextMenu)
         # noinspection PyUnresolvedReferences
         self.customContextMenuRequested.connect(self.right_menu)
-        self.setSelectionMode(ArrayTable.SingleSelection)
-        self.setSelectionBehavior(ArrayTable.SelectRows)
         self.alignment = self.kwargs.get('alignment', Qt.AlignVCenter)
 
     def install(self, data_set: dict[str, int | str | SEQUENCE]) -> bool:
@@ -65,20 +63,32 @@ class AiTable(ArrayTable):
 
     def keyPressEvent(self, event: QKeyEvent) -> bool:
         if self.kwargs.get('copy', True):
-            if event.key() == Qt.Key_I and event.modifiers() == Qt.ControlModifier:
+            if event.key() == Qt.Key_C and event.modifiers() == Qt.ControlModifier:
+                return self.copy_range()
+            elif event.key() == Qt.Key_V and event.modifiers() == Qt.ControlModifier:
+                return self.paste_range()
+            elif event.key() == Qt.Key_I and event.modifiers() == Qt.ControlModifier:
                 return self.insert_row()
             elif event.key() == Qt.Key_D and event.modifiers() == Qt.ControlModifier:
                 return self.remove_row()
+            elif event.key() == Qt.Key_Z and event.modifiers() == Qt.ControlModifier:
+                self.model().sourceModel().undo()
+                self.reset()
+                return True
         super(AiTable, self).keyPressEvent(event)
         return True
 
     def right_menu(self) -> None:
         right_click_menu = QMenu()
+        copy_action = QAction('複製(C)', self)
+        copy_action.triggered.connect(self.copy_range)
+        paste_action = QAction('粘貼(V)', self)
+        paste_action.triggered.connect(self.paste_range)
         insert_acition = QAction('下に挿入', self)
         insert_acition.triggered.connect(self.insert_row)
         remove_action = QAction('行を削除', self)
         remove_action.triggered.connect(self.remove_row)
-        right_click_menu.addActions([insert_acition, remove_action])
+        right_click_menu.addActions([copy_action, paste_action, insert_acition, remove_action])
         right_click_menu.exec_(QCursor().pos())
 
     def insert_row(self) -> bool:
