@@ -7,14 +7,14 @@ import time
 from structure import RobotRAF, PilotBIN, SnmsgBIN, SndataBIN, EnlistBIN, AiunpBIN, ScriptBIN, PrmgrpBIN
 
 paths = {
-    'ROBOT': 'D:/Python/SRWα/resource/bin/UNCOMPRESS_ROBOT.RAF',
-    'PILOT': 'D:/Python/SRWα/resource/bin/PILOT.BIN',
-    'SNMSG': 'D:/Python/SRWα/resource/bin/SNMSG.BIN',
-    'SNDATA': 'D:/Python/SRWα/resource/bin/SNDATA.BIN',
-    'ENLIST': 'D:/Python/SRWα/resource/bin/ENLIST.BIN',
-    'AIUNP': 'D:/Python/SRWα/resource/bin/AIUNP.BIN',
-    'SCRIPT': 'D:/Python/SRWα/resource/bin/SCRIPT.BIN',
-    'PRMGRP': 'D:/Python/SRWα/resource/bin/PRM_GRP.BIN',
+    'ROBOT': '../../resource/bin/jp/UNCOMPRESS_ROBOT.RAF',
+    'PILOT': '../../resource/bin/jp/PILOT.BIN',
+    'SNMSG': '../../resource/bin/jp/SNMSG.BIN',
+    'SNDATA': '../../resource/bin/jp/SNDATA.BIN',
+    'ENLIST': '../../resource/bin/jp/ENLIST.BIN',
+    'AIUNP': '../../resource/bin/jp/AIUNP.BIN',
+    'SCRIPT': '../../resource/bin/jp/SCRIPT.BIN',
+    'PRMGRP': '../../resource/bin/jp/PRM_GRP.BIN',
 }
 
 roms = {
