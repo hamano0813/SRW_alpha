@@ -9,5 +9,5 @@ class SndataBIN(Rom):
     def __init__(self):
         super(SndataBIN, self).__init__()
         self.structures = {
-            '场景列表': Scenario(SCENARIO_STRUCTURE, 0x800, 0x4048, 0x8C),
+            'ステージ設定': Scenario(SCENARIO_STRUCTURE, 0x800, 0x4048, 0x8C),
         }
