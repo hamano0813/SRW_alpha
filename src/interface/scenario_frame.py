@@ -37,6 +37,7 @@ class ScenarioFrame(BackgroundFrame):
     def init_ui(self):
         scenario = self.init_scenario_table()
 
+        self.scenario_tab.addTab(self.init_stage_frame(), 'ステージ設定')
         self.scenario_tab.addTab(self.init_enemy_frame(), '敵設定')
         self.scenario_tab.addTab(self.init_ai_frame(), 'AI設定')
 
@@ -52,6 +53,10 @@ class ScenarioFrame(BackgroundFrame):
         layout = QHBoxLayout()
         layout.addWidget(self['シナリオリスト'])
         return layout
+
+    def init_stage_frame(self):
+        self['ステージ設定'] = ArrayTable(self, 'ステージ設定', {}, stretch=tuple())
+        return StageFrame(self['ステージ設定'], 'Commands', corner='索引')
 
     def init_enemy_frame(self):
         enemy_frame = QFrame()
@@ -147,9 +152,9 @@ class ScenarioFrame(BackgroundFrame):
         self['隊数'].setValue(count)
 
     def control_scenario(self, index: int):
+        self['ステージ設定'].control_child(index)
         self['敵設定'].control_child(index)
         self['AI設定'].control_child(index)
-
         return True
 
     def set_roms(self, roms: list[SndataBIN, EnlistBIN, AiunpBIN]):
@@ -160,6 +165,7 @@ class ScenarioFrame(BackgroundFrame):
         self.sndata_rom.parse()
         self.enlist_rom.parse()
         self.aiunp_rom.parse()
+        self['ステージ設定'].install(self.sndata_rom.data)
         self['敵設定'].install(self.enlist_rom.data)
         self['AI設定'].install(self.aiunp_rom.data)
 
@@ -167,7 +173,7 @@ class ScenarioFrame(BackgroundFrame):
         self['シナリオリスト'].currentIndexChanged[int].connect(self.control_scenario)
 
         self.original_data = dict()
-        self.original_data['シナリオ'] = deepcopy(self.sndata_rom.data)
+        self.original_data['ステージ設定'] = deepcopy(self.sndata_rom.data)
         self.original_data['敵設定'] = deepcopy(self.enlist_rom.data)
         self.original_data['AI設定'] = deepcopy(self.aiunp_rom.data)
 
@@ -177,7 +183,7 @@ class ScenarioFrame(BackgroundFrame):
         self.aiunp_rom.build()
 
     def builded(self) -> bool:
-        scenario = self.original_data['シナリオ'] == self.sndata_rom.data
+        scenario = self.original_data['ステージ設定'] == self.sndata_rom.data
         enemy = self.original_data['敵設定'] == self.enlist_rom.data
         ai = self.original_data['AI設定'] == self.aiunp_rom.data
         if all((scenario, enemy, ai)):

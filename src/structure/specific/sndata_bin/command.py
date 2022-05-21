@@ -196,7 +196,7 @@ class Command(Sequence):
             length = _buffer[offset + 0x1] * 2
             command_buffer = _buffer[offset: offset + length]
 
-            command: dict[str, int | list[int]] = dict()
+            command: dict[str, int | list[int] | str] = dict()
             command['Pos'] = offset // 2
             command['Code'] = command_buffer[0]
             command['Count'] = command_buffer[1]
@@ -204,6 +204,7 @@ class Command(Sequence):
             if command['Code'] == 0xB9:
                 fmt = 'h' * (command['Count'] - 1)
             command['Param'] = list(unpack_from(fmt, command_buffer, 0x2))
+            command['Data'] = ' '.join([f'{d:04X}' for d in unpack_from('H' * command['Count'], command_buffer, 0x0)])
 
             commands.append(command)
             offset += length
