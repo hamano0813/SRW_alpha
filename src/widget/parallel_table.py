@@ -183,6 +183,6 @@ class ParallelTable(ControlWidget, QTableView):
         for rid, row in enumerate(data):
             for cid, text in enumerate(row):
                 index = self.model().createIndex(min_row + rid, min_col + cid)
-                self.model().sourceModel().setData(index, text, Qt.UserRole)
+                self.model().sourceModel().setData(index, text.strip(), Qt.UserRole)
         self.reset()
         return True
