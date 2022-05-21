@@ -13,7 +13,7 @@ class StageModel(QAbstractTableModel):
     def __init__(self, parent):
         super(StageModel, self).__init__(parent)
         self.commands: list[dict[str, int | str]] = list()
-        self.columns = ('指令内容',)
+        self.columns = ('指令码', '指令释义')
 
     def install(self, commands: SEQUENCE) -> bool:
         self.beginResetModel()
@@ -25,21 +25,23 @@ class StageModel(QAbstractTableModel):
         if role != Qt.DisplayRole:
             return None
         elif orientation == Qt.Horizontal:
-            return self.commands[section]
+            return self.columns[section]
         return self.commands[section]["Pos"]
 
     def rowCount(self, parent: QModelIndex = ...) -> int:
         return len(self.commands)
 
     def columnCount(self, parent: QModelIndex = ...) -> int:
-        return 1
+        return 2
 
     def data(self, index: QModelIndex, role: int = ...) -> any:
         command = self.commands[index.row()]
         if role == Qt.DisplayRole:
-            return command['Data']
+            if index.column() == 0:
+                return command['Data']
         if role == Qt.ToolTipRole:
-            return str(command)
+            if index.column() == 0:
+                return str(command)
         return None
 
     def flags(self, index: QModelIndex):
@@ -63,7 +65,7 @@ class StageTable(QTableView, ControlWidget):
         self.setModel(model)
         self.resizeRowsToContents()
         self.resizeColumnsToContents()
-        self.horizontalHeader().setSectionResizeMode(0, self.horizontalHeader().Stretch)
+        self.horizontalHeader().setSectionResizeMode(1, self.horizontalHeader().Stretch)
         self.data_set = data_set
         self.control_child(0)
 
