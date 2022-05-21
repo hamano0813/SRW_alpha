@@ -37,16 +37,15 @@ to_exclude = {
     'qcertonlybackend.dll',
     'qopensslbackend.dll',
     'qschannelbackend.dll',
+    'QtNetwork.pyd',
+    '_webp.cp310-win_amd64.pyd',
     }
 
-# Iterate through the list of included binaries.
 for (dest, source, kind) in a.binaries:
-    # Skip anything we don't need.
-    if os.path.split(dest)[1] in to_exclude:
+    if os.path.split(source)[1] in to_exclude:
         continue
     to_keep.append((dest, source, kind))
 
-# Replace list of data files with filtered one.
 a.binaries = to_keep
 
 pyz = PYZ(a.pure, a.zipped_data, cipher=block_cipher)
