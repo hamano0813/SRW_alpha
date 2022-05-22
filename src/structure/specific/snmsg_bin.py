@@ -17,4 +17,4 @@ class SnmsgBIN(Rom):
     def messages(self):
         if not self.data:
             return dict()
-        return {idx: f"[{idx:04X}] {node['文本']}" for idx, node in enumerate(self.data['文本列表'])}
+        return {idx: f"{node['文本']}" for idx, node in enumerate(self.data['文本列表'])}
