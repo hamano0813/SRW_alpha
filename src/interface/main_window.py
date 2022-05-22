@@ -166,8 +166,14 @@ class MainWindow(QMainWindow):
                 self.findChild(QAction, '写入').setEnabled(True)
                 self.findChild(QAction, '写入').triggered.connect(self.centralWidget().build)
             else:
-                self.centralWidget().parse()
+                self.centralWidget().close()
+                self.setCentralWidget(QWidget())
+                self.findChild(QAction, '刷新').setEnabled(False)
+                self.findChild(QAction, '写入').setEnabled(False)
 
+                for name, frames in self.frames.items():
+                    if frames[0] == frame_class:
+                        self.findChild(QAction, name).setChecked(False)
         return wrapper
 
     def centralWidget(self) -> QWidget | RobotFrame | PilotFrame | SnmsgFrame | ScenarioFrame | PrmgrpFrame:
