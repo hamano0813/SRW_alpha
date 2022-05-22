@@ -20,7 +20,8 @@ class MainWindow(QMainWindow):
 
     def __init__(self, parent=None, flags=QtCore.Qt.WindowCloseButtonHint):
         super(MainWindow, self).__init__(parent, flags)
-        self.tool_bar: Optional[QToolBar] = None
+        self.oprate_bar: Optional[QToolBar] = None
+        self.edit_bar: Optional[QToolBar] = None
 
         self.roms = {
             'UNCOMPRESS_ROBOT.RAF': RobotRAF(),
@@ -54,18 +55,23 @@ class MainWindow(QMainWindow):
         self.setWindowTitle('超级机器人大战α 静态修改器')
         self.setWindowIcon(QIcon(':image/icon.png'))
         self.setMinimumSize(1440, 875)
-        self.test_load('zh')
+        self.test_load('jp')
         self.check_enable()
 
     def init_tool_bar(self):
-        self.tool_bar = self.addToolBar('')
-        self.tool_bar.setMovable(False)
+        self.edit_bar = self.addToolBar('编辑')
+
+        self.oprate_bar = self.addToolBar('操作')
         parse_action = self.create_action('刷新')
         build_action = self.create_action('写入')
         parse_action.setEnabled(False)
         build_action.setEnabled(False)
-        self.tool_bar.addActions([parse_action, build_action])
-        self.tool_bar.addSeparator()
+        self.oprate_bar.addActions([parse_action, build_action])
+
+        self.oprate_bar.setAllowedAreas(QtCore.Qt.TopToolBarArea)
+        self.edit_bar.setAllowedAreas(QtCore.Qt.TopToolBarArea)
+        self.oprate_bar.setFloatable(False)
+        self.edit_bar.setFloatable(False)
 
     def init_file_menu(self):
         file_menu = QMenu('文件', self)
@@ -93,7 +99,7 @@ class MainWindow(QMainWindow):
         edit_menu.addActions(edit_list)
         self.menuBar().addMenu(edit_menu)
 
-        self.tool_bar.addActions(edit_list)
+        self.edit_bar.addActions(edit_list)
 
     def init_option_menu(self):
         option_menu = QMenu('选项', self)
@@ -194,10 +200,12 @@ class MainWindow(QMainWindow):
     def charge_toolbar(self):
         if self.sender().text() == '˯':
             self.sender().setText('˰')
-            self.tool_bar.setVisible(True)
+            self.oprate_bar.setVisible(True)
+            self.edit_bar.setVisible(True)
         else:
             self.sender().setText('˯')
-            self.tool_bar.setVisible(False)
+            self.oprate_bar.setVisible(False)
+            self.edit_bar.setVisible(False)
 
     def charge_style(self):
         if self.sender().objectName() == '深色':
@@ -208,7 +216,6 @@ class MainWindow(QMainWindow):
             'QHeaderView::down-arrow': 'QHeaderView[orientation="horizontal"]::down-arrow',
             'QHeaderView::up-arrow': 'QHeaderView[orientation="horizontal"]::up-arrow',
             'margin: -2px -6px -6px -6px;': 'margin: -2px -3px -6px -6px;position:right;',
-            '* {': '* {font: 10pt "Yu Gothic UI Semibold";',
             'rgba(255.000, 255.000, 255.000, 0.000)': '#ffffff',
         }
         for old, new in sheet_change.items():
@@ -227,6 +234,7 @@ class MainWindow(QMainWindow):
             '#MessageList::item {padding-top: 3px;padding-left: 3px;}',
             '#Corner::section {padding-top: 5px;padding-left: 5px;}',
             '#ENLIST::section {padding: -1px -15px 0px 0px;}',
+            '* {font: 10pt "Yu Gothic UI Semibold";}'
             '* [language="zh"] {font: 10pt "Microsoft YaHei UI";}',
             '* [language="zhb"] {font: bold 11pt "Microsoft YaHei UI";}',
             'QMenu::item, QMenuBar, QToolBar > QToolButton {font: 11pt Consolas, "Microsoft YaHei UI";}',
