@@ -57,7 +57,11 @@ class ScenarioFrame(BackgroundFrame):
 
     def init_stage_frame(self):
         self['场景设计'] = ArrayTable(self, '场景设计', {}, stretch=tuple())
-        return StageFrame(self['场景设计'], 'Commands', corner='索引')
+        return StageFrame(self['场景设计'], 'Commands', corner='索引',
+                          robots=self.robot_mapping,
+                          pilots=self.pilot_mapping,
+                          messages=self.message_mapping,
+                          )
 
     def init_enemy_frame(self):
         enemy_frame = QFrame()

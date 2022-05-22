@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 
-from PySide6.QtWidgets import QLabel, QGroupBox, QFormLayout
+from PySide6.QtWidgets import QLabel, QGroupBox
 
 
 class FontLabel(QLabel):

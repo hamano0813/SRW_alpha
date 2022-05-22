@@ -7,13 +7,15 @@ from PySide6.QtWidgets import (QTableView, QApplication, QPushButton, QVBoxLayou
 
 from structure.generic import SEQUENCE
 from widget.abstract_widget import ControlWidget, AbstractWidget
+from widget.command_dialog import CommandDialog
 
 
 class StageModel(QAbstractTableModel):
-    def __init__(self, parent):
+    def __init__(self, parent, **kwargs):
         super(StageModel, self).__init__(parent)
         self.commands: list[dict[str, int | str]] = list()
         self.columns = ('指令码', '指令释义')
+        self.explain = CommandDialog(None, **kwargs)
 
     def install(self, commands: SEQUENCE) -> bool:
         self.beginResetModel()
@@ -39,9 +41,15 @@ class StageModel(QAbstractTableModel):
         if role == Qt.DisplayRole:
             if index.column() == 0:
                 return command['Data']
+            if index.column() == 1:
+                # return EnumData.COMMAND['简介'].get(command)
+                return self.explain.explain(command)
         if role == Qt.ToolTipRole:
             if index.column() == 0:
                 return str(command)
+        if role == Qt.FontRole:
+            if index.column() == 1:
+                return 'Microsoft Yahei UI'
         return None
 
     def flags(self, index: QModelIndex):
@@ -61,7 +69,7 @@ class StageTable(QTableView, ControlWidget):
             self.set_corner(corner)
 
     def install(self, data_set: dict[str, int | str | SEQUENCE]) -> bool:
-        model = StageModel(self)
+        model = StageModel(self, **self.kwargs)
         model.install(data_set.get(self.data_name, list()))
         self.setModel(model)
         self.resizeRowsToContents()
