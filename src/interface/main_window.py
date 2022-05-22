@@ -33,16 +33,16 @@ class MainWindow(QMainWindow):
             'PRM_GRP.BIN': PrmgrpBIN(),
         }
         self.frames = {
-            '機体': (RobotFrame, ('UNCOMPRESS_ROBOT.RAF',),
+            '机体': (RobotFrame, ('UNCOMPRESS_ROBOT.RAF',),
                    {'robots': self.roms['UNCOMPRESS_ROBOT.RAF'].robots}),
-            'パイロット': (PilotFrame, ('PILOT.BIN',),),
-            'メッセージ': (SnmsgFrame, ('SNMSG.BIN',),),
-            'シナリオ': (ScenarioFrame, ('SNDATA.BIN', 'ENLIST.BIN', 'AIUNP.BIN'),
-                     {'robots': self.roms['UNCOMPRESS_ROBOT.RAF'].robots,
-                      'pilots': self.roms['PILOT.BIN'].pilots,
-                      'messages': self.roms['SNMSG.BIN'].messages},
-                     ),
-            'その他': (PrmgrpFrame, ('PRM_GRP.BIN',),),
+            '机师': (PilotFrame, ('PILOT.BIN',),),
+            '文本': (SnmsgFrame, ('SNMSG.BIN',),),
+            '场景': (ScenarioFrame, ('SNDATA.BIN', 'ENLIST.BIN', 'AIUNP.BIN'),
+                   {'robots': self.roms['UNCOMPRESS_ROBOT.RAF'].robots,
+                    'pilots': self.roms['PILOT.BIN'].pilots,
+                    'messages': self.roms['SNMSG.BIN'].messages},
+                   ),
+            '其他': (PrmgrpFrame, ('PRM_GRP.BIN',),),
         }
 
         self.init_tool_bar()
@@ -53,7 +53,7 @@ class MainWindow(QMainWindow):
 
         self.setWindowTitle('超级机器人大战α 静态修改器')
         self.setWindowIcon(QIcon(':image/icon.png'))
-        self.setMinimumSize(1440, 870)
+        self.setMinimumSize(1440, 875)
         self.test_load('zh')
         self.check_enable()
 
@@ -82,7 +82,7 @@ class MainWindow(QMainWindow):
         self.menuBar().addMenu(file_menu)
 
     def init_edit_menu(self):
-        edit_menu = QMenu('編輯', self)
+        edit_menu = QMenu('编辑', self)
         edit_list = []
         edit_group = QActionGroup(self)
         for frame_name, frame_setting in self.frames.items():
@@ -96,10 +96,10 @@ class MainWindow(QMainWindow):
         self.tool_bar.addActions(edit_list)
 
     def init_option_menu(self):
-        option_menu = QMenu('選項', self)
+        option_menu = QMenu('选项', self)
 
-        style_menu = QMenu('主題', self)
-        light_action = self.create_action('淺色', self.charge_style)
+        style_menu = QMenu('主题', self)
+        light_action = self.create_action('浅色', self.charge_style)
         dark_action = self.create_action('深色', self.charge_style)
         style_menu.addActions([light_action, dark_action])
 
@@ -178,18 +178,18 @@ class MainWindow(QMainWindow):
     # noinspection PyUnresolvedReferences
     def check_enable(self):
         self.findChild(QAction, '保存').setEnabled(any(map(bool, self.roms.values())))
-        self.findChild(QAction, '機体').setEnabled(bool(self.roms.get('UNCOMPRESS_ROBOT.RAF')))
-        self.findChild(QAction, 'パイロット').setEnabled(bool(self.roms.get('PILOT.BIN')))
-        self.findChild(QAction, 'メッセージ').setEnabled(bool(self.roms.get('SNMSG.BIN')))
-        self.findChild(QAction, 'シナリオ').setEnabled(all(map(bool,
-                                                           (self.roms.get('UNCOMPRESS_ROBOT.RAF'),
-                                                            self.roms.get('PILOT.BIN'),
-                                                            self.roms.get('SNMSG.BIN'),
-                                                            self.roms.get('SNDATA.BIN'),
-                                                            self.roms.get('ENLIST.BIN'),
-                                                            self.roms.get('AIUNP.BIN'),
-                                                            ))))
-        self.findChild(QAction, 'その他').setEnabled(bool(self.roms.get('PRM_GRP.BIN')))
+        self.findChild(QAction, '机体').setEnabled(bool(self.roms.get('UNCOMPRESS_ROBOT.RAF')))
+        self.findChild(QAction, '机师').setEnabled(bool(self.roms.get('PILOT.BIN')))
+        self.findChild(QAction, '文本').setEnabled(bool(self.roms.get('SNMSG.BIN')))
+        self.findChild(QAction, '场景').setEnabled(all(map(bool,
+                                                         (self.roms.get('UNCOMPRESS_ROBOT.RAF'),
+                                                          self.roms.get('PILOT.BIN'),
+                                                          self.roms.get('SNMSG.BIN'),
+                                                          self.roms.get('SNDATA.BIN'),
+                                                          self.roms.get('ENLIST.BIN'),
+                                                          self.roms.get('AIUNP.BIN'),
+                                                          ))))
+        self.findChild(QAction, '其他').setEnabled(bool(self.roms.get('PRM_GRP.BIN')))
 
     def charge_toolbar(self):
         if self.sender().text() == '˯':
@@ -227,6 +227,9 @@ class MainWindow(QMainWindow):
             '#MessageList::item {padding-top: 3px;padding-left: 3px;}',
             '#Corner::section {padding-top: 5px;padding-left: 5px;}',
             '#ENLIST::section {padding: -1px -15px 0px 0px;}',
+            '* [language="zh"] {font: 10pt "Microsoft YaHei UI";}',
+            '* [language="zhb"] {font: bold 11pt "Microsoft YaHei UI";}',
+            'QMenu::item, QMenuBar, QToolBar > QToolButton {font: 11pt Consolas, "Microsoft YaHei UI";}',
         ]
         for expand in sheet_expand:
             style_sheet += expand

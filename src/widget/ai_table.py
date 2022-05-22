@@ -12,7 +12,7 @@ from widget.array_table import ArrayModel, ArrayTable
 class AiModel(ArrayModel):
     def __init__(self, parent, columns):
         super(AiModel, self).__init__(parent, columns)
-        self.dummy = {'AI': 0x158, 'ターゲット': 0xFFFF, '目標X': 0xFF, '目標Y': 0xFF, '移動開始': 1, '有効': 1}
+        self.dummy = {'AI': 0x158, '目标机师': 0xFFFF, '目标X': 0xFF, '目标Y': 0xFF, '移动开始': 1, '生效': 1}
 
     def rowCount(self, parent: QModelIndex = ...) -> int:
         return len(self.data_sequence) - 3
@@ -42,6 +42,7 @@ class AiTable(ArrayTable):
         # noinspection PyUnresolvedReferences
         self.customContextMenuRequested.connect(self.right_menu)
         self.alignment = self.kwargs.get('alignment', Qt.AlignVCenter)
+        self.horizontalHeader().setProperty('language', 'zh')
 
     def install(self, data_set: dict[str, int | str | SEQUENCE]) -> bool:
         array_model = AiModel(self, self.columns)

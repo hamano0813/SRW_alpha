@@ -6,6 +6,7 @@ from widget.array_table import ArrayTable
 from widget.background_frame import BackgroundFrame
 from widget.check_combo import CheckCombo
 from widget.check_list import CheckList
+from widget.font_widget import FontLabel, FontGroup
 from widget.mapping_spin import MappingSpin
 from widget.parallel_table import ParallelTable
 from widget.parallel_table import ParallelTable

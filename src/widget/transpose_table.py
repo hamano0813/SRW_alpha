@@ -111,6 +111,7 @@ class TransposeTable(ControlWidget, QTableView):
         self.rows = rows
         self.setItemDelegate(TransposeDelegate(self))
         self.horizontalHeader().setHidden(True)
+        self.verticalHeader().setProperty('language', 'zh')
         self.verticalHeader().setMinimumWidth(40)
         self.check_kwargs()
 

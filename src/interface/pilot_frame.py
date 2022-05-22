@@ -5,9 +5,9 @@ from copy import deepcopy
 from typing import Optional
 
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QLabel, QLineEdit, QGroupBox, QHBoxLayout, QVBoxLayout, QFormLayout, QGridLayout
+from PySide6.QtWidgets import QLineEdit, QHBoxLayout, QVBoxLayout, QFormLayout, QGridLayout
 
-from parameter.enum_data import EnumData
+from parameter import EnumData
 from structure import PilotBIN
 from structure.specific.pilot_bin import PILOT_STRUCTURE, SKILL_STRUCTURE
 from widget import *
@@ -31,7 +31,7 @@ class PilotFrame(BackgroundFrame):
         pilot_adaptation = self.init_pilot_adaptation()
 
         pilot_table.setFixedWidth(1070)
-        skill_table.setFixedHeight(297)
+        skill_table.setFixedHeight(287)
         pilot_sprite.setFixedHeight(220)
         pilot_skill.setFixedSize(135, 220)
         pilot_adaptation.setFixedWidth(135)
@@ -49,41 +49,41 @@ class PilotFrame(BackgroundFrame):
         self.setLayout(main_layout)
 
     def init_pilot_table(self):
-        group = QGroupBox('パイロットリスト')
-        self['パイロットリスト'] = ArrayTable(
-            self, 'パイロットリスト', {
-                'パイロット': TextLine(None, 'パイロット', PILOT_STRUCTURE['パイロット']),
-                '名前': TextLine(None, '名前', PILOT_STRUCTURE['名前']),
-                '格闘': ValueSpin(None, '格闘', PILOT_STRUCTURE['格闘'], alignment=Qt.AlignRight),
-                '射撃': ValueSpin(None, '射撃', PILOT_STRUCTURE['射撃'], alignment=Qt.AlignRight),
+        group = FontGroup('机师列表')
+        self['机师列表'] = ArrayTable(
+            self, '机师列表', {
+                '机师': TextLine(None, '机师', PILOT_STRUCTURE['机师']),
+                '全名': TextLine(None, '全名', PILOT_STRUCTURE['全名']),
+                '格斗': ValueSpin(None, '格斗', PILOT_STRUCTURE['格斗'], alignment=Qt.AlignRight),
+                '射击': ValueSpin(None, '射击', PILOT_STRUCTURE['射击'], alignment=Qt.AlignRight),
                 '回避': ValueSpin(None, '回避', PILOT_STRUCTURE['回避'], alignment=Qt.AlignRight),
                 '命中': ValueSpin(None, '命中', PILOT_STRUCTURE['命中'], alignment=Qt.AlignRight),
-                '反応': ValueSpin(None, '反応', PILOT_STRUCTURE['反応'], alignment=Qt.AlignRight),
+                '反应': ValueSpin(None, '反应', PILOT_STRUCTURE['反应'], alignment=Qt.AlignRight),
                 '技量': ValueSpin(None, '技量', PILOT_STRUCTURE['技量'], alignment=Qt.AlignRight),
-                '性格': RadioCombo(self['パイロットリスト'], '性格', PILOT_STRUCTURE['性格'],
+                '性格': RadioCombo(self['机师列表'], '性格', PILOT_STRUCTURE['性格'],
                                  mapping=EnumData.PILOT['性格']),
                 'ＳＰ': ValueSpin(None, 'ＳＰ', PILOT_STRUCTURE['ＳＰ'], alignment=Qt.AlignRight),
-                '２回行動': ValueSpin(None, '２回行動', PILOT_STRUCTURE['２回行動'], alignment=Qt.AlignRight),
-                'チーム': ValueSpin(self['パイロットリスト'], 'チーム', PILOT_STRUCTURE['チーム'], alignment=Qt.AlignRight),
+                '２回行动': ValueSpin(None, '２回行动', PILOT_STRUCTURE['２回行动'], alignment=Qt.AlignRight),
+                '气力组': ValueSpin(self['机师列表'], '气力组', PILOT_STRUCTURE['气力组'], alignment=Qt.AlignRight),
             },
             stretch=(1,)
         )
         filter_line = QLineEdit()
         filter_layout = QHBoxLayout()
-        filter_layout.addWidget(QLabel('パイロット検索'))
+        filter_layout.addWidget(FontLabel('机师搜索'))
         filter_layout.addWidget(filter_line)
         group_layout = QVBoxLayout()
-        group_layout.addWidget(self['パイロットリスト'])
+        group_layout.addWidget(self['机师列表'])
         group_layout.addLayout(filter_layout)
         group.setLayout(group_layout)
         # noinspection PyUnresolvedReferences
-        filter_line.textChanged[str].connect(self['パイロットリスト'].filterChanged)
+        filter_line.textChanged[str].connect(self['机师列表'].filterChanged)
         return group
 
     def init_skill_table(self):
-        group = QGroupBox('レベルアップ技能')
+        group = FontGroup('升级技能')
         self['技能'] = TransposeTable(
-            self['パイロットリスト'], '技能リスト', {
+            self['机师列表'], '技能列表', {
                 '技能': RadioCombo(None, '技能', SKILL_STRUCTURE['技能'],
                                  mapping=EnumData.PILOT['技能'], alignment=Qt.AlignLeft),
                 'L1': MappingSpin(None, 'L1', SKILL_STRUCTURE['L1'],
@@ -112,8 +112,8 @@ class PilotFrame(BackgroundFrame):
         return group
 
     def init_pilot_skill(self):
-        group = QGroupBox('特殊技能')
-        self['特殊技能'] = CheckList(self['パイロットリスト'], '特殊技能', PILOT_STRUCTURE['特殊技能'],
+        group = FontGroup('特殊技能')
+        self['特殊技能'] = CheckList(self['机师列表'], '特殊技能', PILOT_STRUCTURE['特殊技能'],
                                  item_list=EnumData.PILOT['特殊技能'])
         group_layout = QVBoxLayout()
         group_layout.addWidget(self['特殊技能'])
@@ -121,39 +121,39 @@ class PilotFrame(BackgroundFrame):
         return group
 
     def init_pilot_transfer(self):
-        group = QGroupBox('乗り換え系')
-        self['乗り換え系'] = CheckList(self['パイロットリスト'], '乗り換え系', PILOT_STRUCTURE['乗り換え系'],
-                                  EnumData.PILOT['乗り換え系'])
+        group = FontGroup('换乘系')
+        self['换乘系'] = CheckList(self['机师列表'], '换乘系', PILOT_STRUCTURE['换乘系'],
+                                EnumData.PILOT['换乘系'])
         group_layout = QVBoxLayout()
-        group_layout.addWidget(self['乗り換え系'])
+        group_layout.addWidget(self['换乘系'])
         group.setLayout(group_layout)
         return group
 
     def init_pilot_adaptation(self):
-        group = QGroupBox('地形適応')
-        self['空適応'] = MappingSpin(self['パイロットリスト'], '空適応', PILOT_STRUCTURE['空適応'], EnumData.PILOT['適応'])
-        self['陸適応'] = MappingSpin(self['パイロットリスト'], '陸適応', PILOT_STRUCTURE['陸適応'], EnumData.PILOT['適応'])
-        self['海適応'] = MappingSpin(self['パイロットリスト'], '海適応', PILOT_STRUCTURE['海適応'], EnumData.PILOT['適応'])
-        self['宇適応'] = MappingSpin(self['パイロットリスト'], '宇適応', PILOT_STRUCTURE['宇適応'], EnumData.PILOT['適応'])
+        group = FontGroup('地形适应')
+        self['空适应'] = MappingSpin(self['机师列表'], '空适应', PILOT_STRUCTURE['空适应'], EnumData.PILOT['適応'])
+        self['陆适应'] = MappingSpin(self['机师列表'], '陆适应', PILOT_STRUCTURE['陆适应'], EnumData.PILOT['適応'])
+        self['海适应'] = MappingSpin(self['机师列表'], '海适应', PILOT_STRUCTURE['海适应'], EnumData.PILOT['適応'])
+        self['宇适应'] = MappingSpin(self['机师列表'], '宇适应', PILOT_STRUCTURE['宇适应'], EnumData.PILOT['適応'])
         group_layout = QFormLayout()
-        group_layout.addRow('空適応', self['空適応'])
-        group_layout.addRow('陸適応', self['陸適応'])
-        group_layout.addRow('海適応', self['海適応'])
-        group_layout.addRow('宇適応', self['宇適応'])
+        group_layout.addRow(FontLabel('空适应'), self['空适应'])
+        group_layout.addRow(FontLabel('陆适应'), self['陆适应'])
+        group_layout.addRow(FontLabel('海适应'), self['海适应'])
+        group_layout.addRow(FontLabel('宇适应'), self['宇适应'])
         group.setLayout(group_layout)
         return group
 
     def init_pilot_spirit(self):
-        group = QGroupBox('精神リスト')
-        self['精神リスト'] = ParallelTable(
-            self['パイロットリスト'], ('精神リスト', '習得リスト'), {
-                '精神': RadioCombo(None, '精神', PILOT_STRUCTURE['精神リスト']['精神'], mapping=EnumData.SPIRIT),
-                '習得': MappingSpin(None, '習得', PILOT_STRUCTURE['習得リスト']['習得'],
+        group = FontGroup('精神列表')
+        self['精神列表'] = ParallelTable(
+            self['机师列表'], ('精神列表', '习得列表'), {
+                '精神': RadioCombo(None, '精神', PILOT_STRUCTURE['精神列表']['精神'], mapping=EnumData.SPIRIT),
+                '习得': MappingSpin(None, '习得', PILOT_STRUCTURE['习得列表']['习得'],
                                   mapping=self.lv_mapping | {0xFF: '一'}, alignment=Qt.AlignRight),
             }
         )
         group_layout = QVBoxLayout()
-        group_layout.addWidget(self['精神リスト'])
+        group_layout.addWidget(self['精神列表'])
         group.setLayout(group_layout)
         return group
 
@@ -163,7 +163,7 @@ class PilotFrame(BackgroundFrame):
 
     def parse(self):
         self.rom.parse()
-        self['パイロットリスト'].install(self.rom.data)
+        self['机师列表'].install(self.rom.data)
 
         self.original_data = deepcopy(self.rom.data)
 

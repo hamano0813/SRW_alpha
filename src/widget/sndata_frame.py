@@ -10,10 +10,10 @@ from widget.abstract_widget import ControlWidget, AbstractWidget
 
 
 class StageModel(QAbstractTableModel):
-    def __init__(self, parent, **kwargs):
+    def __init__(self, parent):
         super(StageModel, self).__init__(parent)
         self.commands: list[dict[str, int | str]] = list()
-        self.columns = ('指令碼', '指令釋義')
+        self.columns = ('指令码', '指令释义')
 
     def install(self, commands: SEQUENCE) -> bool:
         self.beginResetModel()
@@ -54,6 +54,7 @@ class StageTable(QTableView, ControlWidget):
     def __init__(self, parent, data_name, **kwargs):
         QTableView.__init__(self, parent=None)
         ControlWidget.__init__(self, parent, data_name, **kwargs)
+        self.horizontalHeader().setProperty('language', 'zh')
         self.verticalHeader().setFixedWidth(40)
         self.verticalHeader().setDefaultAlignment(Qt.AlignLeft | Qt.AlignVCenter)
         if corner := self.kwargs.get('corner', False):

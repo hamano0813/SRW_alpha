@@ -111,6 +111,7 @@ class ParallelTable(ControlWidget, QTableView):
         self.columns = columns
         self.setItemDelegate(ParallelDelegate(self))
         self.horizontalHeader().setProperty('orientation', 'horizontal')
+        self.horizontalHeader().setProperty('language', 'zh')
         self.horizontalHeader().setMinimumSectionSize(70)
         self.verticalHeader().setHidden(True)
 

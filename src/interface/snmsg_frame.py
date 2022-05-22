@@ -5,7 +5,7 @@ from copy import deepcopy
 from typing import Optional
 
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QGroupBox, QHBoxLayout, QLineEdit, QLabel, QVBoxLayout
+from PySide6.QtWidgets import QHBoxLayout, QLineEdit, QLabel, QVBoxLayout
 
 from parameter import SNMSG_TEXT_EXTRA
 from structure import SnmsgBIN
@@ -27,27 +27,27 @@ class SnmsgFrame(BackgroundFrame):
 
     @property
     def init_snmsg_table(self):
-        group = QGroupBox('シナリオメッセージ')
-        self['メッセージリスト'] = ArrayTable(
-            self, 'メッセージリスト',
-            {
-                'メッセージ': TextMulti(None, 'メッセージ', SNMSG_STRUCTURE['メッセージ'],
-                                   extra=SNMSG_TEXT_EXTRA, ),
+        group = FontGroup('剧情文本')
+        self['文本列表'] = ArrayTable(
+            self, '文本列表', {
+                '文本': TextMulti(None, '文本', SNMSG_STRUCTURE['文本'],
+                                extra=SNMSG_TEXT_EXTRA, ),
             }, sortable=False, alignment=Qt.AlignTop, resizeRows=False)
-        self['メッセージリスト'].setObjectName('MessageList')
-        self['メッセージリスト'].verticalHeader().setMinimumSectionSize(62)
+        self['文本列表'].setObjectName('MessageList')
+        self['文本列表'].verticalHeader().setMinimumSectionSize(62)
+        self['文本列表'].horizontalHeader().setHidden(True)
         layout = QHBoxLayout()
-        layout.addWidget(self['メッセージリスト'])
+        layout.addWidget(self['文本列表'])
         filter_line = QLineEdit()
         filter_layout = QHBoxLayout()
-        filter_layout.addWidget(QLabel('メッセージ検索'))
+        filter_layout.addWidget(QLabel('文本搜索'))
         filter_layout.addWidget(filter_line)
         group_layout = QVBoxLayout()
-        group_layout.addWidget(self['メッセージリスト'])
+        group_layout.addWidget(self['文本列表'])
         group_layout.addLayout(filter_layout)
         group.setLayout(group_layout)
         # noinspection PyUnresolvedReferences
-        filter_line.textChanged[str].connect(self['メッセージリスト'].filterChanged)
+        filter_line.textChanged[str].connect(self['文本列表'].filterChanged)
         return group
 
     def set_roms(self, roms: list[SnmsgBIN]):
@@ -56,7 +56,7 @@ class SnmsgFrame(BackgroundFrame):
 
     def parse(self):
         self.rom.parse()
-        self['メッセージリスト'].install(self.rom.data)
+        self['文本列表'].install(self.rom.data)
 
         self.original_data = deepcopy(self.rom.data)
 

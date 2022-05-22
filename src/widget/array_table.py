@@ -136,6 +136,7 @@ class ArrayTable(ControlWidget, QTableView):
         self.columns = columns
         self.setItemDelegate(ArrayDelegate(self))
         self.horizontalHeader().setProperty('orientation', 'horizontal')
+        self.horizontalHeader().setProperty('language', 'zh')
         self.horizontalHeader().setMinimumSectionSize(70)
 
         self.check_kwargs()
@@ -262,6 +263,7 @@ class ArrayTable(ControlWidget, QTableView):
         corner_button: QAbstractButton = self.findChild(QAbstractButton)
         corner_button.setText(text)
         corner_button.setObjectName('Corner')
+        corner_button.setProperty('language', 'zh')
         corner_button.installEventFilter(self)
         option = QStyleOptionHeader()
         option.text = corner_button.text()

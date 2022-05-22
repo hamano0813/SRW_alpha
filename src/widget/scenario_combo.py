@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from PySide6.QtCore import Qt, QAbstractTableModel, QModelIndex
+from PySide6.QtCore import Qt, QAbstractTableModel, QModelIndex, QEvent
 from PySide6.QtGui import QPalette
-from PySide6.QtWidgets import QTableView, QComboBox, QStyle, QStyleOptionComboBox, QStylePainter, QAbstractItemView
+from PySide6.QtWidgets import QTableView, QComboBox, QStyle, QStyleOptionComboBox, QStylePainter, QAbstractItemView, \
+    QStyleOptionHeader, QAbstractButton, QWidget
 
 from parameter import EnumData
 from widget.abstract_widget import ControlWidget
@@ -50,21 +51,52 @@ class ScenarioTable(ControlWidget, QTableView):
         QTableView.__init__(self, parent=None)
         ControlWidget.__init__(self, parent, data_name='', **kwargs)
         self.horizontalHeader().setProperty('orientation', 'horizontal')
+        self.horizontalHeader().setProperty('language', 'zh')
         self.setSelectionMode(QTableView.SingleSelection)
         self.setSelectionBehavior(QTableView.SelectRows)
+        self.set_corner(' 序号')
 
+    def set_corner(self, text: str):
+        # noinspection PyTypeChecker
+        corner_button: QAbstractButton = self.findChild(QAbstractButton)
+        corner_button.setText(text)
+        corner_button.setObjectName('Corner')
+        corner_button.setProperty('language', 'zh')
+        corner_button.installEventFilter(self)
+        option = QStyleOptionHeader()
+        option.text = corner_button.text()
+
+    def eventFilter(self, obj: QWidget, event: QEvent) -> bool:
+        if event.type() != QEvent.Paint or not isinstance(obj, QAbstractButton):
+            return False
+        option: QStyleOptionHeader = QStyleOptionHeader()
+        option.initFrom(obj)
+        style_state = QStyle.State_None
+        if obj.isEnabled():
+            style_state |= QStyle.State_Enabled
+        if obj.isActiveWindow():
+            style_state |= QStyle.State_Active
+        if obj.isDown():
+            style_state |= QStyle.State_Sunken
+        option.state = style_state
+        option.rect = obj.rect()
+        option.text = obj.text()
+        option.position = QStyleOptionHeader.OnlyOneSection
+        painter = QStylePainter(obj)
+        painter.drawControl(QStyle.CE_Header, option)
+        return True
 
 class ScenarioCombo(QComboBox):
     def __init__(self, parent):
         super(ScenarioCombo, self).__init__(parent)
-        model = ScenarioModel(self, ('コード', 'ルート', '話数', 'タイトル'), EnumData.SCENARIO)
+        model = ScenarioModel(self, ('关卡代码', '路线', '话数', '标题'), EnumData.SCENARIO)
         view = ScenarioTable(self)
 
         self.setModel(model)
         self.setView(view)
 
         self.setMaxVisibleItems(20)
-        self.setStyleSheet('* {font-size: 16pt; font-weight: 900;} QAbstractItemView::item {padding: 0 25px;}')
+        self.setStyleSheet('* {font: 900 16pt;} QAbstractItemView::item {padding: 0 30px;}')
         self.init_view()
 
     def view(self) -> QAbstractItemView | ScenarioTable:
@@ -73,7 +105,7 @@ class ScenarioCombo(QComboBox):
     def init_view(self):
         self.view().resizeColumnsToContents()
         self.view().resizeRowsToContents()
-        self.view().verticalHeader().setHidden(True)
+        # self.view().verticalHeader().setHidden(True)
         self.view().horizontalHeader().setSectionResizeMode(3, self.view().horizontalHeader().Stretch)
 
         self.view().setRowHidden(0x7E, True)
