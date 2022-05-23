@@ -81,13 +81,14 @@ class AiTable(ArrayTable):
 
     def right_menu(self) -> None:
         right_click_menu = QMenu()
-        copy_action = QAction('複製(C)', self)
+        right_click_menu.setProperty('language', 'zh')
+        copy_action = QAction('复制(C)', self)
         copy_action.triggered.connect(self.copy_range)
-        paste_action = QAction('粘貼(V)', self)
+        paste_action = QAction('粘贴(V)', self)
         paste_action.triggered.connect(self.paste_range)
-        insert_acition = QAction('下に挿入', self)
+        insert_acition = QAction('插入(I)', self)
         insert_acition.triggered.connect(self.insert_row)
-        remove_action = QAction('行を削除', self)
+        remove_action = QAction('刪除(D)', self)
         remove_action.triggered.connect(self.remove_row)
         right_click_menu.addActions([copy_action, paste_action, insert_acition, remove_action])
         right_click_menu.exec_(QCursor().pos())

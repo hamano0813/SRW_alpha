@@ -4,6 +4,8 @@
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QDialog, QSpinBox, QComboBox
 
+from parameter import EnumData
+
 
 class ParamWidget:
     def __init__(self, name: str, default: int, **kwargs):
@@ -19,6 +21,9 @@ class ParamWidget:
 
     def explain(self, param: int) -> str:
         pass
+
+    def new(self):
+        return self.__class__(self.name, self.default, **self.kwargs)
 
     def __del__(self):
         # noinspection PyUnresolvedReferences
@@ -76,7 +81,7 @@ class ParamCombo(QComboBox, ParamWidget):
         return self.currentData()
 
     def explain(self, param: int) -> str:
-        return self.mapping.get(param)
+        return self.mapping.get(param).replace('\n', '').replace('\u3000', '')
 
 
 class CommandDialog(QDialog):
@@ -86,36 +91,38 @@ class CommandDialog(QDialog):
 
         self.robots_combo = ParamCombo('选择机体', 0x0, kwargs.get('robots'))
         self.pilots_combo = ParamCombo('选择机师', 0x0, kwargs.get('pilots'))
-        self.message_combo = ParamCombo('文本内容', 0x0, kwargs.get('messages'))
+        self.message_combo = ParamCombo('选择文本', 0x0, kwargs.get('messages'))
+        self.face_combo = ParamCombo('选择表情', 0x0, {0: '平静', 1: '高兴', 2: '惊讶', 3: '坚毅', 4: '惊恐', 5: '激动'})
+        self.music_combo = ParamCombo('选择音乐', 0x0, EnumData.MUSIC)
 
         self.COMMAND_SETTING = {
-            0x00: ('<BLOCK ({0})>', [
+            0x00: ('BLOCK<{0}>', [
                 ParamValue('区块序号', 0, 'X'),
             ]),
-            0x01: ('<STOP>', [
+            0x01: ('STOP', [
             ]),
-            0x02: ('<IF ({0})>', [
+            0x02: ('IF ({0})', [
                 ParamValue('套欠层级', 0),
             ]),
-            0x03: ('<ANY ({0})>', [
+            0x03: ('ANY ({0})', [
                 ParamValue('套欠层级', 0),
             ]),
-            0x04: ('<THEN ({0})>', [
+            0x04: ('THEN ({0})', [
                 ParamValue('套欠层级', 0),
             ]),
-            0x05: ('<ELSE ({0})>', [
+            0x05: ('ELSE ({0})', [
                 ParamValue('套欠层级', 0),
             ]),
-            0x06: ('<ENDIF ({0})>', [
+            0x06: ('ENDIF ({0})', [
                 ParamValue('套欠层级', 0),
             ]),
-            0x08: ('<GOTO ({0})>', [
+            0x08: ('GOTO {0}', [
                 ParamValue('目标偏移', 0),
             ]),
-            0x09: ('<RUN ({0})>', [
+            0x09: ('RUN {0}', [
                 ParamValue('目标偏移', 0),
             ]),
-            0x0A: ('<BACK>', []),
+            0x0A: ('BACK', []),
             0x0B: ('载入地图配置{0} 敌方配置{0} AI配置{0}', [
                 ParamValue('地图配置', 0, '02X'),
                 ParamValue('敌方配置', 0, '02X'),
@@ -133,13 +140,13 @@ class CommandDialog(QDialog):
             0x11: ('事件 - 判断场景事件', []),
             0x12: ('事件 - 场景点数比较', []),
             0x13: ('事件 - 全局点数比较', []),
-            0x14: ('判断 - 真实系为真', []),
-            0x15: ('判断 - 超级系为真', []),
-            0x16: ('判断 - 必定返回假', []),
-            0x17: ('{0} {1} 表情{2}\n{3}', [
+            0x14: ('路线为真实系', []),
+            0x15: ('路线为超级系', []),
+            0x16: ('返回假', []),
+            0x17: ('{0}{2}的说  {3}', [
                 self.pilots_combo,
-                ParamValue('未知', 0),
-                ParamValue('表情', 0),
+                ParamValue('无效', 0),
+                self.face_combo,
                 self.message_combo,
             ]),
             0x18: ('文本 - 变量会话', []),
@@ -148,36 +155,69 @@ class CommandDialog(QDialog):
             0x1B: ('文本 - 最终话主角对战BOSS会话', []),
             0x1C: ('文本 - 播放音乐会话', []),
             0x1D: ('文本 - 停止音乐会话', []),
-            0x1E: ('文本 - 胜利与失败文本', []),
+            0x1E: ('显示胜利条件：{1}  失败条件：{3}', [
+                ParamValue('无效', 0),
+                self.message_combo,
+                ParamValue('无效', 0),
+                self.message_combo,
+            ]),
             0x1F: ('文本 - 选项会话', []),
             0x21: ('文本 - 判断选项', []),
             0x22: ('剧情 - 场景胜利', []),
             0x23: ('剧情 - 场景失败', []),
-            0x24: ('剧情 - 选择下一关卡', []),
-            0x25: ('剧情 - 判断当前回合数', []),
-            0x26: ('剧情 - 设定场景音乐', []),
-            0x27: ('剧情 - 播放指定音乐', []),
-            0x28: ('剧情 - 场景音乐复位', []),
-            0x29: ('剧情 - 播放音效', []),
+            0x24: ('下一关为{0}', [
+                ParamCombo('选择关卡', 0x0, EnumData.STAGE),
+            ]),
+            0x25: ('当前回合{1}{0}', [
+                ParamValue('当前回合', 0),
+                ParamCombo('比较符号', 0x2, EnumData.COMMAND['比较']),
+            ]),
+            0x26: ('设定本方回合音乐为《{0}》  敌方回合音乐为《{1}》', [
+                self.music_combo,
+                self.music_combo,
+                ParamValue('无效', 0),
+            ]),
+            0x27: ('播放音乐《{0}》', [
+                self.music_combo,
+            ]),
+            0x28: ('音乐复位', []),
+            0x29: ('播放第{0}号音效', [
+                ParamValue('音效', 0),
+            ]),
             0x2A: ('剧情 - 播放动画', []),
             0x2B: ('剧情 - 静止等待', []),
-            0x2C: ('出击 - 敌方列表组出击', []),
+            0x2C: ('敌方设计第{0}组作为势力{1}出击为{2}阵营', [
+                ParamValue('敌方组号', 0),
+                ParamValue('选择势力', 0, '016b'),
+                ParamCombo('选择阵营', 0, EnumData.COMMAND['阵营']),
+            ]),
             0x2D: ('出击 - 敌方列表组出击到机师相对坐标', []),
             0x2F: ('出击 - 敌方列表组再次出击', []),
-            0x30: ('机库 - 机库开启', []),
-            0x31: ('机库 - 机库关闭', []),
+            0x30: ('格纳库开启', []),
+            0x31: ('格纳库关闭', []),
             0x32: ('机库 - 增加机体', []),
             0x33: ('机库 - 机体离队', []),
             0x34: ('机库 - 机体归队', []),
-            0x35: ('机库 - 刪除机体', []),
+            0x35: ('刪除{0}', [
+                self.robots_combo,
+            ]),
             0x36: ('机库 - 替换机体', []),
             0x37: ('机库 - 增加机师', []),
             0x38: ('机库 - 机师离队', []),
             0x39: ('机库 - 机师归队', []),
-            0x3A: ('机库 - 删除机师', []),
+            0x3A: ('删除{0}', [
+                self.pilots_combo,
+            ]),
             0x3B: ('机库 - 替换机师', []),
             0x3C: ('未知', []),
-            0x3D: ('机库 - 增加机体机师或强制换乘', []),
+            0x3D: ('加入{0} {1}级 击坠数{2} 搭乘{3} 机体{4}改 武器{5}改', [
+                self.pilots_combo,
+                ParamValue('等级', 1),
+                ParamValue('击坠数', 0),
+                self.robots_combo,
+                ParamValue('机体改造', 0),
+                ParamValue('武器改造', 0),
+            ]),
             0x3E: ('机库 - 机师分流', []),
             0x3F: ('机库 - 机体合流', []),
             0x40: ('机库 - 机师合流', []),
@@ -185,7 +225,9 @@ class CommandDialog(QDialog):
             0x42: ('机库 - 机师离队', []),
             0x43: ('机库 - 强制换乘', []),
             0x44: ('机库 - 换乘空机体', []),
-            0x45: ('机库 - 取消机师乘坐', []),
+            0x45: ('{0}取消搭乘', [
+                self.pilots_combo,
+            ]),
             0x46: ('机库 - 增加机体', []),
             0x47: ('机库 - 机师强制出场', []),
             0x48: ('机库 - 指定妖精搭配', []),
@@ -193,9 +235,13 @@ class CommandDialog(QDialog):
             0x4A: ('机库 - 隐藏机体', []),
             0x4B: ('机库 - 换乘空机体', []),
             0x4E: ('机库 - 合体允许分离', []),
-            0x4F: ('出击 - 出击开启', []),
-            0x50: ('出击 - 出击关闭', []),
-            0x51: ('出击 - 机师出击到绝对坐标', []),
+            0x4F: ('开始出击', []),
+            0x50: ('出击完毕', []),
+            0x51: ('{0}出击到 X{1} Y{2}', [
+                self.pilots_combo,
+                ParamValue('X坐标', 0),
+                ParamValue('Y坐标', 0),
+            ]),
             0x52: ('出击 - 机师出击到相对坐标', []),
             0x54: ('出击 - 机体出击到绝对坐标', []),
             0x55: ('出击 - 机体出击到相对坐标', []),

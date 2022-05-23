@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from struct import unpack_from, pack_into
+from struct import unpack_from, pack
 
 from structure.generic import Sequence, SEQUENCE
 
@@ -180,7 +180,7 @@ class Command(Sequence):
         0xB6: 'hh',
         0xB7: 'h',
         0xB8: 'bb',
-        0xB9: '',
+        # 0xB9: '', 特殊变长指令
         0xBA: 'hhh',
         0xBB: 'hhhh',
     }
@@ -194,17 +194,15 @@ class Command(Sequence):
         offset = 0x0
         while _buffer[offset] != 0xFF:
             length = _buffer[offset + 0x1] * 2
-            command_buffer = _buffer[offset: offset + length]
+            c_buffer = _buffer[offset: offset + length]
 
             command: dict[str, int | list[int] | str] = dict()
             command['Pos'] = offset // 2
-            command['Code'] = command_buffer[0]
-            command['Count'] = command_buffer[1]
-            fmt = self.ARGV_FMT[command['Code']]
-            if command['Code'] == 0xB9:
-                fmt = 'h' * (command['Count'] - 1)
-            command['Param'] = list(unpack_from(fmt, command_buffer, 0x2))
-            command['Data'] = ' '.join([f'{d:04X}' for d in unpack_from('H' * command['Count'], command_buffer, 0x0)])
+            command['Code'] = c_buffer[0]
+            command['Count'] = c_buffer[1]
+            fmt = self.ARGV_FMT.get(command['Code'], 'h' * (command['Count'] - 1))
+            command['Param'] = list(unpack_from(fmt, c_buffer, 0x2))
+            command['Data'] = ' '.join([f'{d:04X}' for d in unpack_from('H' * command['Count'], c_buffer, 0x0)])
 
             commands.append(command)
             offset += length
@@ -214,15 +212,18 @@ class Command(Sequence):
         _buffer = bytearray([0xFF] * self.length)
         offset = 0x0
         for command in sequence:
-            length = command['Count'] * 2
-            c_buffer = bytearray(length)
+            fmt = self.ARGV_FMT.get(command['Code'])
+            if fmt is None:
+                fmt = 'h' * (command['Param'][0] * 4 + 4)
+            p_buffer = pack(fmt, *command['Param'])
 
+            length = len(p_buffer) + 2
+            command['Count'] = length // 2
+
+            c_buffer = bytearray(2)
             c_buffer[0] = command['Code']
             c_buffer[1] = command['Count']
-            fmt = self.ARGV_FMT[command['Code']]
-            if command['Code'] == 0xB9:
-                fmt = 'h' * (command['Count'] - 1)
-            pack_into(fmt, c_buffer, 0x2, *command['Param'])
+            c_buffer += p_buffer
 
             _buffer[offset: offset + length] = c_buffer
             offset += length
