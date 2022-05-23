@@ -8,7 +8,7 @@ from PySide6.QtWidgets import (QTableView, QApplication, QPushButton, QVBoxLayou
 
 from structure.generic import SEQUENCE
 from widget.abstract_widget import ControlWidget, AbstractWidget
-from widget.command_dialog import CommandDialog
+from widget.command.command_dialog import CommandDialog
 
 
 class StageModel(QAbstractTableModel):

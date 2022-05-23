@@ -24,7 +24,7 @@ class ScenarioFrame(BackgroundFrame):
         self.scenario_tab = QTabWidget()
         self.scenario_tab.tabBar().setProperty('language', 'zhb')
 
-        self.robot_mapping = kwargs.get('robots', dict()) | {0x0: '一一'}
+        self.robot_mapping = kwargs.get('robots', dict())
         self.pilot_mapping = kwargs.get('pilots', dict()) | {0x7D0: '[7D0]主人公', 0x7D1: '[7D1]恋人', 0x7FA: '[7FA]？？？'}
         self.message_mapping = kwargs.get('messages', dict())
         self.group_mapping = {group: f'{group}' for group in range(0, 16)}
@@ -87,7 +87,7 @@ class ScenarioFrame(BackgroundFrame):
             self['敌方设计'], '敌方列表', {
                 '机师': RadioCombo(None, '机师', ENEMY_STRUCTURE['机师'],
                                  mapping=self.pilot_mapping | {0x0: '一一'}),
-                '机体': RadioCombo(None, '机体', ENEMY_STRUCTURE['机体'], mapping=self.robot_mapping),
+                '机体': RadioCombo(None, '机体', ENEMY_STRUCTURE['机体'], mapping=self.robot_mapping | {0x0: '一一'}),
                 '组号': MappingSpin(None, '组号', ENEMY_STRUCTURE['组号'],
                                   mapping=self.group_mapping, alignment=Qt.AlignRight),
                 '等级': ValueSpin(None, '等级', ENEMY_STRUCTURE['等级'], alignment=Qt.AlignRight),

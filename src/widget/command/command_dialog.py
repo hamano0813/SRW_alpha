@@ -2,86 +2,11 @@
 # -*- coding: utf-8 -*-
 
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QDialog, QSpinBox, QComboBox
+from PySide6.QtWidgets import QDialog
 
 from parameter import EnumData
-
-
-class ParamWidget:
-    def __init__(self, name: str, default: int, **kwargs):
-        self.name = name
-        self.default = default
-        self.kwargs = kwargs
-
-    def install(self, param: int = None):
-        pass
-
-    def data(self) -> int:
-        pass
-
-    def explain(self, param: int) -> str:
-        pass
-
-    def new(self):
-        return self.__class__(self.name, self.default, **self.kwargs)
-
-    def __del__(self):
-        # noinspection PyUnresolvedReferences
-        self.close()
-        del self
-
-
-class ParamValue(QSpinBox, ParamWidget):
-    def __init__(self, name: str, default: int, display: str = 'd', **kwargs):
-        QSpinBox.__init__(self, parent=None)
-        ParamWidget.__init__(self, name, default, **kwargs)
-        self.display = display
-
-    def textFromValue(self, val: int) -> str:
-        return f'{val:{self.display}}'
-
-    def valueFromText(self, text: str) -> int:
-        fmt = self.display.lower()
-        if fmt.endswith('d'):
-            return int(text)
-        if fmt.endswith('x'):
-            return int(text, 16)
-        if fmt.endswith('b'):
-            return int(text, 2)
-
-    def install(self, param: int = None):
-        if param is not None:
-            return self.setValue(param)
-        return self.setValue(self.default)
-
-    def data(self) -> int:
-        return self.value()
-
-    def explain(self, param: int) -> str:
-        return self.textFromValue(param)
-
-
-class ParamCombo(QComboBox, ParamWidget):
-    def __init__(self, name: str, default: int, mapping: dict[int, str], **kwargs):
-        QComboBox.__init__(self, parent=None)
-        ParamWidget.__init__(self, name, default, **kwargs)
-        self.mapping = mapping
-
-    def init_mapping(self):
-        if self.mapping:
-            for data, text in self.mapping.items():
-                self.addItem(text, data)
-
-    def install(self, param: int = None):
-        if param is not None:
-            return self.setCurrentText(self.mapping.get(param))
-        return self.setCurrentText(self.mapping.get(self.default, self.currentText()))
-
-    def data(self) -> int:
-        return self.currentData()
-
-    def explain(self, param: int) -> str:
-        return self.mapping.get(param).replace('\n', '').replace('\u3000', '')
+from widget.command import ParamValueSpin, ParamRadioCombo, ParamCheckCombo
+from widget.command.param_widget import ParamWidget
 
 
 class CommandDialog(QDialog):
@@ -89,50 +14,57 @@ class CommandDialog(QDialog):
         super(CommandDialog, self).__init__(parent, f=Qt.Dialog)
         self.command = command if command else {'Pos': 0x0, 'Code': 0x0, 'Count': 0x1, 'Param': list(), 'Data': ''}
 
-        self.robots_combo = ParamCombo('选择机体', 0x0, kwargs.get('robots'))
-        self.pilots_combo = ParamCombo('选择机师', 0x0, kwargs.get('pilots'))
-        self.message_combo = ParamCombo('选择文本', 0x0, kwargs.get('messages'))
-        self.face_combo = ParamCombo('选择表情', 0x0, {0: '平静', 1: '高兴', 2: '惊讶', 3: '坚毅', 4: '惊恐', 5: '激动'})
-        self.music_combo = ParamCombo('选择音乐', 0x0, EnumData.MUSIC)
+        self.widgets = dict()
+        self.widgets['机体'] = ParamRadioCombo('选择机体', 0x0, kwargs.get('robots'))
+        self.widgets['机师'] = ParamRadioCombo('选择机师', 0x0, kwargs.get('pilots'))
+        self.widgets['文本'] = ParamRadioCombo('选择文本', 0x0, kwargs.get('messages'))
+
+        self.widgets['关卡'] = ParamRadioCombo('选择关卡', 0, EnumData.STAGE)
+        self.widgets['音乐'] = ParamRadioCombo('选择音乐', 0x0, EnumData.MUSIC)
+
+        self.widgets['表情'] = ParamRadioCombo('选择表情', 0x0, EnumData.COMMAND['表情'])
+        self.widgets['势力'] = ParamCheckCombo('选择势力', 0x0, EnumData.COMMAND['势力'])
+        self.widgets['阵营'] = ParamRadioCombo('选择阵营', 0, EnumData.COMMAND['阵营'])
+        self.widgets['比较'] = ParamRadioCombo('比较符号', 0x2, EnumData.COMMAND['比较'])
 
         self.COMMAND_SETTING = {
             0x00: ('BLOCK<{0}>', [
-                ParamValue('区块序号', 0, 'X'),
+                ParamValueSpin('区块序号', 0, 'X'),
             ]),
             0x01: ('STOP', [
             ]),
             0x02: ('IF ({0})', [
-                ParamValue('套欠层级', 0),
+                ParamValueSpin('套欠层级', 0),
             ]),
             0x03: ('ANY ({0})', [
-                ParamValue('套欠层级', 0),
+                ParamValueSpin('套欠层级', 0),
             ]),
             0x04: ('THEN ({0})', [
-                ParamValue('套欠层级', 0),
+                ParamValueSpin('套欠层级', 0),
             ]),
             0x05: ('ELSE ({0})', [
-                ParamValue('套欠层级', 0),
+                ParamValueSpin('套欠层级', 0),
             ]),
             0x06: ('ENDIF ({0})', [
-                ParamValue('套欠层级', 0),
+                ParamValueSpin('套欠层级', 0),
             ]),
             0x08: ('GOTO {0}', [
-                ParamValue('目标偏移', 0),
+                ParamValueSpin('目标偏移', 0),
             ]),
             0x09: ('RUN {0}', [
-                ParamValue('目标偏移', 0),
+                ParamValueSpin('目标偏移', 0),
             ]),
             0x0A: ('BACK', []),
             0x0B: ('载入地图配置{0} 敌方配置{0} AI配置{0}', [
-                ParamValue('地图配置', 0, '02X'),
-                ParamValue('敌方配置', 0, '02X'),
-                ParamValue('AI配置', 0, '02X'),
+                ParamValueSpin('地图配置', 0, '02X'),
+                ParamValueSpin('敌方配置', 0, '02X'),
+                ParamValueSpin('AI配置', 0, '02X'),
             ]),
             0x0C: ('触发全局事件{0}', [
-                ParamValue('全局事件', 0, '04X')
+                ParamValueSpin('全局事件', 0, '04X')
             ]),
             0x0D: ('触发场景事件{0}', [
-                ParamValue('场景事件', 0, '02X')
+                ParamValueSpin('场景事件', 0, '02X')
             ]),
             0x0E: ('事件 - 操作场景点数', []),
             0x0F: ('事件 - 操作全局点数', []),
@@ -144,10 +76,10 @@ class CommandDialog(QDialog):
             0x15: ('路线为超级系', []),
             0x16: ('返回假', []),
             0x17: ('{0}{2}的说  {3}', [
-                self.pilots_combo,
-                ParamValue('无效', 0),
-                self.face_combo,
-                self.message_combo,
+                self.widgets['机师'],
+                ParamValueSpin('无效', 0),
+                self.widgets['表情'],
+                self.widgets['文本'],
             ]),
             0x18: ('文本 - 变量会话', []),
             0x19: ('文本 - 语音会话', []),
@@ -156,40 +88,40 @@ class CommandDialog(QDialog):
             0x1C: ('文本 - 播放音乐会话', []),
             0x1D: ('文本 - 停止音乐会话', []),
             0x1E: ('显示胜利条件：{1}  失败条件：{3}', [
-                ParamValue('无效', 0),
-                self.message_combo,
-                ParamValue('无效', 0),
-                self.message_combo,
+                ParamValueSpin('无效', 0),
+                self.widgets['文本'],
+                ParamValueSpin('无效', 0),
+                self.widgets['文本'],
             ]),
             0x1F: ('文本 - 选项会话', []),
             0x21: ('文本 - 判断选项', []),
             0x22: ('剧情 - 场景胜利', []),
             0x23: ('剧情 - 场景失败', []),
             0x24: ('下一关为{0}', [
-                ParamCombo('选择关卡', 0x0, EnumData.STAGE),
+                self.widgets['关卡'],
             ]),
             0x25: ('当前回合{1}{0}', [
-                ParamValue('当前回合', 0),
-                ParamCombo('比较符号', 0x2, EnumData.COMMAND['比较']),
+                ParamValueSpin('当前回合', 0),
+                self.widgets['比较'],
             ]),
             0x26: ('设定本方回合音乐为《{0}》  敌方回合音乐为《{1}》', [
-                self.music_combo,
-                self.music_combo,
-                ParamValue('无效', 0),
+                self.widgets['音乐'],
+                self.widgets['音乐'],
+                ParamValueSpin('无效', 0),
             ]),
             0x27: ('播放音乐《{0}》', [
-                self.music_combo,
+                self.widgets['音乐'],
             ]),
             0x28: ('音乐复位', []),
             0x29: ('播放第{0}号音效', [
-                ParamValue('音效', 0),
+                ParamValueSpin('音效', 0),
             ]),
             0x2A: ('剧情 - 播放动画', []),
             0x2B: ('剧情 - 静止等待', []),
-            0x2C: ('敌方设计第{0}组作为势力{1}出击为{2}阵营', [
-                ParamValue('敌方组号', 0),
-                ParamValue('选择势力', 0, '016b'),
-                ParamCombo('选择阵营', 0, EnumData.COMMAND['阵营']),
+            0x2C: ('敌方设计第{0}组作为势力[{1}]出击设为{2}阵营', [
+                ParamValueSpin('敌方组号', 0),
+                self.widgets['势力'],
+                self.widgets['阵营'],
             ]),
             0x2D: ('出击 - 敌方列表组出击到机师相对坐标', []),
             0x2F: ('出击 - 敌方列表组再次出击', []),
@@ -199,24 +131,24 @@ class CommandDialog(QDialog):
             0x33: ('机库 - 机体离队', []),
             0x34: ('机库 - 机体归队', []),
             0x35: ('刪除{0}', [
-                self.robots_combo,
+                self.widgets['机体'],
             ]),
             0x36: ('机库 - 替换机体', []),
             0x37: ('机库 - 增加机师', []),
             0x38: ('机库 - 机师离队', []),
             0x39: ('机库 - 机师归队', []),
             0x3A: ('删除{0}', [
-                self.pilots_combo,
+                self.widgets['机师'],
             ]),
             0x3B: ('机库 - 替换机师', []),
             0x3C: ('未知', []),
             0x3D: ('加入{0} {1}级 击坠数{2} 搭乘{3} 机体{4}改 武器{5}改', [
-                self.pilots_combo,
-                ParamValue('等级', 1),
-                ParamValue('击坠数', 0),
-                self.robots_combo,
-                ParamValue('机体改造', 0),
-                ParamValue('武器改造', 0),
+                self.widgets['机师'],
+                ParamValueSpin('等级', 1),
+                ParamValueSpin('击坠数', 0),
+                self.widgets['机体'],
+                ParamValueSpin('机体改造', 0),
+                ParamValueSpin('武器改造', 0),
             ]),
             0x3E: ('机库 - 机师分流', []),
             0x3F: ('机库 - 机体合流', []),
@@ -226,7 +158,7 @@ class CommandDialog(QDialog):
             0x43: ('机库 - 强制换乘', []),
             0x44: ('机库 - 换乘空机体', []),
             0x45: ('{0}取消搭乘', [
-                self.pilots_combo,
+                self.widgets['机师'],
             ]),
             0x46: ('机库 - 增加机体', []),
             0x47: ('机库 - 机师强制出场', []),
@@ -237,10 +169,10 @@ class CommandDialog(QDialog):
             0x4E: ('机库 - 合体允许分离', []),
             0x4F: ('开始出击', []),
             0x50: ('出击完毕', []),
-            0x51: ('{0}出击到 X{1} Y{2}', [
-                self.pilots_combo,
-                ParamValue('X坐标', 0),
-                ParamValue('Y坐标', 0),
+            0x51: ('{0}出击到地图绝对坐标 X{1} Y{2}', [
+                self.widgets['机师'],
+                ParamValueSpin('X坐标', 0),
+                ParamValueSpin('Y坐标', 0),
             ]),
             0x52: ('出击 - 机师出击到相对坐标', []),
             0x54: ('出击 - 机体出击到绝对坐标', []),
@@ -345,11 +277,18 @@ class CommandDialog(QDialog):
     def explain(self, command: dict[str, int | list[int] | str]):
         code = command.get('Code')
         param = command.get('Param')
+        param_setting: tuple[str, list[ParamWidget]] = self.COMMAND_SETTING.get(code, (str(code), tuple()))
+        param_text, param_widgets = param_setting
+        explain_list = []
+
         if code != 0xB9:
-            param_setting: tuple[str, list[ParamValue]] = self.COMMAND_SETTING.get(code, (str(code), tuple()))
-            param_text, param_widgets = param_setting
-            explain_list = []
             for param_idx, param_widget in enumerate(param_widgets):
                 explain_list.append(param_widget.explain(param[param_idx]))
             return param_text.format(*explain_list)
-        return 0xB9
+
+        for param_idx, param_widget in enumerate(param_widgets):
+            if param_idx < 8:
+                explain_list.append(param_widget.explain(param[param_idx]))
+            else:
+                explain_list.append(param_widgets[param_idx % 4 + 4].explain(param[param_idx]))
+        return param_text.format(*explain_list)
