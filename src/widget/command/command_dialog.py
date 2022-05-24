@@ -28,54 +28,31 @@ class CommandDialog(QDialog):
         self.widgets['阵营'] = ParamRadioCombo('选择阵营', 0, EnumData.COMMAND['阵营'])
         self.widgets['比较'] = ParamRadioCombo('比较符号', 0x2, EnumData.COMMAND['比较'])
         self.widgets['触发'] = ParamRadioCombo('触发状态', 0x2, EnumData.COMMAND['触发'])
+        self.widgets['点数'] = ParamRadioCombo('全局点数', 0x2, EnumData.COMMAND['点数'])
 
         self.COMMAND_SETTING = {
-            0x00: ('BLOCK<{0}>', [
-                ParamValueSpin('区块序号', 0, 'X'),
-            ]),
-            0x01: ('STOP', [
-            ]),
-            0x02: ('IF ({0})', [
-                ParamValueSpin('套欠层级', 0),
-            ]),
-            0x03: ('ANY ({0})', [
-                ParamValueSpin('套欠层级', 0),
-            ]),
-            0x04: ('THEN ({0})', [
-                ParamValueSpin('套欠层级', 0),
-            ]),
-            0x05: ('ELSE ({0})', [
-                ParamValueSpin('套欠层级', 0),
-            ]),
-            0x06: ('ENDIF ({0})', [
-                ParamValueSpin('套欠层级', 0),
-            ]),
-            0x08: ('GOTO {0}', [
-                ParamValueSpin('目标偏移', 0),
-            ]),
-            0x09: ('RUN {0}', [
-                ParamValueSpin('目标偏移', 0),
-            ]),
+            0x00: ('BLOCK<{0}>', [ParamValueSpin('区块序号', 0, 'X'), ]),
+            0x01: ('STOP', []),
+            0x02: ('ALL ({0})', [ParamValueSpin('套欠层级', 0), ]),
+            0x03: ('ANY ({0})', [ParamValueSpin('套欠层级', 0), ]),
+            0x04: ('THEN ({0})', [ParamValueSpin('套欠层级', 0), ]),
+            0x05: ('ELSE ({0})', [ParamValueSpin('套欠层级', 0), ]),
+            0x06: ('ENDIF ({0})', [ParamValueSpin('套欠层级', 0), ]),
+            0x08: ('GOTO {0}', [ParamValueSpin('目标偏移', 0), ]),
+            0x09: ('RUN {0}', [ParamValueSpin('目标偏移', 0), ]),
             0x0A: ('BACK', []),
             0x0B: ('载入地图设计{0} 敌方设计{0} AI设计{0}', [
                 ParamValueSpin('地图设计', 0, '02X'),
                 ParamValueSpin('敌方设计', 0, '02X'),
                 ParamValueSpin('AI设计', 0, '02X'),
             ]),
-            0x0C: ('触发全局事件{0}', [
-                ParamValueSpin('全局事件', 0, '04X')
-            ]),
-            0x0D: ('触发场景事件{0}', [
-                ParamValueSpin('场景事件', 0, '02X')
-            ]),
-            0x0E: ('事件 - 操作场景点数', []),
-            0x0F: ('事件 - 操作全局点数', []),
-            0x10: ('事件：{0}为{1}状态', [
-                self.widgets['事件'],
-                self.widgets['触发']
-            ]),
-            0x11: ('事件 - 判断场景事件', []),
-            0x12: ('事件 - 场景点数比较', []),
+            0x0C: ('触发全局事件{0}', [self.widgets['事件'], ]),
+            0x0D: ('触发场景事件[{0}]', [ParamValueSpin('场景事件', 0, '02X')]),
+            0x0E: ('场景点数[{0}]{1}', [ParamValueSpin('场景点数', 0, '04X'), ParamValueSpin('数值操作', 0, '+d'), ]),
+            0x0F: ('全局点数{0}{1}', [self.widgets['点数'], ParamValueSpin('数值操作', 0, '+d'), ]),
+            0x10: ('全局事件：{0}为{1}状态', [self.widgets['事件'], self.widgets['触发'], ]),
+            0x11: ('场景事件：[{0}]为{1}状态', [ParamValueSpin('场景事件', 0, '02X'), self.widgets['触发'], ]),
+            0x12: ('场景点数[{0}]{1}{2}', [self.widgets['点数'], self.widgets['比较'], ParamValueSpin('点数', 0), ]),
             0x13: ('事件 - 全局点数比较', []),
             0x14: ('路线为真实系', []),
             0x15: ('路线为超级系', []),
@@ -86,7 +63,12 @@ class CommandDialog(QDialog):
                 self.widgets['表情'],
                 self.widgets['文本'],
             ]),
-            0x18: ('文本 - 变量会话', []),
+            0x18: ('{0}{2}的说 -- {3}', [
+                self.widgets['机师'],
+                ParamValueSpin('无效', 0),
+                self.widgets['表情'],
+                self.widgets['文本'],
+            ]),
             0x19: ('文本 - 语音会话', []),
             0x1A: ('文本 - 最终话不同主角对战BOSS切换', []),
             0x1B: ('文本 - 最终话主角对战BOSS会话', []),
@@ -98,29 +80,24 @@ class CommandDialog(QDialog):
                 ParamValueSpin('无效', 0),
                 self.widgets['文本'],
             ]),
-            0x1F: ('文本 - 选项会话', []),
-            0x21: ('文本 - 判断选项', []),
-            0x22: ('剧情 - 场景胜利', []),
-            0x23: ('剧情 - 场景失败', []),
-            0x24: ('下一关为{0}', [
-                self.widgets['关卡'],
+            0x1F: ('{0}选择 -- {2}', [
+                self.widgets['机师'],
+                ParamValueSpin('无效', 0),
+                self.widgets['文本'],
             ]),
-            0x25: ('当前回合{1}{0}', [
-                ParamValueSpin('当前回合', 0),
-                self.widgets['比较'],
-            ]),
+            0x21: ('选择了第一项', [ParamValueSpin('无效', 0), ]),
+            0x22: ('场景胜利', [ParamValueSpin('未知', 0), ]),
+            0x23: ('场景失败', []),
+            0x24: ('下一关为{0}', [self.widgets['关卡'], ]),
+            0x25: ('当前回合{1}{0}', [ParamValueSpin('当前回合', 0), self.widgets['比较'], ]),
             0x26: ('设定本方回合音乐为《{0}》  敌方回合音乐为《{1}》', [
                 self.widgets['音乐'],
                 self.widgets['音乐'],
                 ParamValueSpin('无效', 0),
             ]),
-            0x27: ('播放音乐《{0}》', [
-                self.widgets['音乐'],
-            ]),
+            0x27: ('播放音乐《{0}》', [self.widgets['音乐'], ]),
             0x28: ('音乐复位', []),
-            0x29: ('播放《0x{0}》音效', [
-                ParamValueSpin('音效', 0, '04X'),
-            ]),
+            0x29: ('播放《0x{0}》音效', [ParamValueSpin('音效', 0, '04X'), ]),
             0x2A: ('剧情 - 播放动画', []),
             0x2B: ('剧情 - 静止等待', []),
             0x2C: ('敌方设计第{0}组以[{1}]势力出击设为{2}阵营', [
@@ -180,7 +157,11 @@ class CommandDialog(QDialog):
                 ParamValueSpin('Y坐标', 0),
             ]),
             0x52: ('出击 - 机师出击到相对坐标', []),
-            0x54: ('出击 - 机体出击到绝对坐标', []),
+            0x54: ('{0}出击到地图绝对坐标 X{1} Y{2}', [
+                self.widgets['机体'],
+                ParamValueSpin('X坐标', 0),
+                ParamValueSpin('Y坐标', 0),
+            ]),
             0x55: ('出击 - 机体出击到相对坐标', []),
             0x57: ('出击 - 本方部队出击到绝对坐标', []),
             0x58: ('出击 - 本方部队出击到相对坐标', []),
@@ -197,7 +178,11 @@ class CommandDialog(QDialog):
             0x64: ('资源 - 增加资金', []),
             0x65: ('复活 - 复活机师', []),
             0x66: ('复活 - 复活机体', []),
-            0x67: ('移动 - 移动机师到绝对坐标', []),
+            0x67: ('{0}移动到地图绝对坐标 X{1} Y{2}', [
+                self.widgets['机师'],
+                ParamValueSpin('X坐标', 0),
+                ParamValueSpin('Y坐标', 0),
+            ]),
             0x68: ('移动 - 移动机师到相对坐标', []),
             0x69: ('移动 - 移动机师到敌方坐标', []),
             0x6A: ('移动 - 移动光标到绝对坐标', []),
@@ -215,7 +200,11 @@ class CommandDialog(QDialog):
             0x78: ('判断 - 机师是否搭载', []),
             0x79: ('判断 - 敌方小组剩余数量', []),
             0x7A: ('判断 - 指定势力剩余数量', []),
-            0x7B: ('判断 - 指定阵营剩余数量', []),
+            0x7B: ('阵营{0}数量{1}{2}', [
+                self.widgets['阵营'],
+                self.widgets['比较'],
+                ParamValueSpin('数量', 0),
+            ]),
             0x7C: ('判断 - 指定机师位于坐标区域', []),
             0x7D: ('判断 - 敌方单位位于坐标区域', []),
             0x7E: ('判断 - 指定机体位于坐标区域', []),
@@ -264,11 +253,16 @@ class CommandDialog(QDialog):
             0xAC: ('操作 - 指定机师增加说得敌方单位菜单选项', []),
             0xAD: ('判断 - 指定机师说得指定机师', []),
             0xAE: ('判断 - 指定机师说得敌方单位', []),
-            0xAF: ('判断 - 指定机师交战指定机师', []),
+            0xAF: ('{0}与{1}交手', [
+                self.widgets['机师'],
+                self.widgets['机师'],
+            ]),
             0xB0: ('判断 - 指定机师交战敌方单位', []),
             0xB1: ('判断 - 指定机师攻击', []),
             0xB2: ('判断 - 敌方单位被击破', []),
-            0xB3: ('判断 - 指定机师被击破', []),
+            0xB3: ('{0}被击破', [
+                self.widgets['机师'],
+            ]),
             0xB4: ('判断 - 指定机体被击破', []),
             0xB5: ('未知', []),
             0xB6: ('判断 - 指定机师HP量', []),
