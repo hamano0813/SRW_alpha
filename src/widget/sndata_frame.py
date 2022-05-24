@@ -51,20 +51,15 @@ class StageModel(QAbstractTableModel):
         if role == Qt.FontRole:
             font = QFont()
             if index.column() == 1:
-                font.setFamily('Microsoft Yahei UI')
+                font.setFamilies(['Consolas', 'Microsoft Yahei UI'])
+                font.setPointSize(14)
                 if command['Code'] <= 0x01:
                     font.setBold(True)
                     font.setLetterSpacing(QFont.PercentageSpacing, 150)
-                    font.setFamily('Consolas')
-                    font.setPointSize(12)
                 if command['Code'] in (0x08, 0x09, 0x0A):
                     font.setUnderline(True)
-                    font.setFamily('Consolas')
-                    font.setPointSize(12)
                 if command['Code'] in range(0x02, 0x08):
                     font.setItalic(True)
-                    font.setFamily('Consolas')
-                    font.setPointSize(12)
             return font
         return None
 

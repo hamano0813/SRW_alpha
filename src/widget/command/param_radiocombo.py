@@ -103,7 +103,7 @@ class ParamRadioCombo(QComboBox, ParamWidget):
 
     def explain(self, param: int) -> str:
         try:
-            return self.mapping.get(param).replace('\n', '').replace('\u3000', '')
+            return self.mapping.get(param).replace('\u3000', '')
         except:
             print(self.mapping, param)
 

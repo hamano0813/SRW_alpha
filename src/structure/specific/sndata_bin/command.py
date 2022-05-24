@@ -60,7 +60,7 @@ class Command(Sequence):
         0x34: 'h',
         0x35: 'h',
         0x36: 'hh',
-        0x37: 'hh',
+        0x37: 'hbb',
         0x38: 'h',
         0x39: 'h',
         0x3A: 'h',
