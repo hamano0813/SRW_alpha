@@ -55,10 +55,10 @@ class CommandDialog(QDialog):
                 ParamValueSpin('目标偏移', 0),
             ]),
             0x0A: ('BACK', []),
-            0x0B: ('载入地图配置{0} 敌方配置{0} AI配置{0}', [
-                ParamValueSpin('地图配置', 0, '02X'),
-                ParamValueSpin('敌方配置', 0, '02X'),
-                ParamValueSpin('AI配置', 0, '02X'),
+            0x0B: ('载入地图设计{0} 敌方设计{0} AI设计{0}', [
+                ParamValueSpin('地图设计', 0, '02X'),
+                ParamValueSpin('敌方设计', 0, '02X'),
+                ParamValueSpin('AI设计', 0, '02X'),
             ]),
             0x0C: ('触发全局事件{0}', [
                 ParamValueSpin('全局事件', 0, '04X')
@@ -75,7 +75,7 @@ class CommandDialog(QDialog):
             0x14: ('路线为真实系', []),
             0x15: ('路线为超级系', []),
             0x16: ('返回假', []),
-            0x17: ('{0}{2}的说  {3}', [
+            0x17: ('{0}{2}的说 -- {3}', [
                 self.widgets['机师'],
                 ParamValueSpin('无效', 0),
                 self.widgets['表情'],
@@ -113,12 +113,12 @@ class CommandDialog(QDialog):
                 self.widgets['音乐'],
             ]),
             0x28: ('音乐复位', []),
-            0x29: ('播放第{0}号音效', [
-                ParamValueSpin('音效', 0),
+            0x29: ('播放《0x{0}》音效', [
+                ParamValueSpin('音效', 0, '04X'),
             ]),
             0x2A: ('剧情 - 播放动画', []),
             0x2B: ('剧情 - 静止等待', []),
-            0x2C: ('敌方设计第{0}组作为势力[{1}]出击设为{2}阵营', [
+            0x2C: ('敌方设计第{0}组以[{1}]势力出击设为{2}阵营', [
                 ParamValueSpin('敌方组号', 0),
                 self.widgets['势力'],
                 self.widgets['阵营'],
