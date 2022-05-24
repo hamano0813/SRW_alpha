@@ -8,7 +8,7 @@ a = Analysis(
     ['release\\SRWα.pyw'],
     pathex=[],
     binaries=[],
-    datas=[],
+    datas=[('./src/event.txt', './')],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},

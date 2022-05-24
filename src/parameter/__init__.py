@@ -10,4 +10,4 @@ with open(r'event.txt', 'r', encoding='utf-8') as f:
     EnumData.EVENT = dict()
     for line in f.readlines():
         code, event = line.split('=')[0:2]
-        EnumData.EVENT[int(code, 16)] = event.strip()
+        EnumData.EVENT[int(code, 16)] = f'[{code}] {event.strip()}'
