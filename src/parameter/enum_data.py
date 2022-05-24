@@ -787,6 +787,7 @@ class EnumDataTrans(QObject):
         self.COMMAND = dict()
         self.COMMAND['比较'] = {0x0: '>', 0x1: '≥', 0x2: '=', 0x3: '≤', 0x4: '<'}
         self.COMMAND['触发'] = {0x0: '未触发', 0x1: '已触发'}
+        self.COMMAND['状态'] = {0x0: '于场景内存在', 0x1: '于场景内退场'}
         self.COMMAND['势力'] = [
             '連邦',
             'ミケーネ',

@@ -29,6 +29,7 @@ class CommandDialog(QDialog):
         self.widgets['比较'] = ParamRadioCombo('比较符号', 0x2, EnumData.COMMAND['比较'])
         self.widgets['触发'] = ParamRadioCombo('触发状态', 0x2, EnumData.COMMAND['触发'])
         self.widgets['点数'] = ParamRadioCombo('全局点数', 0x2, EnumData.COMMAND['点数'])
+        self.widgets['状态'] = ParamRadioCombo('存在状态', 0x2, EnumData.COMMAND['状态'])
 
         self.COMMAND_SETTING = {
             0x00: ('BLOCK<{0}>', [ParamValueSpin('区块序号', 0, 'X'), ]),
@@ -50,10 +51,10 @@ class CommandDialog(QDialog):
             0x0D: ('触发场景事件[{0}]', [ParamValueSpin('场景事件', 0, '02X')]),
             0x0E: ('场景点数[{0}]{1}', [ParamValueSpin('场景点数', 0, '04X'), ParamValueSpin('数值操作', 0, '+d'), ]),
             0x0F: ('全局点数{0}{1}', [self.widgets['点数'], ParamValueSpin('数值操作', 0, '+d'), ]),
-            0x10: ('全局事件：{0}为{1}状态', [self.widgets['事件'], self.widgets['触发'], ]),
-            0x11: ('场景事件：[{0}]为{1}状态', [ParamValueSpin('场景事件', 0, '02X'), self.widgets['触发'], ]),
+            0x10: ('全局事件{0}为{1}状态', [self.widgets['事件'], self.widgets['触发'], ]),
+            0x11: ('场景事件[{0}]为{1}状态', [ParamValueSpin('场景事件', 0, '02X'), self.widgets['触发'], ]),
             0x12: ('场景点数[{0}]{1}{2}', [self.widgets['点数'], self.widgets['比较'], ParamValueSpin('点数', 0), ]),
-            0x13: ('事件 - 全局点数比较', []),
+            0x13: ('全局点数{0}{1}{2}', [self.widgets['点数'], self.widgets['比较'], ParamValueSpin('点数', 0), ]),
             0x14: ('路线为真实系', []),
             0x15: ('路线为超级系', []),
             0x16: ('返回假', []),
@@ -69,7 +70,13 @@ class CommandDialog(QDialog):
                 self.widgets['表情'],
                 self.widgets['文本'],
             ]),
-            0x19: ('文本 - 语音会话', []),
+            0x19: ('{1}{3}的用语音[{0}]说 -- {4}', [
+                ParamValueSpin('语音', 0, '04X'),
+                self.widgets['机师'],
+                ParamValueSpin('无效', 0),
+                self.widgets['表情'],
+                self.widgets['文本'],
+            ]),
             0x1A: ('文本 - 最终话不同主角对战BOSS切换', []),
             0x1B: ('文本 - 最终话主角对战BOSS会话', []),
             0x1C: ('文本 - 播放音乐会话', []),
@@ -112,16 +119,12 @@ class CommandDialog(QDialog):
             0x32: ('机库 - 增加机体', []),
             0x33: ('机库 - 机体离队', []),
             0x34: ('机库 - 机体归队', []),
-            0x35: ('刪除{0}', [
-                self.widgets['机体'],
-            ]),
+            0x35: ('刪除{0}', [self.widgets['机体'], ]),
             0x36: ('机库 - 替换机体', []),
             0x37: ('机库 - 增加机师', []),
             0x38: ('机库 - 机师离队', []),
             0x39: ('机库 - 机师归队', []),
-            0x3A: ('删除{0}', [
-                self.widgets['机师'],
-            ]),
+            0x3A: ('删除{0}', [self.widgets['机师'], ]),
             0x3B: ('机库 - 替换机师', []),
             0x3C: ('未知', []),
             0x3D: ('加入{0} {1}级 击坠数{2} 搭乘{3} 机体{4}改 武器{5}改', [
@@ -139,9 +142,7 @@ class CommandDialog(QDialog):
             0x42: ('机库 - 机师离队', []),
             0x43: ('机库 - 强制换乘', []),
             0x44: ('机库 - 换乘空机体', []),
-            0x45: ('{0}取消搭乘', [
-                self.widgets['机师'],
-            ]),
+            0x45: ('{0}取消搭乘', [self.widgets['机师'], ]),
             0x46: ('机库 - 增加机体', []),
             0x47: ('机库 - 机师强制出场', []),
             0x48: ('机库 - 指定妖精搭配', []),
@@ -195,8 +196,8 @@ class CommandDialog(QDialog):
             0x72: ('撤退 - 指定势力撤退', []),
             0x73: ('撤退 - 指定阵营撤退', []),
             0x74: ('撤退 - 指定阵营撤退到坐标区域', []),
-            0x75: ('判断 - 机师状态', []),
-            0x77: ('判断 - 机体状态', []),
+            0x75: ('{0}{1}', [self.widgets['机师'], self.widgets['状态'], ]),
+            0x77: ('{0}{1}', [self.widgets['机体'], self.widgets['状态'], ]),
             0x78: ('判断 - 机师是否搭载', []),
             0x79: ('判断 - 敌方小组剩余数量', []),
             0x7A: ('判断 - 指定势力剩余数量', []),
@@ -253,17 +254,12 @@ class CommandDialog(QDialog):
             0xAC: ('操作 - 指定机师增加说得敌方单位菜单选项', []),
             0xAD: ('判断 - 指定机师说得指定机师', []),
             0xAE: ('判断 - 指定机师说得敌方单位', []),
-            0xAF: ('{0}与{1}交手', [
-                self.widgets['机师'],
-                self.widgets['机师'],
-            ]),
+            0xAF: ('{0}与{1}交手', [self.widgets['机师'], self.widgets['机师'], ]),
             0xB0: ('判断 - 指定机师交战敌方单位', []),
             0xB1: ('判断 - 指定机师攻击', []),
             0xB2: ('判断 - 敌方单位被击破', []),
-            0xB3: ('{0}被击破', [
-                self.widgets['机师'],
-            ]),
-            0xB4: ('判断 - 指定机体被击破', []),
+            0xB3: ('{0}被击破', [self.widgets['机师'], ]),
+            0xB4: ('{0}被击破', [self.widgets['机体'], ]),
             0xB5: ('未知', []),
             0xB6: ('判断 - 指定机师HP量', []),
             0xB7: ('判断 - 指定机师被击破', []),
