@@ -21,11 +21,13 @@ class CommandDialog(QDialog):
 
         self.widgets['关卡'] = ParamRadioCombo('选择关卡', 0, EnumData.STAGE)
         self.widgets['音乐'] = ParamRadioCombo('选择音乐', 0x0, EnumData.MUSIC)
+        self.widgets['事件'] = ParamRadioCombo('选择事件', 0x0, EnumData.EVENT)
 
         self.widgets['表情'] = ParamRadioCombo('选择表情', 0x0, EnumData.COMMAND['表情'])
         self.widgets['势力'] = ParamCheckCombo('选择势力', 0x0, EnumData.COMMAND['势力'])
         self.widgets['阵营'] = ParamRadioCombo('选择阵营', 0, EnumData.COMMAND['阵营'])
         self.widgets['比较'] = ParamRadioCombo('比较符号', 0x2, EnumData.COMMAND['比较'])
+        self.widgets['触发'] = ParamRadioCombo('触发状态', 0x2, EnumData.COMMAND['触发'])
 
         self.COMMAND_SETTING = {
             0x00: ('BLOCK<{0}>', [
@@ -68,7 +70,10 @@ class CommandDialog(QDialog):
             ]),
             0x0E: ('事件 - 操作场景点数', []),
             0x0F: ('事件 - 操作全局点数', []),
-            0x10: ('事件 - 判断全局事件', []),
+            0x10: ('事件：{0}为{1}状态', [
+                self.widgets['事件'],
+                self.widgets['触发']
+            ]),
             0x11: ('事件 - 判断场景事件', []),
             0x12: ('事件 - 场景点数比较', []),
             0x13: ('事件 - 全局点数比较', []),
