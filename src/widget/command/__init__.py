@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from widget.command.param_valuespin import ParamValueSpin
-from widget.command.param_radiocombo import ParamRadioCombo
-from widget.command.param_checkcombo import ParamCheckCombo
+from widget.command.param_vspin import ParamVSpin
+from widget.command.param_rcombo import ParamRCombo
+from widget.command.param_ccombo import ParamCCombo

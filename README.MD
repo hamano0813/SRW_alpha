@@ -10,7 +10,7 @@
 #### 构建EXE步骤
 1. 下载完整代码
 2. 安装适合自身操作系统版本的CPython解释器，教程自寻，要求3.8或更高版本。[Python官网下载页面](https://www.python.org/downloads/)
-3. 双击所需bat等待构建完成，one_file为单文件好管理，one_folder为文件夹启动快
+3. 双击所需build.bat等待构建完成
 4. 在dist文件夹内找到修改器，程序入口SRWα.exe
 #### 主要实现功能
 - [x] 机体属性

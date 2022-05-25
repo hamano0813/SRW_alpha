@@ -7,7 +7,7 @@ from PySide6.QtWidgets import QSpinBox
 from widget.command.param_widget import ParamWidget
 
 
-class ParamValueSpin(QSpinBox, ParamWidget):
+class ParamVSpin(QSpinBox, ParamWidget):
     def __init__(self, name: str, default: int, display: str = 'd', **kwargs):
         QSpinBox.__init__(self, parent=None)
         ParamWidget.__init__(self, name, default, **kwargs)

@@ -7,7 +7,7 @@ from PySide6.QtWidgets import QComboBox, QCheckBox, QLineEdit, QListWidget, QLis
 from widget.command.param_widget import ParamWidget
 
 
-class ParamCheckCombo(QComboBox, ParamWidget):
+class ParamCCombo(QComboBox, ParamWidget):
     def __init__(self, name, default, item: list[str], **kwargs):
         QComboBox.__init__(self, parent=None)
         ParamWidget.__init__(self, name, default, **kwargs)

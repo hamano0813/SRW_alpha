@@ -29,7 +29,7 @@ class StageModel(QAbstractTableModel):
             return None
         elif orientation == Qt.Horizontal:
             return self.columns[section]
-        return self.commands[section]["Pos"]
+        return f'{self.commands[section]["Pos"]:04X}'
 
     def rowCount(self, parent: QModelIndex = ...) -> int:
         return len(self.commands)
@@ -202,7 +202,7 @@ class StageTable(QTableView, ControlWidget):
         index = self.indexAt(event.pos())
         text: str = index.data(Qt.DisplayRole)
         if text.startswith('GOTO') or text.startswith('RUN'):
-            pos = int(text.split(' ')[-1])
+            pos = int(text.split(' ')[-1], 16)
             if row := self.model().find_target(pos):
                 self.setCurrentIndex(self.model().createIndex(row, 1))
                 self.jump_indexes.append(index)

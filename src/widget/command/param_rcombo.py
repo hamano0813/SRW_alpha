@@ -80,7 +80,7 @@ class MappingView(QTableView):
         return True
 
 
-class ParamRadioCombo(QComboBox, ParamWidget):
+class ParamRCombo(QComboBox, ParamWidget):
     def __init__(self, name: str, default: int, mapping: dict[int, str], **kwargs):
         QComboBox.__init__(self, parent=None)
         ParamWidget.__init__(self, name, default, **kwargs)
@@ -105,7 +105,7 @@ class ParamRadioCombo(QComboBox, ParamWidget):
         try:
             return self.mapping.get(param).replace('\u3000', '')
         except:
-            print(self.mapping, param)
+            print(self.name, self.mapping, param)
 
     def new(self):
         return self.__class__(self.name, self.default, self.mapping, **self.kwargs)
