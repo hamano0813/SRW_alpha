@@ -166,14 +166,14 @@ class CommandDialog(QDialog):
             0x32: ('{0}入库 机体{1}改 武器{2}改', [self.widgets['机体'], ParamValueSpin('机体改造', 0), ParamValueSpin('武器改造', 0), ]),
             0x33: ('{0}分流', [self.widgets['机体'], ]),
             0x34: ('{0}合流', [self.widgets['机体'], ]),
-            0x35: ('刪除{0}', [self.widgets['机体'], ]),
-            0x36: ('将{0}换成{1}', [self.widgets['机体'], self.widgets['机体'], ]),
+            0x35: ('{0}离队', [self.widgets['机体'], ]),
+            0x36: ('{0}换成{1}', [self.widgets['机体'], self.widgets['机体'], ]),
 
             0x37: ('{0}加入 {1}级 击坠数{2}', [self.widgets['机师'], ParamValueSpin('等级', 1), ParamValueSpin('击坠数', 0), ]),
             0x38: ('{0}分流', [self.widgets['机师'], ]),
             0x39: ('{0}合流', [self.widgets['机师'], ]),
-            0x3A: ('删除{0}', [self.widgets['机师'], ]),
-            0x3B: ('将{0}换成{1}', [self.widgets['机师'], self.widgets['机师'], ]),
+            0x3A: ('{0}离队', [self.widgets['机师'], ]),
+            0x3B: ('{0}换成{1}', [self.widgets['机师'], self.widgets['机师'], ]),
 
             0x3C: ('未知', []),
             0x3D: ('加入或强制换乘 {0} {1}级 击坠数{2} 搭乘{3} 机体{4}改 武器{5}改', [
@@ -191,15 +191,15 @@ class CommandDialog(QDialog):
             0x41: ('{0}与搭乘机师合流', [self.widgets['机体'], ]),
             0x42: ('{0}与搭乘机体离队', [self.widgets['机师'], ]),
 
-            0x43: ('{0}搭乘{1}', [self.widgets['机师'], self.widgets['机体'], ]),
-            0x44: ('{0}搭乘[07D]V2ガンダム', [self.widgets['机师'], ]),
-            0x45: ('{0}取消搭乘', [self.widgets['机师'], ]),
-            0x46: ('{0}取消搭乘', [self.widgets['机体'], ]),
+            0x43: ('{0}强制搭乘{1}', [self.widgets['机师'], self.widgets['机体'], ]),
+            0x44: ('{0}强制搭乘[07D]V2ガンダム', [self.widgets['机师'], ]),
+            0x45: ('{0}强制取消搭乘', [self.widgets['机师'], ]),
+            0x46: ('{0}强制取消搭乘', [self.widgets['机体'], ]),
 
             0x47: ('？{0}', [self.widgets['机师'], ]),
-            0x48: ('将妖精{0}附加给{1}', [self.widgets['机师'], self.widgets['机师'], ]),
-            0x49: ('隐藏{0}', [self.widgets['机师'], ]),
-            0x4A: ('隐藏{0}', [self.widgets['机体'], ]),
+            0x48: ('妖精{0}附加给{1}', [self.widgets['机师'], self.widgets['机师'], ]),
+            0x49: ('{0}从出击名单中隐藏', [self.widgets['机师'], ]),
+            0x4A: ('{0}从出击名单中隐藏', [self.widgets['机体'], ]),
             0x4B: ('{0}强制搭乘空机体', [self.widgets['机师'], ]),
             0x4E: ('机库 - 合体允许分离', []),
 
