@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from struct import unpack_from, pack
+from struct import unpack_from, pack, iter_unpack
 
 from structure.generic import Sequence, SEQUENCE
 
@@ -123,7 +123,7 @@ class Command(Sequence):
         0x7A: 'hhh',
         0x7B: 'hhh',
         0x7C: 'hhhhh',
-        0x7D: 'hhhhh',
+        0x7D: 'bbhhhh',
         0x7E: 'hhhhh',
         0x80: 'hhhhh',
         0x81: 'hhhhh',
@@ -201,7 +201,7 @@ class Command(Sequence):
             command['Code'] = c_buffer[0]
             command['Count'] = c_buffer[1]
             fmt = self.ARGV_FMT.get(command['Code'], 'h' * (command['Count'] - 1))
-            command['Param'] = list(unpack_from(fmt, c_buffer, 0x2))
+            command['Param'] = list(unpack_from(f'>{fmt}', self.reverse_buffer(c_buffer), 0x2))
             command['Data'] = ' '.join([f'{d:04X}' for d in unpack_from('H' * command['Count'], c_buffer, 0x0)])
 
             commands.append(command)
@@ -215,8 +215,8 @@ class Command(Sequence):
             fmt = self.ARGV_FMT.get(command['Code'])
             if fmt is None:
                 fmt = 'h' * (command['Param'][0] * 4 + 4)
-            p_buffer = pack(fmt, *command['Param'])
-
+            p_buffer = pack(f'>{fmt}', *command['Param'])
+            p_buffer = self.reverse_buffer(p_buffer)
             length = len(p_buffer) + 2
             command['Count'] = length // 2
 
@@ -229,3 +229,10 @@ class Command(Sequence):
             offset += length
         buffer[self.offset:] = _buffer
         return buffer
+
+    @staticmethod
+    def reverse_buffer(buffer: bytes | bytearray) -> bytearray:
+        _buffer = bytearray()
+        for unit in iter_unpack('h', buffer):
+            _buffer += pack('>h', *unit)
+        return _buffer
