@@ -242,7 +242,7 @@ class MainWindow(QMainWindow):
             '* {font: 10pt "Yu Gothic UI Semibold";}'
             '* [language="zh"] {font: 10pt "Microsoft YaHei UI";}',
             '* [language="zhb"] {font: bold 11pt Consolas, "Microsoft YaHei UI";}',
-            '* [group="param"] {height: 24px; padding-left: 3px;}',
+            '* [group="param"] {height: 24px; padding-left: 3px; padding-right: 3px;}',
             'QMenu::item, QMenuBar, QToolBar > QToolButton {font: 11pt Consolas, "Microsoft YaHei UI";}',
         ]
         for expand in sheet_expand:

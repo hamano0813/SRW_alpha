@@ -149,15 +149,17 @@ class StageTable(QTableView, ControlWidget):
         self.control_child(index.row())
         return True
 
-    def insert_command(self):
+    def insert_command(self) -> bool:
         if not self.selectedIndexes():
             row = self.model().rowCount()
         else:
             row = self.selectedIndexes()[0].row()
-        command = CommandDialog(self, **self.kwargs).get_command()
-        print(command)
+        if command := CommandDialog(self, **self.kwargs).get_command():
+            self.model().insert_command(row, command)
+            return True
+        return False
 
-    def remove_command(self):
+    def remove_command(self) -> bool:
         if not self.selectedIndexes():
             return False
         row_set = set(map(lambda idx: idx.row(), self.selectedIndexes()))
@@ -165,11 +167,14 @@ class StageTable(QTableView, ControlWidget):
             self.model().remove_command(row)
         return True
 
-    def update_command(self):
+    def update_command(self) -> bool:
         if not self.selectedIndexes():
             return False
         row = self.selectedIndexes()[0].row()
-        print(row)
+        if command := CommandDialog(self, self.model().commands[row], **self.kwargs).get_command():
+            self.model().update_command(row, command)
+            return True
+        return False
 
     def right_menu(self) -> None:
         right_click_menu = QMenu()
@@ -269,6 +274,10 @@ class StageFrame(QFrame, AbstractWidget):
         insert_button = QPushButton('插入指令')
         delete_button = QPushButton('删除指令')
         search_button = QPushButton('全局查找')
+        edit_button.setProperty('language', 'zh')
+        insert_button.setProperty('language', 'zh')
+        delete_button.setProperty('language', 'zh')
+        search_button.setProperty('language', 'zh')
         edit_button.clicked.connect(self.table.update_command)
         insert_button.clicked.connect(self.table.insert_command)
         delete_button.clicked.connect(self.table.remove_command)
