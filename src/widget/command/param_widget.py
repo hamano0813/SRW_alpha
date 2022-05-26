@@ -1,11 +1,19 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from PySide6.QtCore import Signal
+
+
 class ParamWidget:
+    dataChanged = Signal(int)
+
+    # noinspection PyUnresolvedReferences
     def __init__(self, name: str, default: int, **kwargs):
         self.name = name
         self.default = default
         self.kwargs = kwargs
+        self.setProperty('language', 'zh')
+        self.setProperty('group', 'param')
 
     def install(self, param: int = None):
         pass
@@ -16,10 +24,8 @@ class ParamWidget:
     def explain(self, param: int) -> str:
         pass
 
+    def data_change(self):
+        self.dataChanged.emit(self.data())
+
     def new(self):
         return self.__class__(self.name, self.default, **self.kwargs)
-
-    def __del__(self):
-        # noinspection PyUnresolvedReferences
-        self.close()
-        del self

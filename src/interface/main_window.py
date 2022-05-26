@@ -40,8 +40,7 @@ class MainWindow(QMainWindow):
             '文本': (SnmsgFrame, ('SNMSG.BIN',),),
             '场景': (ScenarioFrame, ('SNDATA.BIN', 'ENLIST.BIN', 'AIUNP.BIN'),
                    {'robots': self.roms['UNCOMPRESS_ROBOT.RAF'].robots,
-                    'pilots': self.roms['PILOT.BIN'].pilots,
-                    'messages': self.roms['SNMSG.BIN'].messages},
+                    'pilots': self.roms['PILOT.BIN'].pilots},
                    ),
             '其他': (PrmgrpFrame, ('PRM_GRP.BIN',),),
         }
@@ -242,7 +241,8 @@ class MainWindow(QMainWindow):
             '#ENLIST::section {padding: -1px -15px 0px 0px;}',
             '* {font: 10pt "Yu Gothic UI Semibold";}'
             '* [language="zh"] {font: 10pt "Microsoft YaHei UI";}',
-            '* [language="zhb"] {font: bold 11pt "Microsoft YaHei UI";}',
+            '* [language="zhb"] {font: bold 11pt Consolas, "Microsoft YaHei UI";}',
+            '* [group="param"] {height: 24px; padding-left: 3px;}',
             'QMenu::item, QMenuBar, QToolBar > QToolButton {font: 11pt Consolas, "Microsoft YaHei UI";}',
         ]
         for expand in sheet_expand:

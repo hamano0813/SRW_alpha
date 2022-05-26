@@ -13,6 +13,7 @@ class ParamVSpin(QSpinBox, ParamWidget):
         ParamWidget.__init__(self, name, default, **kwargs)
         self.display = display
         self.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
+        self.valueChanged.connect(self.data_change)
 
     def textFromValue(self, val: int) -> str:
         return f'{val:{self.display}}'

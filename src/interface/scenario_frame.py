@@ -60,7 +60,6 @@ class ScenarioFrame(BackgroundFrame):
         return StageFrame(self['场景设计'], 'Commands', corner='索引',
                           robots=self.robot_mapping,
                           pilots=self.pilot_mapping,
-                          messages=self.message_mapping,
                           )
 
     def init_enemy_frame(self):

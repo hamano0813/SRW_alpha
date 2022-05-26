@@ -61,7 +61,8 @@ class ParamCCombo(QComboBox, ParamWidget):
         return self.sep.join(texts)
 
     def new(self):
-        return self.__init__(self.name, self.default, self.item, **self.kwargs)
+        return self.__class__(self.name, self.default, self.item, **self.kwargs)
 
     def set_text(self):
         self.lineEdit().setText(self.explain(self.data()))
+        self.data_change()

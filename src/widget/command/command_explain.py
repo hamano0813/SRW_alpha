@@ -12,11 +12,10 @@ class CommandExplain:
 
         self.w['机体'] = ParamRCombo('选择机体', 0, kwargs.get('robots'))
         self.w['机师'] = ParamRCombo('选择机师', 0, kwargs.get('pilots') | {-0x1: ''})
-        self.w['文本'] = ParamRCombo('选择文本', 0, kwargs.get('messages'))
 
         self.w['关卡'] = ParamRCombo('选择关卡', 0, EnumData.STAGE)
         self.w['音乐'] = ParamRCombo('选择音乐', 0, EnumData.MUSIC)
-        self.w['事件'] = ParamRCombo('选择事件', 0, EnumData.EVENT)
+        self.w['事件'] = ParamRCombo('选择事件', 0x10, EnumData.EVENT)
         self.w['芯片'] = ParamRCombo('选择芯片', 0, EnumData.PART)
         self.w['精神'] = ParamRCombo('选择精神', 0, EnumData.SPIRIT)
 
@@ -121,16 +120,16 @@ class CommandExplain:
                    [],
                    '[16]事件控制 - 必定返回假',
                    '无条件返回假'),
-            0x17: ('{0} 表情{1}\n{3}',
-                   [self.w['机师'], self.w['表情'], ParamVSpin('无效', 0), self.w['文本']],
+            0x17: ('{0} 表情{1} 文本编号[{3}]',
+                   [self.w['机师'], self.w['表情'], ParamVSpin('无效', 0), ParamVSpin('文本编号', 0, '04X')],
                    '[17]文本语音 - 机师普通文本会话',
                    '指定机师以指定表情说指定文本内容'),
-            0x18: ('{0} 表情{1}\n{3}',
-                   [self.w['机师'], self.w['表情'], ParamVSpin('无效', 0), self.w['文本']],
+            0x18: ('{0} 表情{1} 文本编号[{3}]',
+                   [self.w['机师'], self.w['表情'], ParamVSpin('无效', 0), ParamVSpin('文本编号', 0, '04X')],
                    '[18]文本语音 - 变量普通文本会话',
                    '主角或恋人以指定表情说文本内容，文本八套一组，按性格变化'),
-            0x19: ('{1} 表情{2} 语音[{0}]\n{4}',
-                   [ParamVSpin('语音', 0, '04X'), self.w['机师'], self.w['表情'], ParamVSpin('无效', 0), self.w['文本']],
+            0x19: ('{1} 表情{2} 语音[{0}]  文本编号[{4}]',
+                   [ParamVSpin('语音', 0, '04X'), self.w['机师'], self.w['表情'], ParamVSpin('无效', 0), ParamVSpin('文本编号', 0, '04X')],
                    '[19]文本语音 - 机师普通语音会话',
                    '指定机师以指定表情说指定文本内容并伴随指定语音'),
             0x1A: ('最终话不同主角对战BOSS',
@@ -144,24 +143,25 @@ class CommandExplain:
                     ParamVSpin('未知', 0, '04X')],
                    '[1A]文本语音 - 主角特殊文本',
                    '最终话主角对战尤泽斯时所使用的特殊指令'),
-            0x1B: ('{0} 表情{1}\n{3}',
-                   [self.w['机师'], self.w['表情'], ParamVSpin('无效', 0), self.w['文本']],
+            0x1B: ('{0} 表情{1} 文本编号[{3}]',
+                   [self.w['机师'], self.w['表情'], ParamVSpin('无效', 0), ParamVSpin('文本编号', 0, '04X')],
                    '[1B]文本语音 - 变量普通语音会话',
                    '主角或恋人以指定表情说文本内容并伴随指定语音，文本八套一组，按性格变化'),
-            0x1C: ('{0} 表情{1} 音乐《{4}》\n{3}',
-                   [self.w['机师'], self.w['表情'], ParamVSpin('无效', 0), self.w['文本'], self.w['音乐']],
+            0x1C: ('{0} 表情{1} 音乐《{4}》 文本编号[{3}]',
+                   [self.w['机师'], self.w['表情'], ParamVSpin('无效', 0), ParamVSpin('文本编号', 0, '04X'), self.w['音乐']],
                    '[1C]文本语音 - 机师播放音乐会话',
                    '指定机师以指定表情说指定文本内容并伴随指定音乐'),
-            0x1D: ('{0} 表情{1} 停止音乐\n{3}',
-                   [self.w['机师'], self.w['表情'], ParamVSpin('无效', 0), self.w['文本']],
+            0x1D: ('{0} 表情{1} 停止音乐 文本编号[{3}]',
+                   [self.w['机师'], self.w['表情'], ParamVSpin('无效', 0), ParamVSpin('文本编号', 0, '04X')],
                    '[1D]文本语音 - 机师停止音乐会话',
                    '指定机师以指定表情说指定文本内容并停止指定音乐'),
-            0x1E: ('胜利条件：\n{1}\n失败条件：\n{3}',
-                   [ParamVSpin('无效', 0), self.w['文本'], ParamVSpin('无效', 0), self.w['文本']],
+            0x1E: ('胜利条件： 文本编号[{1}]\n失败条件： 文本编号[{3}]',
+                   [ParamVSpin('无效', 0), ParamVSpin('文本编号', 0, '04X'),
+                    ParamVSpin('无效', 0), ParamVSpin('文本编号', 0, '04X')],
                    '[1E]文本语音 - 显示胜利与失败文本',
                    '更新显示胜利条件与失败条件'),
-            0x1F: ('{0}选择 - {2}',
-                   [self.w['机师'], ParamVSpin('无效', 0), self.w['文本']],
+            0x1F: ('{0}选择：文本编号[{2}]',
+                   [self.w['机师'], ParamVSpin('无效', 0), ParamVSpin('文本编号', 0, '04X')],
                    '[1F]文本语音 - 选项会话文本',
                    '指定机师在二选一选项文本中做选择'),
             0x21: ('选择了第一项',
@@ -780,8 +780,15 @@ class CommandExplain:
                    [ParamVSpin('无效', -0x80, '2X'), ParamVSpin('序号', 0, '02X')],
                    '[B8]条件判断 - 判断敌方未被击破',
                    '指定敌方列表单位未被击破为真，否则为假'),
-            0xB9: ('演出 - 相对坐标特殊演出',  # TODO
-                   [],
+            0xB9: ('{0} {1} {2} {3}\n{4} {5} {6} {7} ',  # TODO
+                   [ParamVSpin('1', 1, '04X'),
+                    ParamVSpin('2', 0, '04X'),
+                    ParamVSpin('3', 0, '04X'),
+                    ParamVSpin('4', 0, '04X'),
+                    ParamVSpin('5', 0, '04X'),
+                    ParamVSpin('6', 0, '04X'),
+                    ParamVSpin('7', 0, '04X'),
+                    ParamVSpin('8', 0, '04X'), ],
                    '[B9]地图演出 - 相对坐标特殊地图演出',
                    '在指定机师的相对坐标进行特殊的地图演出'),
             0xBA: ('地图演出[{0}] 地图绝对坐标 X{1} Y{2}',
@@ -804,16 +811,15 @@ class CommandExplain:
         param = command.get('Param')
         param_setting: tuple[str, list[ParamWidget], str, str] = self.settings.get(code, (str(code), tuple()))
         param_text, param_widgets, _, _ = param_setting
-        explain_list = []
 
-        if code != 0xB9:
-            for param_idx, param_widget in enumerate(param_widgets):
-                explain_list.append(param_widget.explain(param[param_idx]))
-            return param_text.format(*explain_list)
+        if code == 0xB9:
+            set_count = param[0]
+            param_widgets.extend(param_widgets[4:] * (set_count - 1))
+            texts = param_text.splitlines()
+            texts.extend(texts[1:] * (set_count - 1))
+            param_text = '\n'.join(texts)
 
+        explain_list = list()
         for param_idx, param_widget in enumerate(param_widgets):
-            if param_idx < 8:
-                explain_list.append(param_widget.explain(param[param_idx]))
-            else:
-                explain_list.append(param_widgets[param_idx % 4 + 4].explain(param[param_idx]))
+            explain_list.append(param_widget.explain(param[param_idx]))
         return param_text.format(*explain_list)
