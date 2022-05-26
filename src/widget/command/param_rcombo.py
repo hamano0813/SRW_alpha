@@ -96,7 +96,7 @@ class ParamRCombo(QComboBox, ParamWidget):
     def install(self, param: int = None):
         if param is not None:
             return self.setCurrentIndex(list(self.mapping.keys()).index(param))
-        return self.setCurrentIndex(0)
+        return self.setCurrentIndex(list(self.mapping.keys()).index(self.default))
 
     def data(self) -> int:
         return list(self.mapping.keys())[self.currentIndex()]

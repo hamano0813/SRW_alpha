@@ -9,7 +9,7 @@ from PySide6.QtWidgets import (QTableView, QApplication, QPushButton, QVBoxLayou
 from structure.generic import SEQUENCE
 from widget import ArrayTable
 from widget.abstract_widget import ControlWidget, AbstractWidget
-from widget.command.command_explain import CommandExplain
+from widget.command.command_dialog import CommandDialog, CommandExplain
 
 
 class StageModel(QAbstractTableModel):
@@ -154,7 +154,8 @@ class StageTable(QTableView, ControlWidget):
             row = self.model().rowCount()
         else:
             row = self.selectedIndexes()[0].row()
-        print(row)
+        command = CommandDialog(self, **self.kwargs).get_command()
+        print(command)
 
     def remove_command(self):
         if not self.selectedIndexes():

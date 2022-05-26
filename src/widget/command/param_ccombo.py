@@ -31,13 +31,19 @@ class ParamCCombo(QComboBox, ParamWidget):
         self.setView(list_widget)
 
     def install(self, param: int = None):
+        if param is not None:
+            for bit, check_box in enumerate(self.check_list):
+                check_box.disconnect(check_box)
+                check_box.setChecked((param & 1 << bit) >> bit)
+                # noinspection PyUnresolvedReferences
+                check_box.stateChanged.connect(self.set_text)
+            return self.lineEdit().setText(self.explain(param))
         for bit, check_box in enumerate(self.check_list):
             check_box.disconnect(check_box)
-            check_box.setChecked((param & 1 << bit) >> bit)
+            check_box.setChecked((self.default & 1 << bit) >> bit)
             # noinspection PyUnresolvedReferences
             check_box.stateChanged.connect(self.set_text)
-        self.lineEdit().setText(self.explain(param))
-        return True
+        return self.lineEdit().setText(self.explain(self.default))
 
     def data(self) -> int:
         value = 0
