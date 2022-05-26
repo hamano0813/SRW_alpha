@@ -7,8 +7,9 @@ from PySide6.QtWidgets import (QTableView, QApplication, QPushButton, QVBoxLayou
                                QStyleOptionHeader, QWidget, QStyle, QStylePainter, QMenu)
 
 from structure.generic import SEQUENCE
+from widget import ArrayTable
 from widget.abstract_widget import ControlWidget, AbstractWidget
-from widget.command.command_dialog import CommandDialog
+from widget.command.command_explain import CommandExplain
 
 
 class StageModel(QAbstractTableModel):
@@ -16,7 +17,7 @@ class StageModel(QAbstractTableModel):
         super(StageModel, self).__init__(parent)
         self.commands: list[dict[str, int | str]] = list()
         self.columns = ('指令码', '指令释义')
-        self.explain = CommandDialog(None, **kwargs)
+        self.explain = CommandExplain(**kwargs)
 
     def install(self, commands: SEQUENCE) -> bool:
         self.beginResetModel()
@@ -43,7 +44,6 @@ class StageModel(QAbstractTableModel):
             if index.column() == 0:
                 return command['Data']
             if index.column() == 1:
-                # return EnumData.COMMAND['简介'].get(command)
                 return self.explain.explain(command)
         if role == Qt.ToolTipRole:
             if index.column() == 0:
@@ -250,9 +250,11 @@ class StageTable(QTableView, ControlWidget):
 
 
 class StageFrame(QFrame, AbstractWidget):
-    def __init__(self, parent, data_name, **kwargs):
+    def __init__(self, parent, data_name: str, **kwargs):
         QFrame.__init__(self, parent)
         AbstractWidget.__init__(self, parent, data_name, **kwargs)
+        self._parent: ArrayTable | QWidget = parent
+
         self.table = StageTable(parent, data_name, **kwargs)
 
         layout = QHBoxLayout()
@@ -262,18 +264,25 @@ class StageFrame(QFrame, AbstractWidget):
 
     # noinspection PyUnresolvedReferences
     def init_buttons(self):
-        edit_button = QPushButton('编辑')
-        insert_button = QPushButton('插入')
-        delete_button = QPushButton('删除')
+        edit_button = QPushButton('编辑指令')
+        insert_button = QPushButton('插入指令')
+        delete_button = QPushButton('删除指令')
+        search_button = QPushButton('全局查找')
         edit_button.clicked.connect(self.table.update_command)
         insert_button.clicked.connect(self.table.insert_command)
         delete_button.clicked.connect(self.table.remove_command)
+        search_button.clicked.connect(self.search_command)
         button_layout = QVBoxLayout()
         button_layout.addWidget(edit_button)
         button_layout.addWidget(insert_button)
         button_layout.addWidget(delete_button)
+        button_layout.addWidget(search_button)
         button_layout.addStretch()
         return button_layout
 
     def install(self, data_set: dict[str, int | str | SEQUENCE]) -> bool:
         return self.table.install(data_set)
+
+    def search_command(self):
+        scenario_data = self._parent.data_set
+        print(scenario_data)
