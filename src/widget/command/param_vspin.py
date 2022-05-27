@@ -12,11 +12,12 @@ class ParamVSpin(QSpinBox, ParamWidget):
         QSpinBox.__init__(self, parent=None)
         ParamWidget.__init__(self, name, default, **kwargs)
         self.display = display
-        self.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
+        self.setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
         self.setContextMenuPolicy(Qt.NoContextMenu)
         # noinspection PyUnresolvedReferences
         self.valueChanged.connect(self.data_change)
         self.mapping = self.kwargs.get('mapping')
+        self.setRange(0, 65535)
 
     def textFromValue(self, val: int) -> str:
         return f'{val:{self.display}}'

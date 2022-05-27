@@ -5,7 +5,7 @@ from struct import calcsize, pack, unpack
 
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (QDialog, QFormLayout, QDialogButtonBox, QComboBox, QPushButton, QVBoxLayout,
-                               QPlainTextEdit, QLabel, QApplication)
+                               QPlainTextEdit, QLabel, QApplication, QHBoxLayout)
 
 from structure.specific.sndata_bin.command import Command
 from widget.command.command_explain import CommandExplain
@@ -18,11 +18,12 @@ class CommandDialog(QDialog):
         self.setWindowTitle('编辑指令' if command else '插入指令')
         self.explain = CommandExplain(**kwargs)
         self.widgets = list()
-        self.setFixedWidth(800)
+        # self.setFixedWidth(800)
 
         self.code_combo = QComboBox()
         self.code_combo.setProperty('language', 'zhb')
         self.code_combo.setProperty('group', 'param')
+        self.code_combo.setFixedWidth(400)
         for code, settings in self.explain.settings.items():
             self.code_combo.addItem(settings[2], code)
 
@@ -30,19 +31,30 @@ class CommandDialog(QDialog):
         self.explain_text.setReadOnly(True)
         self.explain_text.setContextMenuPolicy(Qt.NoContextMenu)
         self.explain_text.setProperty('language', 'zh')
-        self.explain_text.setFixedHeight(100)
+        self.explain_text.setFixedWidth(468)
 
         self.edit_layout = QFormLayout()
-        l1 = QLabel('指令选择')
-        l2 = QLabel('指令释义')
-        l1.setProperty('language', 'zh')
-        l2.setProperty('language', 'zh')
-        self.edit_layout.addRow(l1, self.code_combo)
-        self.edit_layout.addRow(l2, self.explain_text)
 
-        main_layout = QVBoxLayout()
-        main_layout.addLayout(self.edit_layout)
-        main_layout.addWidget(self.init_button())
+        left_layout = QVBoxLayout()
+        top_layout = QHBoxLayout()
+        l1 = QLabel('指令选择')
+        l1.setProperty('language', 'zhb')
+        top_layout.addWidget(l1)
+        top_layout.addWidget(self.code_combo)
+        l2 = QLabel('指令释义')
+        l2.setProperty('language', 'zhb')
+        left_layout.addLayout(top_layout)
+        left_layout.addWidget(l2)
+        left_layout.addWidget(self.explain_text)
+
+        right_layout = QVBoxLayout()
+        right_layout.addLayout(self.edit_layout)
+        right_layout.addStretch()
+        right_layout.addWidget(self.init_button())
+
+        main_layout = QHBoxLayout()
+        main_layout.addLayout(left_layout)
+        main_layout.addLayout(right_layout)
         self.setLayout(main_layout)
 
         self.init_widgets(command)
@@ -92,11 +104,12 @@ class CommandDialog(QDialog):
 
         for param_widget in param_widgets:
             widget: ParamWidget = param_widget.new()
-            if widget.name == '无效':
+            if widget.name == '无效参数':
                 # noinspection PyUnresolvedReferences
                 widget.setEnabled(False)
             label = QLabel(widget.name)
-            label.setProperty('language', 'zh')
+            label.setProperty('language', 'zhb')
+            label.setFixedWidth(72)
             self.edit_layout.addRow(label, widget)
             self.widgets.append(widget)
 
@@ -114,18 +127,19 @@ class CommandDialog(QDialog):
 
     def reset_widgets(self):
         for i in range(len(self.widgets)):
-            self.edit_layout.removeRow(2)
+            self.edit_layout.removeRow(0)
         self.widgets = list()
 
         code = self.code_combo.currentData()
         param_widgets: list[ParamWidget] = self.explain.settings.get(code)[1]
         for param_widget in param_widgets:
             widget: ParamWidget = param_widget.new()
-            if widget.name == '无效':
+            if widget.name == '无效参数':
                 # noinspection PyUnresolvedReferences
                 widget.setEnabled(False)
             label = QLabel(widget.name)
-            label.setProperty('language', 'zh')
+            label.setProperty('language', 'zhb')
+            label.setFixedWidth(72)
             self.edit_layout.addRow(label, widget)
             self.widgets.append(widget)
 
