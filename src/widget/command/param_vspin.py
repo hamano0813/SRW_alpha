@@ -16,6 +16,7 @@ class ParamVSpin(QSpinBox, ParamWidget):
         self.setContextMenuPolicy(Qt.NoContextMenu)
         # noinspection PyUnresolvedReferences
         self.valueChanged.connect(self.data_change)
+        self.mapping = self.kwargs.get('mapping')
 
     def textFromValue(self, val: int) -> str:
         return f'{val:{self.display}}'
@@ -38,6 +39,8 @@ class ParamVSpin(QSpinBox, ParamWidget):
         return self.value()
 
     def explain(self, param: int) -> str:
+        if self.mapping:
+            return self.mapping.get(param, self.textFromValue(param)).replace('\u3000', '')
         return self.textFromValue(param)
 
     def new(self):

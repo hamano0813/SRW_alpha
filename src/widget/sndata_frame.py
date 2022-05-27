@@ -45,14 +45,11 @@ class StageModel(QAbstractTableModel):
                 return command['Data']
             if index.column() == 1:
                 return self.explain.explain(command)
-        if role == Qt.ToolTipRole:
-            if index.column() == 0:
-                return str(command)
         if role == Qt.FontRole:
             font = QFont()
+            font.setFamilies(['Consolas', 'Microsoft Yahei UI', 'Wingdings'])
+            font.setPointSize(12)
             if index.column() == 1:
-                font.setFamilies(['Consolas', 'Microsoft Yahei UI'])
-                font.setPointSize(14)
                 if command['Code'] <= 0x01:
                     font.setBold(True)
                     font.setLetterSpacing(QFont.PercentageSpacing, 150)
@@ -116,9 +113,12 @@ class StageTable(QTableView, ControlWidget):
         ControlWidget.__init__(self, parent, data_name, **kwargs)
         self.jump_indexes = []
 
+        self.setWordWrap(True)
+
         self.horizontalHeader().setProperty('language', 'zh')
         self.verticalHeader().setFixedWidth(40)
         self.verticalHeader().setDefaultAlignment(Qt.AlignLeft | Qt.AlignVCenter)
+
         self.setContextMenuPolicy(Qt.CustomContextMenu)
         # noinspection PyUnresolvedReferences
         self.customContextMenuRequested.connect(self.right_menu)
@@ -132,6 +132,7 @@ class StageTable(QTableView, ControlWidget):
         self.setModel(model)
         self.resizeRowsToContents()
         self.resizeColumnsToContents()
+        self.setColumnWidth(0, 250)
         self.horizontalHeader().setSectionResizeMode(1, self.horizontalHeader().Stretch)
         self.data_set = data_set
         self.control_child(0)

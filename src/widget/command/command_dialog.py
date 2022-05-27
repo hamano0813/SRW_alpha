@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from struct import calcsize
+from struct import calcsize, pack, unpack
 
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (QDialog, QFormLayout, QDialogButtonBox, QComboBox, QPushButton, QVBoxLayout,
@@ -18,7 +18,7 @@ class CommandDialog(QDialog):
         self.setWindowTitle('编辑指令' if command else '插入指令')
         self.explain = CommandExplain(**kwargs)
         self.widgets = list()
-        self.setFixedWidth(600)
+        self.setFixedWidth(800)
 
         self.code_combo = QComboBox()
         self.code_combo.setProperty('language', 'zhb')
@@ -30,7 +30,7 @@ class CommandDialog(QDialog):
         self.explain_text.setReadOnly(True)
         self.explain_text.setContextMenuPolicy(Qt.NoContextMenu)
         self.explain_text.setProperty('language', 'zh')
-        self.explain_text.setFixedHeight(80)
+        self.explain_text.setFixedHeight(100)
 
         self.edit_layout = QFormLayout()
         l1 = QLabel('指令选择')
@@ -46,6 +46,7 @@ class CommandDialog(QDialog):
         self.setLayout(main_layout)
 
         self.init_widgets(command)
+        # noinspection PyUnresolvedReferences
         self.code_combo.currentIndexChanged.connect(self.reset_widgets)
 
     def get_command(self):
@@ -57,21 +58,34 @@ class CommandDialog(QDialog):
         code = command['Code'] = self.code_combo.currentData()
         command['Param'] = [widget.data() for widget in self.widgets]
         if code == 0xB9:
-            command['Count'] = command['Param'] * 4 + 5
+            command['Count'] = command['Param'][0] * 4 + 5
         else:
             command['Count'] = calcsize(Command.ARGV_FMT.get(code, '')) // 2 + 1
+        self.generate_data(command)
         return command
+
+    @staticmethod
+    def generate_data(command: dict):
+        fmt = Command.ARGV_FMT.get(command['Code'], None)
+        if fmt is None:
+            fmt = 'h' * (command['Param'][0] * 4 + 4)
+        p_buffer = pack(f'>{fmt}', *command['Param'])
+        p_buffer = Command.reverse_buffer(p_buffer)
+        length = len(p_buffer) + 2
+        command['Count'] = length // 2
+
+        c_buffer = bytearray(2)
+        c_buffer[0] = command['Code']
+        c_buffer[1] = command['Count']
+        c_buffer += p_buffer
+        command['Data'] = ' '.join([f'{d:04X}' for d in unpack('H' * command['Count'], c_buffer)])
 
     def explain_command(self):
         self.explain_text.setPlainText(self.explain.explain(self.command()))
 
     def init_widgets(self, command: dict = None):
-        if not command:
-            code = 0
-            param = [0]
-        else:
-            code: int = command['Code']
-            param: list[int] = command['Param']
+        code = 0 if not command else command['Code']
+        param = [1] if not command else command['Param']
 
         param_widgets: list[ParamWidget] = self.explain.settings.get(code)[1]
         self.code_combo.setCurrentIndex(list(self.explain.settings.keys()).index(code))
@@ -85,19 +99,19 @@ class CommandDialog(QDialog):
 
         if code == 0xB9:
             self.widgets[0].valueChanged[int].connect(self.adjust_b9)
-            self.adjust_b9(param[0])
 
         for idx, widget in enumerate(self.widgets):
             widget.install(param[idx])
-            widget.dataChanged.connect(self.explain_command)
+            if idx > 0:
+                widget.dataChanged.connect(self.explain_command)
 
         self.explain_command()
         self.special_rule()
         self.resize_self()
 
     def reset_widgets(self):
-        for idx in range(len(self.widgets) + 1, 1, -1):
-            self.edit_layout.removeRow(idx)
+        for i in range(len(self.widgets)):
+            self.edit_layout.removeRow(2)
         self.widgets = list()
 
         code = self.code_combo.currentData()
@@ -110,42 +124,44 @@ class CommandDialog(QDialog):
             self.widgets.append(widget)
 
         if code == 0xB9:
-            # noinspection PyUnresolvedReferences
             self.widgets[0].dataChanged[int].connect(self.adjust_b9)
 
-        for widget in self.widgets:
+        for idx, widget in enumerate(self.widgets):
             widget.install()
-            widget.dataChanged.connect(self.explain_command)
+            if idx > 0:
+                widget.dataChanged.connect(self.explain_command)
 
         self.explain_command()
         self.special_rule()
         self.resize_self()
 
     def resize_self(self):
-        # for i in range(0, 10):
         QApplication.processEvents()
         self.resize(self.minimumSizeHint())
 
     def adjust_b9(self, count: int):
         adjust_count = count - (len(self.widgets) // 4 - 1)
-        rows = self.edit_layout.rowCount()
         if adjust_count < 0:
+            for i in range(abs(adjust_count) * 4):
+                self.edit_layout.removeRow(self.edit_layout.rowCount() - 1)
             self.widgets = self.widgets[:adjust_count * 4]
-            for idx in range(rows - 1, len(self.widgets) + 1, -1):
-                self.edit_layout.removeRow(idx)
             self.resize_self()
         else:
-            self.widgets.extend([w.new() for w in self.widgets[-4:]] * adjust_count)
-            for widget in self.widgets[rows - 2:]:
+            start_idx = len(self.widgets)
+            for i in range(adjust_count):
+                self.widgets.extend([w.new() for w in self.widgets[-4:]])
+            for widget in self.widgets[start_idx:]:
                 label = QLabel(widget.name)
                 label.setProperty('language', 'zh')
                 self.edit_layout.addRow(label, widget)
+                widget.dataChanged.connect(self.explain_command)
+                widget.install()
+        self.explain_command()
 
     def special_rule(self):
         match self.code_combo.currentData():
             case 0xB9:
                 self.widgets[0].setRange(1, 5)
-
 
     # noinspection PyUnresolvedReferences
     def init_button(self):

@@ -25,10 +25,7 @@ class ParamRCombo(QComboBox, ParamWidget):
         return list(self.mapping.keys())[self.currentIndex()]
 
     def explain(self, param: int) -> str:
-        try:
-            return self.mapping.get(param).replace('\u3000', '')
-        except:
-            print(self.name, self.mapping, param)
+        return self.mapping.get(param).replace('\u3000', '')
 
     def new(self):
         return self.__class__(self.name, self.default, self.mapping, **self.kwargs)

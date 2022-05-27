@@ -86,6 +86,7 @@ class ScenarioTable(ControlWidget, QTableView):
         painter.drawControl(QStyle.CE_Header, option)
         return True
 
+
 class ScenarioCombo(QComboBox):
     def __init__(self, parent):
         super(ScenarioCombo, self).__init__(parent)

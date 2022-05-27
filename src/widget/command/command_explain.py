@@ -12,7 +12,7 @@ class CommandExplain:
 
         self.w['机体'] = ParamRCombo('选择机体', 0, kwargs.get('robots'))
         self.w['机师'] = ParamRCombo('选择机师', 0, kwargs.get('pilots') | {-0x1: ''})
-        self.w['文本'] = ParamRCombo('选择文本', 0, kwargs.get('messages'))
+        self.w['文本'] = ParamVSpin('选择文本', 0, '04X', mapping=kwargs.get('messages'))
 
         self.w['关卡'] = ParamRCombo('选择关卡', 0, EnumData.STAGE)
         self.w['音乐'] = ParamRCombo('选择音乐', 0, EnumData.MUSIC)
@@ -28,9 +28,9 @@ class CommandExplain:
         self.w['状态'] = ParamRCombo('存在状态', 0, EnumData.COMMAND['状态'])
         self.w['行动'] = ParamRCombo('行动状态', 0, EnumData.COMMAND['行动'])
         self.w['移动'] = ParamRCombo('移动状态', 0, EnumData.COMMAND['移动'])
-        self.w['势力'] = ParamCCombo('势力编号', 0, EnumData.COMMAND['势力'], sep='＆')
+        self.w['势力'] = ParamCCombo('势力编号', 0, EnumData.COMMAND['势力'], sep='|')
         self.w['选项'] = ParamCCombo('选项序号', 0, EnumData.COMMAND['选项'], sep='＆')
-        self.w['演出'] = ParamCCombo('选择演出', 0, EnumData.COMMAND['演出'], sep='＆')
+        self.w['演出'] = ParamCCombo('选择演出', 0, EnumData.COMMAND['演出'], sep=' ')
 
         self.settings = {
             0x00: ('BLOCK<{0}>',
@@ -73,7 +73,7 @@ class CommandExplain:
                    [],
                    '[0A]流程控制 - 回调符号',
                    '从回调符号开始切回原转来的定位'),
-            0x0B: ('载入地图设计{0} 敌方设计{0} AI设计{0}',
+            0x0B: ('载入地图设计[{0}] 敌方设计[{0}] AI设计[{0}]',
                    [ParamVSpin('地图设计', 0, '02X'), ParamVSpin('敌方设计', 0, '02X'), ParamVSpin('AI设计', 0, '02X')],
                    '[0B]流程控制 - 载入场景相关信息',
                    '分别载入地图设计、敌方设计、AI设计'),
@@ -125,12 +125,12 @@ class CommandExplain:
                    [self.w['机师'], self.w['表情'], ParamVSpin('无效', 0), self.w['文本']],
                    '[17]文本语音 - 机师普通文本会话',
                    '指定机师以指定表情说指定文本内容'),
-            0x18: ('{0} 表情{1} 文本编号[{3}]',
-                   [self.w['机师'], self.w['表情'], ParamVSpin('无效', 0), ParamVSpin('文本编号', 0, '04X')],
+            0x18: ('{0} 表情{1}\n{3}',
+                   [self.w['机师'], self.w['表情'], ParamVSpin('无效', 0), self.w['文本']],
                    '[18]文本语音 - 变量普通文本会话',
                    '主角或恋人以指定表情说文本内容，文本八套一组，按性格变化'),
-            0x19: ('{1} 表情{2} 语音[{0}]  文本编号[{4}]',
-                   [ParamVSpin('语音', 0, '04X'), self.w['机师'], self.w['表情'], ParamVSpin('无效', 0), ParamVSpin('文本编号', 0, '04X')],
+            0x19: ('{1} 表情{2} 语音[{0}]\n{4}',
+                   [ParamVSpin('语音', 0, '04X'), self.w['机师'], self.w['表情'], ParamVSpin('无效', 0), self.w['文本']],
                    '[19]文本语音 - 机师普通语音会话',
                    '指定机师以指定表情说指定文本内容并伴随指定语音'),
             0x1A: ('最终话不同主角对战BOSS',
@@ -144,25 +144,25 @@ class CommandExplain:
                     ParamVSpin('未知', 0, '04X')],
                    '[1A]文本语音 - 主角特殊文本',
                    '最终话主角对战尤泽斯时所使用的特殊指令'),
-            0x1B: ('{0} 表情{1} 文本编号[{3}]',
-                   [self.w['机师'], self.w['表情'], ParamVSpin('无效', 0), ParamVSpin('文本编号', 0, '04X')],
+            0x1B: ('{0} 表情{1}\n{3}',
+                   [self.w['机师'], self.w['表情'], ParamVSpin('无效', 0), self.w['文本']],
                    '[1B]文本语音 - 变量普通语音会话',
                    '主角或恋人以指定表情说文本内容并伴随指定语音，文本八套一组，按性格变化'),
-            0x1C: ('{0} 表情{1} 音乐《{4}》 文本编号[{3}]',
-                   [self.w['机师'], self.w['表情'], ParamVSpin('无效', 0), ParamVSpin('文本编号', 0, '04X'), self.w['音乐']],
+            0x1C: ('{0} 表情{1} 音乐《{4}》\n{3}',
+                   [self.w['机师'], self.w['表情'], ParamVSpin('无效', 0), self.w['文本'], self.w['音乐']],
                    '[1C]文本语音 - 机师播放音乐会话',
                    '指定机师以指定表情说指定文本内容并伴随指定音乐'),
-            0x1D: ('{0} 表情{1} 停止音乐 文本编号[{3}]',
-                   [self.w['机师'], self.w['表情'], ParamVSpin('无效', 0), ParamVSpin('文本编号', 0, '04X')],
+            0x1D: ('{0} 表情{1} 停止音乐\n{3}',
+                   [self.w['机师'], self.w['表情'], ParamVSpin('无效', 0), self.w['文本']],
                    '[1D]文本语音 - 机师停止音乐会话',
                    '指定机师以指定表情说指定文本内容并停止指定音乐'),
-            0x1E: ('胜利条件： 文本编号[{1}]\n失败条件： 文本编号[{3}]',
-                   [ParamVSpin('无效', 0), ParamVSpin('文本编号', 0, '04X'),
-                    ParamVSpin('无效', 0), ParamVSpin('文本编号', 0, '04X')],
+            0x1E: ('胜利条件：\n{1}\n失败条件：\n{3}',
+                   [ParamVSpin('无效', 0), self.w['文本'],
+                    ParamVSpin('无效', 0), self.w['文本']],
                    '[1E]文本语音 - 显示胜利与失败文本',
                    '更新显示胜利条件与失败条件'),
-            0x1F: ('{0}选择：文本编号[{2}]',
-                   [self.w['机师'], ParamVSpin('无效', 0), ParamVSpin('文本编号', 0, '04X')],
+            0x1F: ('{0}选择：\n{2}',
+                   [self.w['机师'], ParamVSpin('无效', 0), self.w['文本']],
                    '[1F]文本语音 - 选项会话文本',
                    '指定机师在二选一选项文本中做选择'),
             0x21: ('选择了第一项',
@@ -209,15 +209,15 @@ class CommandExplain:
                    [ParamVSpin('秒数', 3)],
                    '[2B]场景控制 - 静止等待',
                    '静止等待指定秒数，不确定'),
-            0x2C: ('敌方设计第{0}组以{1}势力出击设为{2}阵营到地图绝对坐标',
+            0x2C: ('敌方设计第{0}组以第[{1}]势力出击设为{2}阵营到地图绝对坐标',
                    [ParamVSpin('敌方组号', 0), self.w['势力'], self.w['阵营']],
                    '[2C]敌方出击 - 出击到绝对坐标',
                    '将敌方设计指定组的单位，出击到地图绝对坐标，并设定这些单位的势力和阵营'),
-            0x2D: ('敌方设计第{0}组以{1}势力出击设为{2}阵营到{3}的相对坐标',
+            0x2D: ('敌方设计第{0}组以第[{1}]势力出击设为{2}阵营到{3}的相对坐标',
                    [ParamVSpin('敌方组号', 0), self.w['势力'], self.w['阵营'], self.w['机师']],
                    '[2D]敌方出击 - 出击到相对坐标',
                    '将敌方设计指定组的单位，出击到指定机师的相对坐标，并设定这些单位的势力和阵营'),
-            0x2F: ('敌方设计第{0}组以{1}势力复活设为{2}阵营',
+            0x2F: ('敌方设计第{0}组以第[{1}]势力复活设为{2}阵营',
                    [ParamVSpin('敌方组号', 0), self.w['势力'], self.w['阵营']],
                    '[2F]敌方出击 - 复活出击',
                    '将敌方设计指定组复活并从被击破处原地出击'),
@@ -394,7 +394,7 @@ class CommandExplain:
                    [self.w['机师']],
                    '[5F]场景控制 - 机师加入本方',
                    '场景上指定机师加入本方'),
-            0x60: ('{0}转为{1}势力',
+            0x60: ('{0}转为第[{1}]势力',
                    [self.w['机师'], self.w['势力']],
                    '[60]场景控制 - 机师势力转换',
                    '场景上指定机师转为指定势力'),
@@ -466,7 +466,7 @@ class CommandExplain:
                    [ParamVSpin('组号', 0x0, '02d')],
                    '[71]场景控制 - 敌方小组撤退',
                    '指定敌方设计小组强制撤退'),
-            0x72: ('{0}势力全部撤退',
+            0x72: ('第[{0}]势力全部撤退',
                    [self.w['势力']],
                    '[72]场景控制 - 势力撤退',
                    '指定势力强制撤退'),
@@ -494,7 +494,7 @@ class CommandExplain:
                    [ParamVSpin('组号', 0, '02d'), self.w['比较'], ParamVSpin('数量', 0)],
                    '[79]条件判断 - 判断敌方小组数量',
                    '判断敌方小组数量'),
-            0x7A: ('{0}势力数量{1}{2}台',
+            0x7A: ('第[{0}]势力数量{1}{2}台',
                    [self.w['势力'], self.w['比较'], ParamVSpin('数量', 0)],
                    '[7A]条件判断 - 判断势力数量',
                    '判断势力数量'),
@@ -519,7 +519,7 @@ class CommandExplain:
                    [self.w['机体'], ParamVSpin('X1', 1), ParamVSpin('Y1', 1), ParamVSpin('X2', 1), ParamVSpin('Y2', 1)],
                    '[7E]条件判断 - 判断机体位置',
                    '判断指定机体是否进入划定区域'),
-            0x80: ('{0}势力进入 X{1}-X{3} Y{2}-Y{4}区域内',
+            0x80: ('第[{0}]势力进入 X{1}-X{3} Y{2}-Y{4}区域内',
                    [self.w['势力'], ParamVSpin('X1', 1), ParamVSpin('Y1', 1), ParamVSpin('X2', 1), ParamVSpin('Y2', 1)],
                    '[80]条件判断 - 判断势力位置',
                    '判断势力是否进入划定区域'),
@@ -657,11 +657,11 @@ class CommandExplain:
                    [],
                    '[99]战斗演出 - 关闭战斗演出',
                    '关闭强制战斗演出'),
-            0x9A: ('允许{0}势力攻击{1}势力',
+            0x9A: ('允许第[{0}]势力攻击第[{1}]势力',
                    [self.w['势力'], self.w['势力']],
                    '[9A]规则设置 - 势力攻击许可',
                    '允许指定势力攻击另一势力'),
-            0x9B: ('禁止{0}势力攻击{1}势力',
+            0x9B: ('禁止第[{0}]势力攻击第[{1}]势力',
                    [self.w['势力'], self.w['势力']],
                    '[9B]规则设置 - 势力攻击禁止',
                    '禁止指定势力攻击另一势力'),
@@ -781,15 +781,15 @@ class CommandExplain:
                    [ParamVSpin('无效', -0x80, '2X'), ParamVSpin('序号', 0, '02X')],
                    '[B8]条件判断 - 判断敌方未被击破',
                    '指定敌方列表单位未被击破为真，否则为假'),
-            0xB9: ('{0} {1} {2} {3}\n{4} {5} {6} {7} ',  # TODO
-                   [ParamVSpin('1', 1, '04X'),
-                    ParamVSpin('2', 0, '04X'),
-                    ParamVSpin('3', 0, '04X'),
-                    ParamVSpin('4', 0, '04X'),
-                    ParamVSpin('5', 0, '04X'),
-                    ParamVSpin('6', 0, '04X'),
-                    ParamVSpin('7', 0, '04X'),
-                    ParamVSpin('8', 0, '04X'), ],
+            0xB9: ('{1}以{3}进行特殊地图演出 演出代码[{2}] 演出套数：{0} \n镜头移动到{} 方向{} X坐标{} Y坐标{} ',
+                   [ParamVSpin('演出套数', 1),
+                    self.w['机师'],
+                    ParamVSpin('演出代码', 0, '02X'),
+                    ParamRCombo('坐标定位', 0, {0: '绝对坐标', 1: '相对坐标'}),
+                    ParamVSpin('镜头移动', 0, '04X'),
+                    ParamRCombo('方向', 1, {1: '↖', 4: '↘', 5: ''}),
+                    ParamVSpin('X坐标', 0, '+d'),
+                    ParamVSpin('Y坐标', 0, '+d'), ],
                    '[B9]地图演出 - 相对坐标特殊地图演出',
                    '在指定机师的相对坐标进行特殊的地图演出'),
             0xBA: ('地图演出[{0}] 地图绝对坐标 X{1} Y{2}',
@@ -811,16 +811,18 @@ class CommandExplain:
         code = command.get('Code')
         param = command.get('Param')
         param_setting: tuple[str, list[ParamWidget], str, str] = self.settings.get(code, (str(code), tuple()))
-        param_text, param_widgets, _, _ = param_setting
-
-        if code == 0xB9:
-            set_count = param[0]
-            param_widgets.extend(param_widgets[4:] * (set_count - 1))
-            texts = param_text.splitlines()
-            texts.extend(texts[1:] * (set_count - 1))
-            param_text = '\n'.join(texts)
+        param_text, param_widgets, *_ = param_setting
 
         explain_list = list()
-        for param_idx, param_widget in enumerate(param_widgets):
-            explain_list.append(param_widget.explain(param[param_idx]))
+        for param_idx, param_data in enumerate(param):
+            if code != 0xB9 or param_idx < 8:
+                param_widget = param_widgets[param_idx].new()
+            else:
+                param_widget = param_widgets[param_idx % 4 + 4].new()
+            explain_list.append(param_widget.explain(param_data))
+        if code == 0xB9:
+            main_text, expand_text = param_text.splitlines()
+            main_str = main_text.format(*explain_list[:4])
+            expand_str = '\n'.join([expand_text] * param[0]).format(*explain_list[4:])
+            return main_str + '\n' + expand_str
         return param_text.format(*explain_list)

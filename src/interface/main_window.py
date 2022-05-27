@@ -241,7 +241,7 @@ class MainWindow(QMainWindow):
             '#Corner::section {padding-top: 5px;padding-left: 5px;}',
             '#ENLIST::section {padding: -1px -15px 0px 0px;}',
             '* {font: 10pt "Yu Gothic UI Semibold";}'
-            '* [language="zh"] {font: 10pt "Microsoft YaHei UI";}',
+            '* [language="zh"] {font: 10pt "Microsoft YaHei UI", "Wingdings";}',
             '* [language="zhb"] {font: bold 11pt Consolas, "Microsoft YaHei UI";}',
             '* [group="param"] {height: 24px; padding-left: 3px; padding-right: 3px;}',
             'QMenu::item, QMenuBar, QToolBar > QToolButton {font: 11pt Consolas, "Microsoft YaHei UI";}',

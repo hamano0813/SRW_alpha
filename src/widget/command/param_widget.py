@@ -25,6 +25,7 @@ class ParamWidget:
         pass
 
     def data_change(self):
+        # noinspection PyUnresolvedReferences
         self.dataChanged.emit(self.data())
 
     def new(self):

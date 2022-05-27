@@ -793,7 +793,7 @@ class EnumDataTrans(QObject):
         self.COMMAND['表情'] = {0: '平静', 1: '高兴', 2: '惊讶', 3: '坚毅', 4: '惊恐', 5: '激动'}
         self.COMMAND['阵营'] = {0x0: '中立', 0x1: '本方', 0x2: '友军', 0x3: '敌方'}
         self.COMMAND['点数'] = {0x0: '熟练度', 0x1: '恋爱度', 0x2: '宿敌度', 0x3: '未知', 0x5: '明美点', 0x6: '未沙点'}
-        self.COMMAND['势力'] = self.COMMAND['选项'] = [f'第{i + 1}' for i in range(16)]
-        self.COMMAND['演出'] = ['会心', '护盾', '破盾']
+        self.COMMAND['势力'] = self.COMMAND['选项'] = [f'{i + 1}' for i in range(16)]
+        self.COMMAND['演出'] = ['会心', '护盾', '破罩']
         self.COMMAND['菜单'] = ['移動', '攻撃', '精神', '変形', '分離', '合体', '説得', '地上', '水中', '空中', '地中', '水上',
                               '芯片', '修理', '補給', '接続', '切断', '待機', '搭載', '発進', '能力']
