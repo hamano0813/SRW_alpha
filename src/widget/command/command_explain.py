@@ -12,6 +12,7 @@ class CommandExplain:
 
         self.w['机体'] = ParamRCombo('选择机体', 0, kwargs.get('robots'))
         self.w['机师'] = ParamRCombo('选择机师', 0, kwargs.get('pilots') | {-0x1: ''})
+        self.w['文本'] = ParamRCombo('选择文本', 0, kwargs.get('messages'))
 
         self.w['关卡'] = ParamRCombo('选择关卡', 0, EnumData.STAGE)
         self.w['音乐'] = ParamRCombo('选择音乐', 0, EnumData.MUSIC)
@@ -120,8 +121,8 @@ class CommandExplain:
                    [],
                    '[16]事件控制 - 必定返回假',
                    '无条件返回假'),
-            0x17: ('{0} 表情{1} 文本编号[{3}]',
-                   [self.w['机师'], self.w['表情'], ParamVSpin('无效', 0), ParamVSpin('文本编号', 0, '04X')],
+            0x17: ('{0} 表情{1}\n{3}',
+                   [self.w['机师'], self.w['表情'], ParamVSpin('无效', 0), self.w['文本']],
                    '[17]文本语音 - 机师普通文本会话',
                    '指定机师以指定表情说指定文本内容'),
             0x18: ('{0} 表情{1} 文本编号[{3}]',

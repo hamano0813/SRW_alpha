@@ -40,7 +40,8 @@ class MainWindow(QMainWindow):
             '文本': (SnmsgFrame, ('SNMSG.BIN',),),
             '场景': (ScenarioFrame, ('SNDATA.BIN', 'ENLIST.BIN', 'AIUNP.BIN'),
                    {'robots': self.roms['UNCOMPRESS_ROBOT.RAF'].robots,
-                    'pilots': self.roms['PILOT.BIN'].pilots},
+                    'pilots': self.roms['PILOT.BIN'].pilots,
+                    'messages': self.roms['SNMSG.BIN'].messages},
                    ),
             '其他': (PrmgrpFrame, ('PRM_GRP.BIN',),),
         }

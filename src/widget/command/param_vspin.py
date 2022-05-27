@@ -13,6 +13,7 @@ class ParamVSpin(QSpinBox, ParamWidget):
         ParamWidget.__init__(self, name, default, **kwargs)
         self.display = display
         self.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
+        self.setContextMenuPolicy(Qt.NoContextMenu)
         # noinspection PyUnresolvedReferences
         self.valueChanged.connect(self.data_change)
 

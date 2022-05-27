@@ -27,6 +27,8 @@ class CommandDialog(QDialog):
             self.code_combo.addItem(settings[2], code)
 
         self.explain_text = QPlainTextEdit()
+        self.explain_text.setReadOnly(True)
+        self.explain_text.setContextMenuPolicy(Qt.NoContextMenu)
         self.explain_text.setProperty('language', 'zh')
         self.explain_text.setFixedHeight(80)
 
