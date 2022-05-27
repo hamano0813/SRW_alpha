@@ -92,6 +92,9 @@ class CommandDialog(QDialog):
 
         for param_widget in param_widgets:
             widget: ParamWidget = param_widget.new()
+            if widget.name == '无效':
+                # noinspection PyUnresolvedReferences
+                widget.setEnabled(False)
             label = QLabel(widget.name)
             label.setProperty('language', 'zh')
             self.edit_layout.addRow(label, widget)
@@ -102,7 +105,7 @@ class CommandDialog(QDialog):
 
         for idx, widget in enumerate(self.widgets):
             widget.install(param[idx])
-            if idx > 0:
+            if idx > 0 or code != 0xB9:
                 widget.dataChanged.connect(self.explain_command)
 
         self.explain_command()
@@ -118,6 +121,9 @@ class CommandDialog(QDialog):
         param_widgets: list[ParamWidget] = self.explain.settings.get(code)[1]
         for param_widget in param_widgets:
             widget: ParamWidget = param_widget.new()
+            if widget.name == '无效':
+                # noinspection PyUnresolvedReferences
+                widget.setEnabled(False)
             label = QLabel(widget.name)
             label.setProperty('language', 'zh')
             self.edit_layout.addRow(label, widget)
@@ -128,7 +134,7 @@ class CommandDialog(QDialog):
 
         for idx, widget in enumerate(self.widgets):
             widget.install()
-            if idx > 0:
+            if idx > 0 or code != 0xB9:
                 widget.dataChanged.connect(self.explain_command)
 
         self.explain_command()
