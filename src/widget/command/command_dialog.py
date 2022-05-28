@@ -8,7 +8,7 @@ from PySide6.QtWidgets import (QDialog, QFormLayout, QDialogButtonBox, QComboBox
                                QPlainTextEdit, QLabel, QApplication, QHBoxLayout)
 
 from structure.specific.sndata_bin.command import Command
-from widget.command.command_explain import CommandExplain
+from widget.command.command_explain import CommandExplain, EnumData
 from widget.command.param_widget import ParamWidget
 
 
@@ -36,14 +36,11 @@ class CommandDialog(QDialog):
 
         left_layout = QVBoxLayout()
         top_layout = QHBoxLayout()
-        l1 = QLabel('指令选择')
-        l1.setProperty('language', 'zhb')
-        top_layout.addWidget(l1)
+        label = QLabel('指令选择')
+        label.setProperty('language', 'zhb')
+        top_layout.addWidget(label)
         top_layout.addWidget(self.code_combo)
-        l2 = QLabel('指令释义')
-        l2.setProperty('language', 'zhb')
         left_layout.addLayout(top_layout)
-        left_layout.addWidget(l2)
         left_layout.addWidget(self.explain_text)
 
         right_layout = QVBoxLayout()
@@ -112,6 +109,10 @@ class CommandDialog(QDialog):
             self.edit_layout.addRow(label, widget)
             self.widgets.append(widget)
 
+        if code == 0x62:
+            self.widgets[0].dataChanged[int].connect(self.adjust_62)
+            self.adjust_62(param[0])
+
         if code == 0xB9:
             self.widgets[0].dataChanged[int].connect(self.adjust_b9)
 
@@ -142,6 +143,10 @@ class CommandDialog(QDialog):
             self.edit_layout.addRow(label, widget)
             self.widgets.append(widget)
 
+        if code == 0x62:
+            self.widgets[0].dataChanged[int].connect(self.adjust_62)
+            self.adjust_62(0)
+
         if code == 0xB9:
             self.widgets[0].dataChanged[int].connect(self.adjust_b9)
 
@@ -157,6 +162,10 @@ class CommandDialog(QDialog):
     def resize_self(self) -> None:
         QApplication.processEvents()
         self.resize(self.minimumSizeHint())
+
+    # noinspection PyUnresolvedReferences
+    def adjust_62(self, code: int = 0):
+        self.widgets[1].init_mapping(EnumData.COMMAND['换装'][code])
 
     def adjust_b9(self, count: int) -> None:
         adjust_count = count - (len(self.widgets) // 4 - 1)
@@ -180,9 +189,9 @@ class CommandDialog(QDialog):
     # TODO
     # noinspection PyUnresolvedReferences
     def special_rule(self) -> None:
-        match self.code_combo.currentData():
-            case 0xB9:
-                self.widgets[0].setRange(1, 5)
+        code = self.code_combo.currentData()
+        if code == 0xB9:
+            self.widgets[0].setRange(1, 5)
 
     # noinspection PyUnresolvedReferences
     def init_button(self) -> QDialogButtonBox:

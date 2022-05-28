@@ -404,9 +404,10 @@ class CommandExplain:
                    [self.w['芯片']],
                    '[61]资源操作 - 增加芯片',
                    '增加指定芯片'),
-            0x62: ('允许换装 V2{0}{1}ガンダム',
-                   [ParamRCombo('アサルト', 0, {0: '', 1: 'アサルト'}), ParamRCombo('バスター', 0, {0: '', 1: 'バスター'})],
-                   '[62]资源操作 - 增加V2ガンダム换装',
+            0x62: ('增加{0}换装 {1}组件',
+                   [ParamRCombo('选择机体', 0, {0: 'V2ガンダム', 1: 'ヒュッケバインMK-Ⅲ'}),
+                    ParamRCombo('选择组件', 0, {0: '组件1', 1: '组件2'})],
+                   '[62]资源操作 - 增加换装系统组件',
                    '增加V2ガンダム的不同换装'),
             0x63: ('[07D]V2ガンダム换装为{0}',
                    [self.w['机体']],
@@ -814,6 +815,8 @@ class CommandExplain:
         param = command.get('Param')
         param_setting: tuple[str, list[ParamWidget], str, str] = self.settings.get(code, (str(code), tuple()))
         param_text, param_widgets, *_ = param_setting
+        if code == 0x62:
+            param_widgets[1].init_mapping(EnumData.COMMAND['换装'][param[0]])
 
         explain_list = list()
         for param_idx, param_data in enumerate(param):

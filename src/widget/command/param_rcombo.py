@@ -12,8 +12,14 @@ class ParamRCombo(QComboBox, ParamWidget):
     def __init__(self, name: str, default: int, mapping: dict[int, str], **kwargs):
         QComboBox.__init__(self, parent=None)
         ParamWidget.__init__(self, name, default, **kwargs)
+        self.mapping: dict[int, str] = dict()
+        self.init_mapping(mapping)
+
+    def init_mapping(self, mapping: dict):
         self.mapping = mapping
-        for key, text in self.mapping.items():
+        self.disconnect(self)
+        self.clear()
+        for key, text in mapping.items():
             self.addItem(text.replace('\n', '').replace('\u3000', ''), key)
         # noinspection PyUnresolvedReferences
         self.currentIndexChanged.connect(self.data_change)

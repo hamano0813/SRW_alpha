@@ -231,13 +231,13 @@ class ArrayTable(ControlWidget, QTableView):
         if not self.selectedIndexes():
             return False
         indexes = tuple(map(self.model().mapToSource, self.selectedIndexes()))
-        row_set = set(map(lambda idx: idx.row(), indexes))
-        col_set = set(map(lambda idx: idx.column(), indexes))
+        row_set = set(map(lambda index: index.row(), indexes))
+        col_set = set(map(lambda index: index.column(), indexes))
         row_count = max(row_set) - min(row_set) + 1
         col_count = max(col_set) - min(col_set) + 1
         data = [[''] * col_count for _ in range(row_count)]
-        for index in indexes:
-            data[index.row() - min(row_set)][index.column() - min(col_set)] = index.data(Qt.DisplayRole)
+        for idx in indexes:
+            data[idx.row() - min(row_set)][idx.column() - min(col_set)] = idx.data(Qt.DisplayRole)
         text = '\n'.join(['\t'.join(row) for row in data])
         QApplication.clipboard().setText(text)
         return True
