@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from typing import Optional
+
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QComboBox, QCheckBox, QLineEdit, QListWidget, QListWidgetItem
 
