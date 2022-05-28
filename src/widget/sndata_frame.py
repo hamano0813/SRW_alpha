@@ -3,13 +3,13 @@
 
 from typing import Optional
 
-from PySide6.QtCore import Qt, QAbstractTableModel, QModelIndex, QEvent
+from PySide6.QtCore import Qt, QAbstractTableModel, QSortFilterProxyModel, QModelIndex, QEvent, QRegularExpression
 from PySide6.QtGui import QMouseEvent, QCursor, QAction, QKeyEvent, QFont
 from PySide6.QtWidgets import (QTableView, QApplication, QPushButton, QVBoxLayout, QFrame, QHBoxLayout, QAbstractButton,
-                               QStyleOptionHeader, QWidget, QStyle, QStylePainter, QMenu)
+                               QStyleOptionHeader, QWidget, QStyle, QStylePainter, QMenu, QLineEdit)
 
 from structure.generic import SEQUENCE
-from widget import ArrayTable
+from widget import ArrayTable, FontLabel
 from widget.abstract_widget import ControlWidget, AbstractWidget
 from widget.command.command_dialog import CommandDialog, CommandExplain
 
@@ -18,7 +18,7 @@ class StageModel(QAbstractTableModel):
     def __init__(self, parent, **kwargs):
         super(StageModel, self).__init__(parent)
         self.commands: list[dict[str, int | str]] = list()
-        self.columns = ('指令码', '指令释义')
+        self.columns = ('指令释义', )
         self.explain = CommandExplain(**kwargs)
 
     def install(self, commands: SEQUENCE) -> bool:
@@ -38,27 +38,25 @@ class StageModel(QAbstractTableModel):
         return len(self.commands)
 
     def columnCount(self, parent: QModelIndex = ...) -> int:
-        return 2
+        return 1
 
     def data(self, index: QModelIndex, role: int = ...) -> any:
         command = self.commands[index.row()]
         if role == Qt.DisplayRole:
-            if index.column() == 0:
-                return command['Data']
-            if index.column() == 1:
-                return self.explain.explain(command)
+            return self.explain.explain(command)
+        if role == Qt.ToolTipRole:
+            return f"Command:\t{command}".replace(", 'Data': '", "}\nSourceData:\t").replace("'}", "")
         if role == Qt.FontRole:
             font = QFont()
             font.setFamilies(['Consolas', 'Microsoft Yahei UI', 'Wingdings'])
-            font.setPointSize(12)
-            if index.column() == 1:
-                if command['Code'] <= 0x01:
-                    font.setBold(True)
-                    font.setLetterSpacing(QFont.PercentageSpacing, 150)
-                if command['Code'] in (0x08, 0x09, 0x0A):
-                    font.setUnderline(True)
-                if command['Code'] in range(0x02, 0x08):
-                    font.setItalic(True)
+            font.setPointSize(11)
+            if command['Code'] <= 0x01:
+                font.setBold(True)
+                font.setLetterSpacing(QFont.PercentageSpacing, 150)
+            if command['Code'] in (0x08, 0x09, 0x0A):
+                font.setUnderline(True)
+            if command['Code'] in range(0x02, 0x08):
+                font.setItalic(True)
             return font
         return None
 
@@ -131,11 +129,12 @@ class StageTable(QTableView, ControlWidget):
     def install(self, data_set: dict[str, int | str | SEQUENCE]) -> bool:
         model = StageModel(self, **self.kwargs)
         model.install(data_set.get(self.data_name, list()))
-        self.setModel(model)
+        proxy = QSortFilterProxyModel(self)
+        proxy.setSourceModel(model)
+        self.setModel(proxy)
         self.resizeRowsToContents()
         self.resizeColumnsToContents()
-        self.setColumnWidth(0, 250)
-        self.horizontalHeader().setSectionResizeMode(1, self.horizontalHeader().Stretch)
+        self.horizontalHeader().setSectionResizeMode(0, self.horizontalHeader().Stretch)
         self.data_set = data_set
 
         # noinspection PyUnresolvedReferences
@@ -148,33 +147,36 @@ class StageTable(QTableView, ControlWidget):
     def select_index(self, index: QModelIndex) -> bool:
         if not index.isValid():
             return False
-        self.control_child(index.row())
+        self.control_child(self.model().mapToSource(index).row())
         return True
 
     def insert_command(self) -> bool:
         if not self.selectedIndexes():
-            row = self.model().rowCount()
+            row = self.model().sourceModel().rowCount()
         else:
-            row = self.selectedIndexes()[0].row()
+            row = self.model().mapToSource(self.selectedIndexes()[0]).row()
         if command := CommandDialog(self, **self.kwargs).get_command():
-            self.model().insert_command(row, command)
+            self.model().sourceModel().insert_command(row, command)
+            self.resizeRowsToContents()
             return True
         return False
 
     def remove_command(self) -> bool:
         if not self.selectedIndexes():
             return False
-        row_set = set(map(lambda idx: idx.row(), self.selectedIndexes()))
+        row_set = set(map(lambda index: self.model().mapToSource(index).row(), self.selectedIndexes()))
         for row in row_set:
-            self.model().remove_command(row)
+            self.model().sourceModel().remove_command(row)
+        self.resizeRowsToContents()
         return True
 
     def update_command(self) -> bool:
         if not self.selectedIndexes():
             return False
-        row = self.selectedIndexes()[0].row()
-        if command := CommandDialog(self, self.model().commands[row], **self.kwargs).get_command():
-            self.model().update_command(row, command)
+        row = self.model().mapToSource(self.selectedIndexes()[0]).row()
+        if command := CommandDialog(self, self.model().sourceModel().commands[row], **self.kwargs).get_command():
+            self.model().sourceModel().update_command(row, command)
+            self.resizeRowsToContents()
             return True
         return False
 
@@ -189,36 +191,44 @@ class StageTable(QTableView, ControlWidget):
     def copy_range(self) -> bool:
         if not self.selectedIndexes():
             return False
-        row_set = set(map(lambda index: index.row(), self.selectedIndexes()))
-        col_set = set(map(lambda index: index.column(), self.selectedIndexes()))
+        indexes = tuple(map(self.model().mapToSource, self.selectedIndexes()))
+        row_set = set(map(lambda index: index.row(), indexes))
+        col_set = set(map(lambda index: index.column(), indexes))
         row_count = max(row_set) - min(row_set) + 1
         col_count = max(col_set) - min(col_set) + 1
         data = [[''] * col_count for _ in range(row_count)]
-        for idx in self.selectedIndexes():
+        for idx in indexes:
             data[idx.row() - min(row_set)][idx.column() - min(col_set)] = idx.data(Qt.DisplayRole)
         text = '\n'.join(['\t'.join(row) for row in data])
         QApplication.clipboard().setText(text)
-        print(text)
         return True
 
     def back_jump(self) -> bool:
         if self.jump_indexes:
-            self.setCurrentIndex(self.jump_indexes.pop(-1))
+            target = self.model().mapFromSource(self.jump_indexes.pop(-1))
+            self.scrollTo(target, self.PositionAtCenter)
+            self.setCurrentIndex(target)
             return True
         return False
 
     def mouseDoubleClickEvent(self, event: QMouseEvent) -> None:
-        index = self.indexAt(event.pos())
+        index = self.model().mapToSource(self.indexAt(event.pos()))
         text: str = index.data(Qt.DisplayRole)
         if text.startswith('GOTO') or text.startswith('RUN'):
             pos = int(text.split(' ')[-1], 16)
-            if row := self.model().find_target(pos):
-                self.setCurrentIndex(self.model().createIndex(row, 1))
-                self.jump_indexes.append(index)
+            if row := self.model().sourceModel().find_target(pos):
+                target: QModelIndex = self.model().mapFromSource(self.model().sourceModel().createIndex(row, 0))
+                self.scrollTo(target, self.PositionAtCenter)
+                self.setCurrentIndex(target)
+                return self.jump_indexes.append(index)
         if text == 'BACK':
-            if row := self.model().find_start(index.row()):
-                self.setCurrentIndex(self.model().createIndex(row, 1))
-                self.jump_indexes.append(index)
+            if row := self.model().sourceModel().find_start(index.row()):
+                target: QModelIndex = self.model().mapFromSource(self.model().sourceModel().createIndex(row, 0))
+                self.scrollTo(target, self.PositionAtCenter)
+                self.setCurrentIndex(target)
+                return self.jump_indexes.append(index)
+        self.update_command()
+        return super(StageTable, self).mouseDoubleClickEvent(event)
 
     def keyPressEvent(self, event: QKeyEvent) -> bool:
         if event.key() == Qt.Key_C and event.modifiers() == Qt.ControlModifier:
@@ -257,6 +267,17 @@ class StageTable(QTableView, ControlWidget):
         painter.drawControl(QStyle.CE_Header, option)
         return True
 
+    def filterChanged(self, text: str) -> None:
+        filter_text = text.strip()
+        if filter_text:
+            pattern = QRegularExpression.wildcardToRegularExpression(f'*{filter_text}*')
+            regexp = QRegularExpression(pattern)
+            options = regexp.patternOptions() | QRegularExpression.CaseInsensitiveOption
+            regexp.setPatternOptions(options)
+            self.model().setFilterRegularExpression(regexp)
+        else:
+            self.model().setFilterRegularExpression('')
+        self.resizeRowsToContents()
 
 class StageFrame(QFrame, AbstractWidget):
     def __init__(self, parent, data_name: str, **kwargs):
@@ -266,10 +287,22 @@ class StageFrame(QFrame, AbstractWidget):
 
         self.table = StageTable(parent, data_name, **kwargs)
 
-        layout = QHBoxLayout()
-        layout.addWidget(self.table)
-        layout.addLayout(self.init_buttons())
-        self.setLayout(layout)
+        left_layout = QVBoxLayout()
+        filter_layout = QHBoxLayout()
+        filter_label = FontLabel('查询过滤')
+        self.filter_line = QLineEdit()
+        # noinspection PyUnresolvedReferences
+        self.filter_line.textChanged[str].connect(self.table.filterChanged)
+        self.filter_line.setProperty('language', 'zh')
+        filter_layout.addWidget(filter_label)
+        filter_layout.addWidget(self.filter_line)
+        left_layout.addWidget(self.table)
+        left_layout.addLayout(filter_layout)
+
+        main_layout = QHBoxLayout()
+        main_layout.addLayout(left_layout)
+        main_layout.addLayout(self.init_buttons())
+        self.setLayout(main_layout)
 
     # noinspection PyUnresolvedReferences
     def init_buttons(self) -> QVBoxLayout:
@@ -294,6 +327,9 @@ class StageFrame(QFrame, AbstractWidget):
         return button_layout
 
     def install(self, data_set: dict[str, int | str | SEQUENCE]) -> bool:
+        if data_set:
+            self.filter_line.clear()
+            self.table.scrollToTop()
         return self.table.install(data_set)
 
     def search_command(self):
