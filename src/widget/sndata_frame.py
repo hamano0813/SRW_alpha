@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from typing import Optional
+
 from PySide6.QtCore import Qt, QAbstractTableModel, QModelIndex, QEvent
 from PySide6.QtGui import QMouseEvent, QCursor, QAction, QKeyEvent, QFont
 from PySide6.QtWidgets import (QTableView, QApplication, QPushButton, QVBoxLayout, QFrame, QHBoxLayout, QAbstractButton,
@@ -25,7 +27,7 @@ class StageModel(QAbstractTableModel):
         self.endResetModel()
         return True
 
-    def headerData(self, section: int, orientation: Qt.Orientation, role: int = ...):
+    def headerData(self, section: int, orientation: Qt.Orientation, role: int = ...) -> any:
         if role != Qt.DisplayRole:
             return None
         elif orientation == Qt.Horizontal:
@@ -60,18 +62,18 @@ class StageModel(QAbstractTableModel):
             return font
         return None
 
-    def flags(self, index: QModelIndex):
+    def flags(self, index: QModelIndex) -> Optional[Qt.ItemFlags]:
         if not index.isValid():
             return None
         return Qt.ItemIsEnabled | Qt.ItemIsSelectable
 
-    def find_target(self, pos: int):
+    def find_target(self, pos: int) -> Optional[int]:
         for idx, command in enumerate(self.commands):
             if command['Pos'] == pos:
                 return idx
         return None
 
-    def find_start(self, end_row: int):
+    def find_start(self, end_row: int) -> Optional[int]:
         for row in range(end_row, 1, -1):
             if self.commands[row - 1]['Code'] in (0x01, 0x0A):
                 pos = self.commands[row]['Pos']
@@ -81,7 +83,7 @@ class StageModel(QAbstractTableModel):
                             return idx
         return None
 
-    def insert_command(self, row: int, command: dict[str, int | str | list]):
+    def insert_command(self, row: int, command: dict[str, int | str | list]) -> None:
         self.beginInsertRows(QModelIndex(), row, row)
         command['Pos'] = self.commands[row]['Pos']
         for idx, _command in enumerate(self.commands):
@@ -92,7 +94,7 @@ class StageModel(QAbstractTableModel):
         self.commands.insert(row, command)
         self.endInsertRows()
 
-    def remove_command(self, row: int):
+    def remove_command(self, row: int) -> None:
         self.beginRemoveRows(QModelIndex(), row, row)
         command = self.commands.pop(row)
         for idx, _command in enumerate(self.commands):
@@ -102,7 +104,7 @@ class StageModel(QAbstractTableModel):
                 _command['Param'][0] -= command['Count']
         self.endRemoveRows()
 
-    def update_command(self, row: int, command: dict[str, int | str | list]):
+    def update_command(self, row: int, command: dict[str, int | str | list]) -> None:
         self.remove_command(row)
         self.insert_command(row, command)
 
@@ -111,7 +113,7 @@ class StageTable(QTableView, ControlWidget):
     def __init__(self, parent, data_name, **kwargs):
         QTableView.__init__(self, parent=None)
         ControlWidget.__init__(self, parent, data_name, **kwargs)
-        self.jump_indexes = []
+        self.jump_indexes: list[QModelIndex] = list()
 
         self.setWordWrap(True)
 
@@ -135,13 +137,12 @@ class StageTable(QTableView, ControlWidget):
         self.setColumnWidth(0, 250)
         self.horizontalHeader().setSectionResizeMode(1, self.horizontalHeader().Stretch)
         self.data_set = data_set
-        self.control_child(0)
 
         # noinspection PyUnresolvedReferences
         self.clicked[QModelIndex].connect(self.select_index)
         # noinspection PyUnresolvedReferences
         self.selectionModel().currentChanged[QModelIndex, QModelIndex].connect(self.select_index)
-        self.jump_indexes = []
+        self.jump_indexes: list[QModelIndex] = list()
         return True
 
     def select_index(self, index: QModelIndex) -> bool:
@@ -199,7 +200,7 @@ class StageTable(QTableView, ControlWidget):
         QApplication.clipboard().setText(text)
         return True
 
-    def back_jump(self):
+    def back_jump(self) -> bool:
         if self.jump_indexes:
             self.setCurrentIndex(self.jump_indexes.pop(-1))
             return True
@@ -226,7 +227,7 @@ class StageTable(QTableView, ControlWidget):
         super(StageTable, self).keyPressEvent(event)
         return True
 
-    def set_corner(self, text: str):
+    def set_corner(self, text: str) -> None:
         # noinspection PyTypeChecker
         corner_button: QAbstractButton = self.findChild(QAbstractButton)
         corner_button.setText(text)
@@ -270,7 +271,7 @@ class StageFrame(QFrame, AbstractWidget):
         self.setLayout(layout)
 
     # noinspection PyUnresolvedReferences
-    def init_buttons(self):
+    def init_buttons(self) -> QVBoxLayout:
         edit_button = QPushButton('编辑指令')
         insert_button = QPushButton('插入指令')
         delete_button = QPushButton('删除指令')

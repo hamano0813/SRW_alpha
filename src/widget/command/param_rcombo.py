@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from typing import Optional
+
 from PySide6.QtWidgets import QComboBox
 
 from widget.command.param_widget import ParamWidget
@@ -16,7 +18,7 @@ class ParamRCombo(QComboBox, ParamWidget):
         # noinspection PyUnresolvedReferences
         self.currentIndexChanged.connect(self.data_change)
 
-    def install(self, param: int = None):
+    def install(self, param: int = None) -> None:
         if param is not None:
             return self.setCurrentIndex(list(self.mapping.keys()).index(param))
         return self.setCurrentIndex(list(self.mapping.keys()).index(self.default))
@@ -27,5 +29,5 @@ class ParamRCombo(QComboBox, ParamWidget):
     def explain(self, param: int) -> str:
         return self.mapping.get(param).replace('\u3000', '')
 
-    def new(self):
+    def new(self) -> Optional["ParamRCombo"]:
         return self.__class__(self.name, self.default, self.mapping, **self.kwargs)

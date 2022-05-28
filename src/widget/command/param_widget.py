@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from typing import Optional
+
 from PySide6.QtCore import Signal
 
 
@@ -15,7 +17,7 @@ class ParamWidget:
         self.setProperty('language', 'zh')
         self.setProperty('group', 'param')
 
-    def install(self, param: int = None):
+    def install(self, param: int = None) -> None:
         pass
 
     def data(self) -> int:
@@ -24,9 +26,9 @@ class ParamWidget:
     def explain(self, param: int) -> str:
         pass
 
-    def data_change(self):
+    def data_change(self) -> None:
         # noinspection PyUnresolvedReferences
         self.dataChanged.emit(self.data())
 
-    def new(self):
+    def new(self) -> Optional["ParamWidget"]:
         return self.__class__(self.name, self.default, **self.kwargs)

@@ -58,7 +58,7 @@ class MainWindow(QMainWindow):
         self.test_load('jp')
         self.check_enable()
 
-    def init_tool_bar(self):
+    def init_tool_bar(self) -> None:
         self.edit_bar = self.addToolBar('编辑')
 
         self.oprate_bar = self.addToolBar('操作')
@@ -73,7 +73,7 @@ class MainWindow(QMainWindow):
         self.oprate_bar.setFloatable(False)
         self.edit_bar.setFloatable(False)
 
-    def init_file_menu(self):
+    def init_file_menu(self) -> None:
         file_menu = QMenu('文件', self)
         for name, rom in self.roms.items():
             action = self.create_action(name, self.load_file(name, rom))
@@ -87,7 +87,7 @@ class MainWindow(QMainWindow):
         file_menu.addAction(quit_action)
         self.menuBar().addMenu(file_menu)
 
-    def init_edit_menu(self):
+    def init_edit_menu(self) -> None:
         edit_menu = QMenu('编辑', self)
         edit_list = []
         edit_group = QActionGroup(self)
@@ -101,7 +101,7 @@ class MainWindow(QMainWindow):
 
         self.edit_bar.addActions(edit_list)
 
-    def init_option_menu(self):
+    def init_option_menu(self) -> None:
         option_menu = QMenu('选项', self)
 
         style_menu = QMenu('主题', self)
@@ -113,7 +113,7 @@ class MainWindow(QMainWindow):
         self.menuBar().addMenu(option_menu)
         dark_action.trigger()
 
-    def init_menu_action(self):
+    def init_menu_action(self) -> None:
         corner_button = QPushButton('', self.menuBar())
         corner_button.setObjectName('ConnerButton')
         style = '''
@@ -174,12 +174,13 @@ class MainWindow(QMainWindow):
                 for name, frames in self.frames.items():
                     if frames[0] == frame_class:
                         self.findChild(QAction, name).setChecked(False)
+
         return wrapper
 
     def centralWidget(self) -> QWidget | RobotFrame | PilotFrame | SnmsgFrame | ScenarioFrame | PrmgrpFrame:
         return super(MainWindow, self).centralWidget()
 
-    def save_file(self):
+    def save_file(self) -> None:
         for rom in self.roms.values():
             rom.save()
         # noinspection PyTypeChecker
@@ -188,7 +189,7 @@ class MainWindow(QMainWindow):
         box.exec()
 
     # noinspection PyUnresolvedReferences
-    def check_enable(self):
+    def check_enable(self) -> None:
         self.findChild(QAction, '保存').setEnabled(any(map(bool, self.roms.values())))
         self.findChild(QAction, '机体').setEnabled(bool(self.roms.get('UNCOMPRESS_ROBOT.RAF')))
         self.findChild(QAction, '机师').setEnabled(bool(self.roms.get('PILOT.BIN')))
@@ -203,7 +204,7 @@ class MainWindow(QMainWindow):
                                                           ))))
         self.findChild(QAction, '其他').setEnabled(bool(self.roms.get('PRM_GRP.BIN')))
 
-    def charge_toolbar(self):
+    def charge_toolbar(self) -> None:
         if self.sender().text() == '˯':
             self.sender().setText('˰')
             self.oprate_bar.setVisible(True)
@@ -213,7 +214,7 @@ class MainWindow(QMainWindow):
             self.oprate_bar.setVisible(False)
             self.edit_bar.setVisible(False)
 
-    def charge_style(self):
+    def charge_style(self) -> None:
         if self.sender().objectName() == '深色':
             style_sheet = qdarktheme.load_stylesheet('dark', 'sharp')
         else:
@@ -251,7 +252,7 @@ class MainWindow(QMainWindow):
         # print(style_sheet)
         QApplication.instance().setStyleSheet(style_sheet)
 
-    def test_load(self, lang: str = 'jp'):
+    def test_load(self, lang: str = 'jp') -> None:
         self.roms['UNCOMPRESS_ROBOT.RAF'].load(rf'..\resource\bin\{lang}\UNCOMPRESS_ROBOT.RAF')
         self.roms['PILOT.BIN'].load(rf'..\resource\bin\{lang}\PILOT.BIN')
         self.roms['SNMSG.BIN'].load(rf'..\resource\bin\{lang}\SNMSG.BIN')

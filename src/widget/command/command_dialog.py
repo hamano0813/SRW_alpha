@@ -16,9 +16,8 @@ class CommandDialog(QDialog):
     def __init__(self, parent, command: dict = None, **kwargs):
         super(CommandDialog, self).__init__(parent, f=Qt.Dialog)
         self.setWindowTitle('编辑指令' if command else '插入指令')
-        self.explain = CommandExplain(**kwargs)
-        self.widgets = list()
-        # self.setFixedWidth(800)
+        self.explain: CommandExplain = CommandExplain(**kwargs)
+        self.widgets: list[ParamWidget] = list()
 
         self.code_combo = QComboBox()
         self.code_combo.setProperty('language', 'zhb')
@@ -31,7 +30,7 @@ class CommandDialog(QDialog):
         self.explain_text.setReadOnly(True)
         self.explain_text.setContextMenuPolicy(Qt.NoContextMenu)
         self.explain_text.setProperty('language', 'zh')
-        self.explain_text.setFixedWidth(468)
+        self.explain_text.setFixedWidth(480)
 
         self.edit_layout = QFormLayout()
 
@@ -61,11 +60,11 @@ class CommandDialog(QDialog):
         # noinspection PyUnresolvedReferences
         self.code_combo.currentIndexChanged.connect(self.reset_widgets)
 
-    def get_command(self):
+    def get_command(self) -> dict[str, int | list[int]]:
         if self.exec():
             return self.command()
 
-    def command(self):
+    def command(self) -> dict[str, int | list[int]]:
         command = {'Pos': 0, 'Code': 0, 'Count': 1, 'Param': list(), 'Data': ''}
         code = command['Code'] = self.code_combo.currentData()
         command['Param'] = [widget.data() for widget in self.widgets]
@@ -77,7 +76,7 @@ class CommandDialog(QDialog):
         return command
 
     @staticmethod
-    def generate_data(command: dict):
+    def generate_data(command: dict) -> None:
         fmt = Command.ARGV_FMT.get(command['Code'], None)
         if fmt is None:
             fmt = 'h' * (command['Param'][0] * 4 + 4)
@@ -92,10 +91,10 @@ class CommandDialog(QDialog):
         c_buffer += p_buffer
         command['Data'] = ' '.join([f'{d:04X}' for d in unpack('H' * command['Count'], c_buffer)])
 
-    def explain_command(self):
+    def explain_command(self) -> None:
         self.explain_text.setPlainText(self.explain.explain(self.command()))
 
-    def init_widgets(self, command: dict = None):
+    def init_widgets(self, command: dict = None) -> None:
         code = 0 if not command else command['Code']
         param = [1] if not command else command['Param']
 
@@ -114,7 +113,7 @@ class CommandDialog(QDialog):
             self.widgets.append(widget)
 
         if code == 0xB9:
-            self.widgets[0].valueChanged[int].connect(self.adjust_b9)
+            self.widgets[0].dataChanged[int].connect(self.adjust_b9)
 
         for idx, widget in enumerate(self.widgets):
             widget.install(param[idx])
@@ -125,7 +124,7 @@ class CommandDialog(QDialog):
         self.special_rule()
         self.resize_self()
 
-    def reset_widgets(self):
+    def reset_widgets(self) -> None:
         for i in range(len(self.widgets)):
             self.edit_layout.removeRow(0)
         self.widgets = list()
@@ -155,11 +154,11 @@ class CommandDialog(QDialog):
         self.special_rule()
         self.resize_self()
 
-    def resize_self(self):
+    def resize_self(self) -> None:
         QApplication.processEvents()
         self.resize(self.minimumSizeHint())
 
-    def adjust_b9(self, count: int):
+    def adjust_b9(self, count: int) -> None:
         adjust_count = count - (len(self.widgets) // 4 - 1)
         if adjust_count < 0:
             for i in range(abs(adjust_count) * 4):
@@ -178,13 +177,15 @@ class CommandDialog(QDialog):
                 widget.install()
         self.explain_command()
 
-    def special_rule(self):
+    # TODO
+    # noinspection PyUnresolvedReferences
+    def special_rule(self) -> None:
         match self.code_combo.currentData():
             case 0xB9:
                 self.widgets[0].setRange(1, 5)
 
     # noinspection PyUnresolvedReferences
-    def init_button(self):
+    def init_button(self) -> QDialogButtonBox:
         accept_button = QPushButton('确定')
         accept_button.setProperty('language', 'zh')
         accept_button.setProperty('group', 'param')

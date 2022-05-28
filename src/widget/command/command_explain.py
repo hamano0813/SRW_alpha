@@ -8,7 +8,7 @@ from widget.command.param_widget import ParamWidget
 
 class CommandExplain:
     def __init__(self, **kwargs):
-        self.w = dict()
+        self.w: dict[str, ParamWidget] = dict()
 
         self.w['机体'] = ParamRCombo('选择机体', 0, kwargs.get('robots'))
         self.w['机师'] = ParamRCombo('选择机师', 0, kwargs.get('pilots') | {-0x1: ''})
@@ -34,7 +34,7 @@ class CommandExplain:
 
         self.w['无效'] = ParamVSpin('无效参数', -0x80, '2X')
 
-        self.settings = {
+        self.settings: dict[int, tuple[str, list[ParamWidget], str, str]] = {
             0x00: ('BLOCK<{0}>',
                    [ParamVSpin('区块序号', 0, 'X')],
                    '[00]流程控制 - BLOCK区块号',
@@ -809,7 +809,7 @@ class CommandExplain:
                    '在指定机师的相对坐标进行地图演出'),
         }
 
-    def explain(self, command: dict[str, int | list[int] | str]):
+    def explain(self, command: dict[str, int | list[int] | str]) -> str:
         code = command.get('Code')
         param = command.get('Param')
         param_setting: tuple[str, list[ParamWidget], str, str] = self.settings.get(code, (str(code), tuple()))

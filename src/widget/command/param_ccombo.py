@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from typing import Optional
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QComboBox, QCheckBox, QLineEdit, QListWidget, QListWidgetItem
 
@@ -20,7 +21,7 @@ class ParamCCombo(QComboBox, ParamWidget):
         self.init_check()
         self.setContextMenuPolicy(Qt.ContextMenuPolicy.NoContextMenu)
 
-    def init_check(self):
+    def init_check(self) -> None:
         list_widget = QListWidget()
         for item in self.item:
             check_box = QCheckBox(item)
@@ -30,7 +31,7 @@ class ParamCCombo(QComboBox, ParamWidget):
         self.setModel(list_widget.model())
         self.setView(list_widget)
 
-    def install(self, param: int = None):
+    def install(self, param: int = None) -> None:
         if param is not None:
             for bit, check_box in enumerate(self.check_list):
                 check_box.disconnect(check_box)
@@ -60,9 +61,9 @@ class ParamCCombo(QComboBox, ParamWidget):
             texts.remove('')
         return self.sep.join(texts)
 
-    def new(self):
+    def new(self) -> Optional["ParamCCombo"]:
         return self.__class__(self.name, self.default, self.item, **self.kwargs)
 
-    def set_text(self):
+    def set_text(self) -> None:
         self.lineEdit().setText(self.explain(self.data()))
         self.data_change()

@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from typing import Optional
+
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QSpinBox
 
@@ -31,7 +33,7 @@ class ParamVSpin(QSpinBox, ParamWidget):
         if fmt.endswith('b'):
             return int(text, 2)
 
-    def install(self, param: int = None):
+    def install(self, param: int = None) -> None:
         if param is not None:
             return self.setValue(param)
         return self.setValue(self.default)
@@ -44,5 +46,5 @@ class ParamVSpin(QSpinBox, ParamWidget):
             return self.mapping.get(param, self.textFromValue(param)).replace('\u3000', '')
         return self.textFromValue(param)
 
-    def new(self):
+    def new(self) -> Optional["ParamVSpin"]:
         return self.__class__(self.name, self.default, self.display, **self.kwargs)
