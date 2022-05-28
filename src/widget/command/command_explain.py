@@ -790,7 +790,7 @@ class CommandExplain:
                     ParamVSpin('演出代码', 0, '02X'),
                     ParamRCombo('坐标定位', 0, {0: '绝对坐标', 1: '相对坐标'}),
                     ParamVSpin('子镜头', 0),
-                    ParamRCombo('方向', 1, {1: '↘', 4: '↖', 5: ''}),
+                    ParamRCombo('方向', 1, {1: '↖', 4: '↘', 5: ''}),
                     ParamVSpin('X坐标', 0, '+d'),
                     ParamVSpin('Y坐标', 0, '+d'), ],
                    '[B9]地图演出 - 相对坐标特殊地图演出',
