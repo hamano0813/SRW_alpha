@@ -243,6 +243,7 @@ class ArrayTable(ControlWidget, QTableView):
         data = [[''] * col_count for _ in range(row_count)]
         for idx in indexes:
             data[idx.row() - min(row_set)][idx.column() - min(col_set)] = idx.data(Qt.DisplayRole)
+            QApplication.processEvents()
         text = '\r\n'.join([f'"{t}"' if '\n' in t else t for t in ['\t'.join(row) for row in data]])
         win32clipboard.OpenClipboard()
         win32clipboard.EmptyClipboard()

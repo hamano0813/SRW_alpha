@@ -157,7 +157,9 @@ class MainWindow(QMainWindow):
                 if self.centralWidget():
                     self.centralWidget().close()
                 frame = frame_class(self, **kwargs)
+                QApplication.processEvents()
                 frame.set_roms([self.roms[name] for name in roms])
+                QApplication.processEvents()
                 self.setCentralWidget(frame)
 
                 self.findChild(QAction, '刷新').setEnabled(True)
