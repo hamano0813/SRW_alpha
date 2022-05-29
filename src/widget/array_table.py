@@ -4,6 +4,7 @@
 from collections import deque
 from typing import Optional
 
+import win32clipboard
 from PySide6.QtCore import Qt, QAbstractTableModel, QSortFilterProxyModel, QModelIndex, QRegularExpression, QEvent
 from PySide6.QtGui import QAction, QCursor, QKeyEvent, QPainter
 from PySide6.QtWidgets import (QApplication, QWidget, QTableView, QMenu, QAbstractButton, QStyle, QStylePainter,
@@ -142,6 +143,9 @@ class ArrayTable(ControlWidget, QTableView):
         self.check_kwargs()
         self.alignment = self.kwargs.get('alignment', Qt.AlignVCenter)
 
+    def source(self):
+        return self.model().sourceModel()
+
     def install(self, data_set: dict[str, int | str | SEQUENCE]) -> bool:
         array_model = ArrayModel(self, self.columns)
         array_model.install(data_set.get(self.data_name, list()))
@@ -239,17 +243,23 @@ class ArrayTable(ControlWidget, QTableView):
         data = [[''] * col_count for _ in range(row_count)]
         for idx in indexes:
             data[idx.row() - min(row_set)][idx.column() - min(col_set)] = idx.data(Qt.DisplayRole)
-        text = '\n'.join(['\t'.join(row) for row in data])
-        QApplication.clipboard().setText(text)
+        text = '\r\n'.join([f'"{t}"' if '\n' in t else t for t in ['\t'.join(row) for row in data]])
+        win32clipboard.OpenClipboard()
+        win32clipboard.EmptyClipboard()
+        win32clipboard.SetClipboardText(text, win32clipboard.CF_UNICODETEXT)
+        win32clipboard.CloseClipboard()
         return True
 
     def paste_range(self) -> bool:
         if not self.selectedIndexes():
             return False
-        if not (text := QApplication.clipboard().text().rstrip()):
+        win32clipboard.OpenClipboard()
+        text = win32clipboard.GetClipboardData(win32clipboard.CF_UNICODETEXT)
+        win32clipboard.CloseClipboard()
+        if not text:
             return False
         internal_id = self.selectedIndexes()[0].internalId()
-        data = [row.split('\t') for row in text.split('\n')]
+        data = [row.strip('"').split('\t') for row in text.strip().split('\r\n')]
         min_row = min(map(lambda idx: idx.row(), self.selectedIndexes()))
         min_col = min(map(lambda idx: idx.column(), self.selectedIndexes()))
         for rid, row in enumerate(data):

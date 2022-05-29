@@ -3,9 +3,10 @@
 
 from typing import Optional
 
+import win32clipboard
 from PySide6.QtCore import Qt, QAbstractTableModel, QSortFilterProxyModel, QModelIndex, QEvent, QRegularExpression
 from PySide6.QtGui import QMouseEvent, QCursor, QAction, QKeyEvent, QFont
-from PySide6.QtWidgets import (QTableView, QApplication, QPushButton, QVBoxLayout, QFrame, QHBoxLayout, QAbstractButton,
+from PySide6.QtWidgets import (QTableView, QPushButton, QVBoxLayout, QFrame, QHBoxLayout, QAbstractButton,
                                QStyleOptionHeader, QWidget, QStyle, QStylePainter, QMenu, QLineEdit)
 
 from structure.generic import SEQUENCE
@@ -18,7 +19,7 @@ class StageModel(QAbstractTableModel):
     def __init__(self, parent, **kwargs):
         super(StageModel, self).__init__(parent)
         self.commands: list[dict[str, int | str]] = list()
-        self.columns = ('指令释义', )
+        self.columns = ('指令释义',)
         self.explain = CommandExplain(**kwargs)
 
     def install(self, commands: SEQUENCE) -> bool:
@@ -199,8 +200,11 @@ class StageTable(QTableView, ControlWidget):
         data = [[''] * col_count for _ in range(row_count)]
         for idx in indexes:
             data[idx.row() - min(row_set)][idx.column() - min(col_set)] = idx.data(Qt.DisplayRole)
-        text = '\n'.join(['\t'.join(row) for row in data])
-        QApplication.clipboard().setText(text)
+        text = '\r\n'.join([f'"{t}"' if '\n' in t else t for t in ['\t'.join(row) for row in data]])
+        win32clipboard.OpenClipboard()
+        win32clipboard.EmptyClipboard()
+        win32clipboard.SetClipboardText(text, win32clipboard.CF_UNICODETEXT)
+        win32clipboard.CloseClipboard()
         return True
 
     def back_jump(self) -> bool:
@@ -278,6 +282,7 @@ class StageTable(QTableView, ControlWidget):
         else:
             self.model().setFilterRegularExpression('')
         self.resizeRowsToContents()
+
 
 class StageFrame(QFrame, AbstractWidget):
     def __init__(self, parent, data_name: str, **kwargs):

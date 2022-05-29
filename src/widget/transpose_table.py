@@ -4,9 +4,10 @@
 from collections import deque
 from typing import Optional
 
+import win32clipboard
 from PySide6.QtCore import Qt, QAbstractTableModel, QModelIndex
 from PySide6.QtGui import QAction, QCursor, QKeyEvent
-from PySide6.QtWidgets import QApplication, QWidget, QTableView, QMenu, QStyledItemDelegate, QStyleOptionViewItem
+from PySide6.QtWidgets import QWidget, QTableView, QMenu, QStyledItemDelegate, QStyleOptionViewItem
 
 from structure.generic import SEQUENCE
 from widget.abstract_widget import ControlWidget, SingleWidget
@@ -168,16 +169,22 @@ class TransposeTable(ControlWidget, QTableView):
         data = [[''] * col_count for _ in range(row_count)]
         for index in indexes:
             data[index.row() - min(row_set)][index.column() - min(col_set)] = index.data(Qt.DisplayRole)
-        text = '\n'.join(['\t'.join(row) for row in data])
-        QApplication.clipboard().setText(text)
+        text = '\r\n'.join([f'"{t}"' if '\n' in t else t for t in ['\t'.join(row) for row in data]])
+        win32clipboard.OpenClipboard()
+        win32clipboard.EmptyClipboard()
+        win32clipboard.SetClipboardText(text, win32clipboard.CF_UNICODETEXT)
+        win32clipboard.CloseClipboard()
         return True
 
     def paste_range(self) -> bool:
         if not self.selectedIndexes():
             return False
-        if not (text := QApplication.clipboard().text().rstrip()):
+        win32clipboard.OpenClipboard()
+        text = win32clipboard.GetClipboardData(win32clipboard.CF_UNICODETEXT)
+        win32clipboard.CloseClipboard()
+        if not text:
             return False
-        data = [row.split('\t') for row in text.split('\n')]
+        data = [row.strip('"').split('\t') for row in text.strip().split('\r\n')]
         min_row = min(map(lambda idx: idx.row(), self.selectedIndexes()))
         min_col = min(map(lambda idx: idx.column(), self.selectedIndexes()))
         for rid, row in enumerate(data):
