@@ -55,7 +55,6 @@ class MainWindow(QMainWindow):
         self.setWindowTitle('超级机器人大战α 静态修改器')
         self.setWindowIcon(QIcon(':image/icon.png'))
         self.setMinimumSize(1440, 875)
-        self.test_load('jp')
         self.check_enable()
 
     def init_tool_bar(self) -> None:
@@ -251,13 +250,3 @@ class MainWindow(QMainWindow):
             style_sheet += expand
         # print(style_sheet)
         QApplication.instance().setStyleSheet(style_sheet)
-
-    def test_load(self, lang: str = 'jp') -> None:
-        self.roms['UNCOMPRESS_ROBOT.RAF'].load(rf'..\resource\bin\{lang}\UNCOMPRESS_ROBOT.RAF')
-        self.roms['PILOT.BIN'].load(rf'..\resource\bin\{lang}\PILOT.BIN')
-        self.roms['SNMSG.BIN'].load(rf'..\resource\bin\{lang}\SNMSG.BIN')
-        self.roms['SNDATA.BIN'].load(rf'..\resource\bin\{lang}\SNDATA.BIN')
-        self.roms['ENLIST.BIN'].load(rf'..\resource\bin\{lang}\ENLIST.BIN')
-        self.roms['AIUNP.BIN'].load(rf'..\resource\bin\{lang}\AIUNP.BIN')
-        self.roms['SCRIPT.BIN'].load(rf'..\resource\bin\{lang}\SCRIPT.BIN')
-        self.roms['PRM_GRP.BIN'].load(rf'..\resource\bin\{lang}\PRM_GRP.BIN')

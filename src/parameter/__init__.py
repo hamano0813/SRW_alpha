@@ -11,7 +11,7 @@ EnumData = EnumDataTrans()
 EVENT_PATH = r'event.txt'
 
 if os.path.exists(EVENT_PATH):
-    with open(r'event.txt', 'r', encoding='utf-8') as f:
+    with open(EVENT_PATH, 'r', encoding='utf-8') as f:
         EnumData.EVENT = dict()
         for line in f.readlines():
             code, event = line.split('=')[0:2]
