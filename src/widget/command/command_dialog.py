@@ -21,7 +21,6 @@ class CommandDialog(QDialog):
 
         self.code_combo = QComboBox()
         self.code_combo.setProperty('language', 'zhb')
-        self.code_combo.setProperty('group', 'param')
         self.code_combo.setFixedWidth(560)
         for code, settings in self.explain.settings.items():
             self.code_combo.addItem(settings[2], code)
@@ -29,7 +28,7 @@ class CommandDialog(QDialog):
         self.explain_text = QPlainTextEdit()
         self.explain_text.setReadOnly(True)
         self.explain_text.setContextMenuPolicy(Qt.NoContextMenu)
-        self.explain_text.setStyleSheet("* {font: 12pt bold 'Consolas', 'Yu Gothic UI', 'Wingdings';}")
+        self.explain_text.setStyleSheet("* {font: 12pt bold 'Consolas', 'Yu Gothic UI semibold', 'Wingdings';}")
         self.explain_text.setFixedWidth(640)
 
         self.edit_layout = QFormLayout()
@@ -122,7 +121,6 @@ class CommandDialog(QDialog):
                 widget.dataChanged.connect(self.explain_command)
 
         self.explain_command()
-        self.special_rule()
         self.resize_self()
 
     def reset_widgets(self) -> None:
@@ -156,7 +154,6 @@ class CommandDialog(QDialog):
                 widget.dataChanged.connect(self.explain_command)
 
         self.explain_command()
-        self.special_rule()
         self.resize_self()
 
     def resize_self(self) -> None:
@@ -185,13 +182,6 @@ class CommandDialog(QDialog):
                 widget.dataChanged.connect(self.explain_command)
                 widget.install()
         self.explain_command()
-
-    # TODO
-    # noinspection PyUnresolvedReferences
-    def special_rule(self) -> None:
-        code = self.code_combo.currentData()
-        if code == 0xB9:
-            self.widgets[0].setRange(1, 5)
 
     # noinspection PyUnresolvedReferences
     def init_button(self) -> QDialogButtonBox:

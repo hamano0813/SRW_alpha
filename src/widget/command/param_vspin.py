@@ -10,6 +10,8 @@ from widget.command.param_widget import ParamWidget
 
 
 class ParamVSpin(QSpinBox, ParamWidget):
+    INTEGER_BASE = {'d': 10, 'x': 16, 'b': 2}
+
     def __init__(self, name: str, default: int, display: str = 'd', **kwargs):
         QSpinBox.__init__(self, parent=None)
         ParamWidget.__init__(self, name, default, **kwargs)
@@ -19,12 +21,15 @@ class ParamVSpin(QSpinBox, ParamWidget):
         # noinspection PyUnresolvedReferences
         self.valueChanged.connect(self.data_change)
         self.mapping = self.kwargs.get('mapping')
-        self.setRange(0, 65535)
+        self.setRange(*self.kwargs.get('range', (-0x8000, 0x7FFF)))
+        self.setDisplayIntegerBase(self.INTEGER_BASE.get(display[-1].lower()))
 
     def textFromValue(self, val: int) -> str:
         return f'{val:{self.display}}'
 
     def valueFromText(self, text: str) -> int:
+        if not text:
+            return self.value()
         fmt = self.display.lower()
         if fmt.endswith('d'):
             return int(text)
