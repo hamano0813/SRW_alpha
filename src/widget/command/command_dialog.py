@@ -22,15 +22,15 @@ class CommandDialog(QDialog):
         self.code_combo = QComboBox()
         self.code_combo.setProperty('language', 'zhb')
         self.code_combo.setProperty('group', 'param')
-        self.code_combo.setFixedWidth(400)
+        self.code_combo.setFixedWidth(560)
         for code, settings in self.explain.settings.items():
             self.code_combo.addItem(settings[2], code)
 
         self.explain_text = QPlainTextEdit()
         self.explain_text.setReadOnly(True)
         self.explain_text.setContextMenuPolicy(Qt.NoContextMenu)
-        self.explain_text.setProperty('language', 'zh')
-        self.explain_text.setFixedWidth(480)
+        self.explain_text.setStyleSheet("* {font: 12pt bold 'Consolas', 'Yu Gothic UI', 'Wingdings';}")
+        self.explain_text.setFixedWidth(640)
 
         self.edit_layout = QFormLayout()
 
@@ -180,7 +180,7 @@ class CommandDialog(QDialog):
                 self.widgets.extend([w.new() for w in self.widgets[-4:]])
             for widget in self.widgets[start_idx:]:
                 label = QLabel(widget.name)
-                label.setProperty('language', 'zh')
+                label.setProperty('language', 'zhb')
                 self.edit_layout.addRow(label, widget)
                 widget.dataChanged.connect(self.explain_command)
                 widget.install()
@@ -196,10 +196,10 @@ class CommandDialog(QDialog):
     # noinspection PyUnresolvedReferences
     def init_button(self) -> QDialogButtonBox:
         accept_button = QPushButton('确定')
-        accept_button.setProperty('language', 'zh')
+        accept_button.setProperty('language', 'zhb')
         accept_button.setProperty('group', 'param')
         reject_button = QPushButton('取消')
-        reject_button.setProperty('language', 'zh')
+        reject_button.setProperty('language', 'zhb')
         reject_button.setProperty('group', 'param')
         button_box = QDialogButtonBox()
         button_box.setOrientation(Qt.Horizontal)

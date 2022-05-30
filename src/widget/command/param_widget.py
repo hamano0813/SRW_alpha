@@ -14,7 +14,6 @@ class ParamWidget:
         self.name = name
         self.default = default
         self.kwargs = kwargs
-        self.setProperty('language', 'zh')
         self.setProperty('group', 'param')
 
     def install(self, param: int = None) -> None:
