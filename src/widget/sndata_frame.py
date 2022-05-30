@@ -50,10 +50,10 @@ class StageModel(QAbstractTableModel):
         if role == Qt.FontRole:
             font = QFont()
             font.setFamilies(['Consolas', 'Yu Gothic UI', 'Wingdings'])
-            font.setPointSize(16)
+            font.setPointSize(14)
             if command['Code'] <= 0x01:
                 font.setBold(True)
-                font.setLetterSpacing(QFont.PercentageSpacing, 150)
+                font.setLetterSpacing(QFont.PercentageSpacing, 200)
             if command['Code'] in (0x08, 0x09, 0x0A):
                 font.setUnderline(True)
             if command['Code'] in range(0x02, 0x08):
