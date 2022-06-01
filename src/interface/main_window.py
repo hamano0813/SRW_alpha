@@ -53,7 +53,7 @@ class MainWindow(QMainWindow):
         self.init_menu_action()
 
         self.setWindowTitle('超级机器人大战α 静态修改器')
-        self.setWindowIcon(QIcon(':image/icon.png'))
+        self.setWindowIcon(QIcon(':image/icon.ico'))
         self.setMinimumSize(1440, 875)
         self.check_enable()
 
