@@ -20,9 +20,16 @@ a = Analysis(
     noarchive=False,
 )
 
-to_keep = []
-to_exclude = {
+# Exclude Binaries
+binaries = []
+binaries_exclude = {
     'opengl32sw.dll',
+    'MSVCP140.dll',
+    'MSVCP140_1.dll',
+    'MSVCP140_2.dll',
+    'libcrypto-1_1.dll',
+    'VCRUNTIME140.dll',
+    'VCRUNTIME140_1.dll',
     'Qt6Network.dll',
     'Qt6OpenGL.dll',
     'Qt6Qml.dll',
@@ -39,14 +46,29 @@ to_exclude = {
     'qschannelbackend.dll',
     'QtNetwork.pyd',
     '_webp.cp310-win_amd64.pyd',
+    '_bz2.pyd',
+    '_decimal.pyd',
+    '_hashlib.pyd',
+    '_lzma.pyd',
+    '_socket.pyd',
     }
 
 for (dest, source, kind) in a.binaries:
-    if os.path.split(source)[1] in to_exclude:
+    if os.path.split(source)[1] in binaries_exclude:
         continue
-    to_keep.append((dest, source, kind))
+    binaries.append((dest, source, kind))
 
-a.binaries = to_keep
+a.binaries = binaries
+
+# Exclude Datas
+datas = []
+
+for (dest, source, kind) in a.datas:
+    if os.path.split(source)[1].startswith('qtbase_'):
+        continue
+    datas.append((dest, source, kind))
+
+a.datas = datas
 
 pyz = PYZ(a.pure, a.zipped_data, cipher=block_cipher)
 

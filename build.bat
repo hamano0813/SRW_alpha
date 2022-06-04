@@ -7,5 +7,4 @@ pyinstaller project.spec
 RMDIR /S /Q release
 RMDIR /S /Q build
 RMDIR /S /Q venv
-RMDIR /S /Q dist\SRW¦Á\PySide6\translations
 start dist
