@@ -60,7 +60,7 @@ class CommandExplain:
         self.w['特未'] = ParamVSpin('未知参数', 0, '04X', range=(0x0, 0x7FFF))
         self.w['无效参数'] = ParamVSpin('无效参数', 0)
         self.w['声音代码'] = ParamVSpin('声音代码', 0, '04X', range=(0x0, 0x7FFF))
-        self.w['等级'] = ParamVSpin('等级', 1, range=(0x1, 0x63))
+        self.w['等级'] = ParamVSpin('等级', 1, range=(0x0, 0x63))
         self.w['改造'] = ParamVSpin('改造', 0, range=(0x0, 0xA))
 
         self.settings: dict[int, tuple[str, list[ParamWidget], str, str]] = {
