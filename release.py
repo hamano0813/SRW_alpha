@@ -1,6 +1,15 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+#############################################################################
+#
+#  Created by Hamano0813
+#  用于将项目以二进制码发布的小工具
+#  命令行执行输入 python release.py main.py
+#  可直接将项目入口的main文件拖放到工具上执行
+#
+#############################################################################
+
 import os
 import py_compile
 import shutil
@@ -40,8 +49,22 @@ def release_project(s_path):
                     shutil.move(c_path, t_path)
                     count += 1
 
+    print(f'转换了{count}个文件...')
     remove_cache(p_folder)
 
-    print(f'0 INFO: release completed. convert {count} files.')
 
-release_project(sys.argv[1])
+def process():
+    if len(sys.argv) != 2:
+        return print('必须传入1个程序入口...')
+
+    path = sys.argv[1]
+    if path.endswith('.py') or path.endswith('.pyw'):
+        release_project(path)
+
+        return print('程序发布完成...')
+
+    return print('必须传入.py或.pyw文件作为程序入口...')
+
+
+if __name__ == '__main__':
+    process()

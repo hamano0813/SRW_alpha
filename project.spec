@@ -5,7 +5,7 @@ block_cipher = None
 
 
 a = Analysis(
-    ['release\\SRWα.pyw'],
+    ['release\\SRWα.py'],
     pathex=[],
     binaries=[],
     datas=[('./src/event.txt', './')],
@@ -89,6 +89,7 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
+    version='version.txt',
 )
 coll = COLLECT(
     exe,
