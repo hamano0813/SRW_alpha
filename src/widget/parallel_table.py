@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from collections import deque
-from typing import Optional
+from typing import Optional, Union
 
 import win32clipboard
 from PySide6.QtCore import Qt, QAbstractTableModel, QModelIndex
@@ -56,7 +56,7 @@ class ParallelModel(QAbstractTableModel):
                 return font
         return None
 
-    def setData(self, index: QModelIndex, data: int | str, role: int = ...) -> bool:
+    def setData(self, index: QModelIndex, data: Union[int, str], role: int = ...) -> bool:
         if not index.isValid():
             return False
         column_name = tuple(self.columns.keys())[index.column()]
@@ -106,7 +106,7 @@ class ParallelDelegate(QStyledItemDelegate):
 
 
 class ParallelTable(ControlWidget, QTableView):
-    def __init__(self, parent, data_name: tuple, columns: dict[str, SingleWidget | QWidget], **kwargs):
+    def __init__(self, parent, data_name: tuple, columns: dict[str, Union[SingleWidget, QWidget]], **kwargs):
         ControlWidget.__init__(self, parent, data_name, **kwargs)
         QTableView.__init__(self, parent)
         self.columns = columns
@@ -118,7 +118,7 @@ class ParallelTable(ControlWidget, QTableView):
 
         self.check_kwargs()
 
-    def install(self, data_set: dict[str, int | str | SEQUENCE]) -> bool:
+    def install(self, data_set: dict[str, Union[int, str, SEQUENCE]]) -> bool:
         parallel_model = ParallelModel(self, self.columns)
         data_list: list[SEQUENCE] = [data_set.get(name, list()) for name in self.data_name]
         parallel_model.install(data_list)

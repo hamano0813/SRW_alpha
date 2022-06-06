@@ -3,7 +3,7 @@
 
 import os
 import sys
-from typing import Optional
+from typing import Optional, Union
 
 import qdarktheme
 from PySide6.QtGui import QIcon, QAction, QActionGroup
@@ -178,7 +178,7 @@ class MainWindow(QMainWindow):
 
         return wrapper
 
-    def centralWidget(self) -> QWidget | RobotFrame | PilotFrame | SnmsgFrame | ScenarioFrame | PrmgrpFrame:
+    def centralWidget(self) -> Union[QWidget, RobotFrame, PilotFrame, SnmsgFrame, ScenarioFrame, PrmgrpFrame]:
         return super(MainWindow, self).centralWidget()
 
     def save_file(self) -> None:

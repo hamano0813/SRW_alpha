@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from collections import deque
-from typing import Optional
+from typing import Optional, Union
 
 import win32clipboard
 from PySide6.QtCore import Qt, QAbstractTableModel, QModelIndex
@@ -56,7 +56,7 @@ class TransposeModel(QAbstractTableModel):
                 return font
         return None
 
-    def setData(self, index: QModelIndex, data: int | str, role: int = ...) -> bool:
+    def setData(self, index: QModelIndex, data: Union[int, str], role: int = ...) -> bool:
         if not index.isValid():
             return False
         row_name = tuple(self.rows.keys())[index.row()]
@@ -106,7 +106,7 @@ class TransposeDelegate(QStyledItemDelegate):
 
 
 class TransposeTable(ControlWidget, QTableView):
-    def __init__(self, parent, data_name, rows: dict[str, SingleWidget | QWidget], **kwargs):
+    def __init__(self, parent, data_name, rows: dict[str, Union[SingleWidget, QWidget]], **kwargs):
         QTableView.__init__(self, parent=None)
         ControlWidget.__init__(self, parent, data_name, **kwargs)
         self.rows = rows
@@ -116,7 +116,7 @@ class TransposeTable(ControlWidget, QTableView):
         self.verticalHeader().setMinimumWidth(40)
         self.check_kwargs()
 
-    def install(self, data_set: dict[str, int | str | SEQUENCE]) -> bool:
+    def install(self, data_set: dict[str, Union[int, str, SEQUENCE]]) -> bool:
         transpose_model = TransposeModel(self, self.rows)
         transpose_model.install(data_set.get(self.data_name, list()))
         self.setModel(transpose_model)

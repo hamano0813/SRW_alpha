@@ -1,5 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+
+from typing import Union
+
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QComboBox, QLineEdit
 
@@ -30,7 +33,7 @@ class RadioCombo(SingleWidget, QComboBox):
             for data, text in self.mapping.items():
                 self.addItem(text, data)
 
-    def install(self, data_set: dict[str, int | str], delegate: bool = False) -> bool:
+    def install(self, data_set: dict[str, Union[int, str]], delegate: bool = False) -> bool:
         self.disconnect(self)
         self.data_set = data_set
         value = self.data_set.get(self.data_name, 0)

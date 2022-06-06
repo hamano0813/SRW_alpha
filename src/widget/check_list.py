@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from typing import Union
+
 from PySide6.QtWidgets import QCheckBox, QListWidget, QListWidgetItem
 
 from widget.abstract_widget import SingleWidget
@@ -24,7 +26,7 @@ class CheckList(SingleWidget, QListWidget):
                 check_item = QListWidgetItem(self)
                 self.setItemWidget(check_item, check_box)
 
-    def install(self, data_set: dict[str, int | str], delegate: bool = False) -> bool:
+    def install(self, data_set: dict[str, Union[int, str]], delegate: bool = False) -> bool:
         self.data_set = data_set
         value = self.data_set.get(self.data_name, 0)
         for bit, check_box in enumerate(self.check_list):

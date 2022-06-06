@@ -1,42 +1,44 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from typing import Union
+
 from PySide6.QtWidgets import QWidget, QTableView, QSpinBox
 
 from structure.generic import Value, Text, SEQUENCE
 
 
 class AbstractWidget:
-    def __init__(self, parent, data_name: str | tuple, **kwargs):
-        self.data_set: dict[str, int | str | SEQUENCE] = dict()
+    def __init__(self, parent, data_name: Union[str, tuple], **kwargs):
+        self.data_set: dict[str, Union[int, str, SEQUENCE]] = dict()
         self.data_name = data_name
         self.kwargs = kwargs
         if isinstance(parent, ControlWidget):
             parent.append_child(self)
 
-    def install(self, data_set: dict[str, int | str | SEQUENCE]) -> bool:
+    def install(self, data_set: dict[str, Union[int, str, SEQUENCE]]) -> bool:
         pass
 
 
 class SingleWidget(AbstractWidget):
-    def __init__(self, parent, data_name, structure: Value | Text, **kwargs):
+    def __init__(self, parent, data_name, structure: Union[Value, Text], **kwargs):
         AbstractWidget.__init__(self, parent, data_name, **kwargs)
         self.structure = structure
 
-    def install(self, data_set: dict[str, int | str], delegate: bool = False) -> bool:
+    def install(self, data_set: dict[str, Union[int, str]], delegate: bool = False) -> bool:
         pass
 
     def overwrite(self) -> bool:
         self.data_set[self.data_name] = self.delegate()
         return True
 
-    def display(self, data: int | str) -> str:
+    def display(self, data: Union[int, str]) -> str:
         pass
 
-    def interpret(self, text: str) -> int | str:
+    def interpret(self, text: str) -> Union[int, str]:
         pass
 
-    def delegate(self) -> int | str:
+    def delegate(self) -> Union[int, str]:
         pass
 
     def new(self, parent):
@@ -48,7 +50,7 @@ class ControlWidget(AbstractWidget):
         super(ControlWidget, self).__init__(parent, data_name, **kwargs)
         self.childs: list[AbstractWidget] = list()
 
-    def install(self, data_set: dict[str, int | str | SEQUENCE]) -> bool:
+    def install(self, data_set: dict[str, Union[int, str, SEQUENCE]]) -> bool:
         self.data_set = data_set
         self.control_child(0)
         return True
@@ -71,7 +73,7 @@ class BackgroundWidget:
         self.widgets: dict[str, AbstractWidget] = dict()
         self.kwargs = kwargs
 
-    def __getitem__(self, widget_name: str) -> AbstractWidget | ControlWidget | QWidget | QTableView | QSpinBox:
+    def __getitem__(self, widget_name: str) -> Union[AbstractWidget, ControlWidget, QWidget, QTableView, QSpinBox]:
         return self.widgets.get(widget_name)
 
     def __setitem__(self, widget_name: str, child_widget: AbstractWidget) -> bool:

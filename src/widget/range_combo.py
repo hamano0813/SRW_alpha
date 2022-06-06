@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from typing import Union
+
 from PIL import Image, ImageDraw
 from PySide6.QtCore import QSize
 from PySide6.QtGui import QIcon
@@ -123,7 +125,7 @@ class RangeCombo(SingleWidget, QComboBox):
             draw.rectangle(((10 * rect[0] + 1, 10 * rect[1] + 1), (10 * rect[0] + 9, 10 * rect[1] + 9)), fill="red")
         return img.rotate(45, resample=Image.BICUBIC, expand=True).resize((150, 100)).toqpixmap()
 
-    def install(self, data_set: dict[str, int | str], delegate: bool = False) -> bool:
+    def install(self, data_set: dict[str, Union[int, str]], delegate: bool = False) -> bool:
         self.disconnect(self)
         self.data_set = data_set
         value = self.data_set.get(self.data_name, 0)

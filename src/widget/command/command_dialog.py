@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from typing import Union
 from struct import calcsize, pack, unpack
 
 from PySide6.QtCore import Qt
@@ -56,11 +57,11 @@ class CommandDialog(QDialog):
         # noinspection PyUnresolvedReferences
         self.code_combo.currentIndexChanged.connect(self.reset_widgets)
 
-    def get_command(self) -> dict[str, int | list[int]]:
+    def get_command(self) -> dict[str, Union[int, list[int]]]:
         if self.exec():
             return self.command()
 
-    def command(self) -> dict[str, int | list[int]]:
+    def command(self) -> dict[str, Union[int, list[int]]]:
         command = {'Pos': 0, 'Code': 0, 'Count': 1, 'Param': list(), 'Data': ''}
         code = command['Code'] = self.code_combo.currentData()
         command['Param'] = [widget.data() for widget in self.widgets]

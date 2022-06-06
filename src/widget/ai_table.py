@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from typing import Union
+
 from PySide6.QtCore import Qt, QModelIndex
 from PySide6.QtGui import QAction, QCursor, QKeyEvent
 from PySide6.QtWidgets import QMenu
@@ -44,7 +46,7 @@ class AiTable(ArrayTable):
         self.alignment = self.kwargs.get('alignment', Qt.AlignVCenter)
         self.horizontalHeader().setProperty('language', 'zh')
 
-    def install(self, data_set: dict[str, int | str | SEQUENCE]) -> bool:
+    def install(self, data_set: dict[str, Union[int, str, SEQUENCE]]) -> bool:
         array_model = AiModel(self, self.columns)
         array_model.install(data_set.get(self.data_name, list()))
         proxy = self.generate_proxy()

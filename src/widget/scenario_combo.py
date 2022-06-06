@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from typing import Union
+
 from PySide6.QtCore import Qt, QAbstractTableModel, QModelIndex, QEvent
 from PySide6.QtGui import QPalette
 from PySide6.QtWidgets import QTableView, QComboBox, QStyle, QStyleOptionComboBox, QStylePainter, QAbstractItemView, \
@@ -100,7 +102,7 @@ class ScenarioCombo(QComboBox):
         self.setStyleSheet('* {font: 900 16pt;} QAbstractItemView::item {padding: 0 30px;}')
         self.init_view()
 
-    def view(self) -> QAbstractItemView | ScenarioTable:
+    def view(self) -> Union[QAbstractItemView, ScenarioTable]:
         return super(ScenarioCombo, self).view()
 
     def init_view(self):

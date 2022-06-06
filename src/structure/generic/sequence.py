@@ -1,17 +1,17 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from typing import Optional
+from typing import Optional, Union
 
 from structure.generic.text import Text
 from structure.generic.value import Value
 
-SEQUENCE = list[dict[str, int | str | Optional["SEQUENCE"]]]
+SEQUENCE = list[dict[str, Union[int, str, Optional["SEQUENCE"]]]]
 
 
 class Sequence:
     def __init__(self, structures, offset: int, length: int, count: int = 0x1):
-        self.structures: dict[str, Value | Text | Optional["Sequence"]] = structures
+        self.structures: dict[str, Union[Value, Text, Optional["Sequence"]]] = structures
         self.offset = offset
         self.length = length
         self.count = count

@@ -1,5 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+
+from typing import Union
+
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QPlainTextEdit
 
@@ -17,7 +20,7 @@ class TextMulti(SingleWidget, QPlainTextEdit):
             self.setFont(font)
         self.setContextMenuPolicy(Qt.ContextMenuPolicy.NoContextMenu)
 
-    def install(self, data_set: dict[str, int | str], delegate: bool = False) -> bool:
+    def install(self, data_set: dict[str, Union[int, str]], delegate: bool = False) -> bool:
         self.disconnect(self)
         self.data_set = data_set
         text = self.data_set.get(self.data_name)

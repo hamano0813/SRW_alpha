@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from collections import deque
-from typing import Optional
+from typing import Optional, Union
 
 import win32clipboard
 from PySide6.QtCore import Qt, QAbstractTableModel, QSortFilterProxyModel, QModelIndex, QRegularExpression, QEvent
@@ -58,7 +58,7 @@ class ArrayModel(QAbstractTableModel):
                 return font
         return None
 
-    def setData(self, index: QModelIndex, data: int | str, role: int = ...) -> bool:
+    def setData(self, index: QModelIndex, data: Union[int, str], role: int = ...) -> bool:
         if not index.isValid():
             return False
         column_name = tuple(self.columns.keys())[index.column()]
@@ -104,7 +104,7 @@ class ArrayDelegate(QStyledItemDelegate):
             return QApplication.style().drawControl(QStyle.CE_CheckBox, checkbox_option, painter, QCheckBox())
         return super(ArrayDelegate, self).paint(painter, option, index)
 
-    def editorEvent(self, event: QEvent, model: ArrayModel | QSortFilterProxyModel, option, index: QModelIndex):
+    def editorEvent(self, event: QEvent, model: Union[ArrayModel, QSortFilterProxyModel], option, index: QModelIndex):
         if event.type() == QEvent.MouseButtonPress and option.rect.contains(event.pos()):
             if index.column() in model.sourceModel().check_column:
                 value = index.data(Qt.EditRole)
@@ -131,7 +131,7 @@ class ArrayDelegate(QStyledItemDelegate):
 
 
 class ArrayTable(ControlWidget, QTableView):
-    def __init__(self, parent, data_name, columns: dict[str, SingleWidget | QWidget], **kwargs):
+    def __init__(self, parent, data_name, columns: dict[str, Union[SingleWidget, QWidget]], **kwargs):
         QTableView.__init__(self, parent=None)
         ControlWidget.__init__(self, parent, data_name, **kwargs)
         self.columns = columns
@@ -146,7 +146,7 @@ class ArrayTable(ControlWidget, QTableView):
     def source(self):
         return self.model().sourceModel()
 
-    def install(self, data_set: dict[str, int | str | SEQUENCE]) -> bool:
+    def install(self, data_set: dict[str, Union[int, str, SEQUENCE]]) -> bool:
         array_model = ArrayModel(self, self.columns)
         array_model.install(data_set.get(self.data_name, list()))
         proxy = self.generate_proxy()

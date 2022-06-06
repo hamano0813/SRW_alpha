@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from typing import Union
+
 from parameter import EnumData
 from widget.command import ParamRCombo, ParamCCombo, ParamVSpin
 from widget.command.param_widget import ParamWidget
@@ -611,7 +613,7 @@ class CommandExplain:
                    '[BB]地图演出 - 相对坐标地图演出'),
         }
 
-    def explain(self, command: dict[str, int | list[int] | str]) -> str:
+    def explain(self, command: dict[str, Union[int, list[int], str]]) -> str:
         code = command.get('Code')
         param = command.get('Param')
         param_setting: tuple[str, list[ParamWidget], str, str] = self.settings.get(code, (str(code), tuple()))

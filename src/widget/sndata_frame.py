@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from typing import Optional
+from typing import Optional, Union
 
 import win32clipboard
 from PySide6.QtCore import Qt, QAbstractTableModel, QSortFilterProxyModel, QModelIndex, QEvent, QRegularExpression
@@ -82,7 +82,7 @@ class StageModel(QAbstractTableModel):
                             return idx
         return None
 
-    def insert_command(self, row: int, command: dict[str, int | str | list]) -> None:
+    def insert_command(self, row: int, command: dict[str, Union[int, str, list]]) -> None:
         self.beginInsertRows(QModelIndex(), row, row)
         command['Pos'] = self.commands[row]['Pos']
         for idx, _command in enumerate(self.commands):
@@ -103,7 +103,7 @@ class StageModel(QAbstractTableModel):
                 _command['Param'][0] -= command['Count']
         self.endRemoveRows()
 
-    def update_command(self, row: int, command: dict[str, int | str | list]) -> None:
+    def update_command(self, row: int, command: dict[str, Union[int, str, list]]) -> None:
         self.remove_command(row)
         self.insert_command(row, command)
 
@@ -127,7 +127,7 @@ class StageTable(QTableView, ControlWidget):
         if corner := self.kwargs.get('corner', False):
             self.set_corner(corner)
 
-    def install(self, data_set: dict[str, int | str | SEQUENCE]) -> bool:
+    def install(self, data_set: dict[str, Union[int, str, SEQUENCE]]) -> bool:
         model = StageModel(self, **self.kwargs)
         model.install(data_set.get(self.data_name, list()))
         proxy = QSortFilterProxyModel(self)
@@ -331,7 +331,7 @@ class StageFrame(QFrame, AbstractWidget):
         button_layout.addStretch()
         return button_layout
 
-    def install(self, data_set: dict[str, int | str | SEQUENCE]) -> bool:
+    def install(self, data_set: dict[str, Union[int, str, SEQUENCE]]) -> bool:
         if data_set:
             self.filter_line.clear()
             self.table.scrollToTop()

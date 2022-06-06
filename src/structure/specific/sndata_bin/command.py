@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from typing import Union
 from struct import unpack_from, pack, iter_unpack
 
 from structure.generic import Sequence, SEQUENCE
@@ -196,7 +197,7 @@ class Command(Sequence):
             length = _buffer[offset + 0x1] * 2
             c_buffer = _buffer[offset: offset + length]
 
-            command: dict[str, int | list[int] | str] = dict()
+            command: dict[str, Union[int, list[int], str]] = dict()
             command['Pos'] = offset // 2
             command['Code'] = c_buffer[0]
             command['Count'] = c_buffer[1]
@@ -231,7 +232,7 @@ class Command(Sequence):
         return buffer
 
     @staticmethod
-    def reverse_buffer(buffer: bytes | bytearray) -> bytearray:
+    def reverse_buffer(buffer: Union[bytes, bytearray]) -> bytearray:
         _buffer = bytearray()
         for unit in iter_unpack('h', buffer):
             _buffer += pack('>h', *unit)
