@@ -4,7 +4,8 @@
 from typing import Optional
 
 import win32clipboard
-from PySide6.QtCore import Qt, QAbstractTableModel, QSortFilterProxyModel, QModelIndex, QEvent, QRegularExpression
+from PySide6.QtCore import Qt, QAbstractTableModel, QSortFilterProxyModel, QModelIndex, QEvent, QRegularExpression, \
+    Signal
 from PySide6.QtGui import QMouseEvent, QCursor, QAction, QKeyEvent, QFont
 from PySide6.QtWidgets import (QTableView, QPushButton, QVBoxLayout, QFrame, QHBoxLayout, QAbstractButton,
                                QStyleOptionHeader, QWidget, QStyle, QStylePainter, QMenu, QLineEdit)
@@ -13,6 +14,7 @@ from structure.generic import SEQUENCE
 from widget import ArrayTable, FontLabel
 from widget.abstract_widget import ControlWidget, AbstractWidget
 from widget.command.command_dialog import CommandDialog, CommandExplain
+from widget.command_search import CommandSearch
 
 
 class StageModel(QAbstractTableModel):
@@ -144,6 +146,13 @@ class StageTable(QTableView, ControlWidget):
         self.selectionModel().currentChanged[QModelIndex, QModelIndex].connect(self.select_index)
         self.jump_indexes: list[QModelIndex] = list()
         return True
+
+    def jump_pos(self, pos: int):
+        positions = [command['Pos'] for command in self.model().sourceModel().commands]
+        if pos in positions:
+            target = self.model().sourceModel().createIndex(positions.index(pos), 0)
+            self.scrollTo(target, self.PositionAtCenter)
+            self.setCurrentIndex(self.model().mapFromSource(target))
 
     def select_index(self, index: QModelIndex) -> bool:
         if not index.isValid():
@@ -285,6 +294,8 @@ class StageTable(QTableView, ControlWidget):
 
 
 class StageFrame(QFrame, AbstractWidget):
+    jumpSearch = Signal(int, int)
+
     def __init__(self, parent, data_name: str, **kwargs):
         QFrame.__init__(self, parent)
         AbstractWidget.__init__(self, parent, data_name, **kwargs)
@@ -339,4 +350,6 @@ class StageFrame(QFrame, AbstractWidget):
 
     def search_command(self):
         scenario_data = self._parent.data_set
-        print(scenario_data)
+        search = CommandSearch(self, Qt.Dialog, scenario_data, explain=self.table.model().sourceModel().explain)
+        search.jumpSearch[int, int].connect(self.jumpSearch)
+        search.show()

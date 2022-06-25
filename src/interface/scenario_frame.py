@@ -57,11 +57,13 @@ class ScenarioFrame(BackgroundFrame):
 
     def init_stage_frame(self):
         self['场景设计'] = ArrayTable(self, '场景设计', {}, stretch=tuple())
-        return StageFrame(self['场景设计'], 'Commands', corner='索引',
-                          robots=self.robot_mapping,
-                          pilots=self.pilot_mapping,
-                          messages=self.message_mapping,
-                          )
+        stage_frame = StageFrame(self['场景设计'], 'Commands', corner='索引',
+                                 robots=self.robot_mapping,
+                                 pilots=self.pilot_mapping,
+                                 messages=self.message_mapping,
+                                 )
+        stage_frame.jumpSearch[int, int].connect(self.jump_search)
+        return stage_frame
 
     def init_enemy_frame(self):
         enemy_frame = QFrame()
@@ -161,6 +163,10 @@ class ScenarioFrame(BackgroundFrame):
         self['敌方设计'].control_child(index)
         self['AI设计'].control_child(index)
         return True
+
+    def jump_search(self, scenario: int, pos: int):
+        self['シナリオ列表'].setCurrentIndex(list(EnumData.SCENARIO.keys()).index(scenario))
+        self.scenario_tab.widget(0).table.jump_pos(pos)
 
     def set_roms(self, roms: list[SndataBIN, EnlistBIN, AiunpBIN]):
         self.sndata_rom, self.enlist_rom, self.aiunp_rom = roms
