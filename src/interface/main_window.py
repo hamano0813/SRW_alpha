@@ -9,7 +9,7 @@ import qdarktheme
 from PySide6.QtGui import QIcon, QAction, QActionGroup
 from PySide6.QtWidgets import QApplication, QMainWindow, QMenu, QFileDialog, QToolBar, QPushButton, QWidget, QMessageBox
 
-from interface import RobotFrame, PilotFrame, SnmsgFrame, ScenarioFrame, PrmgrpFrame
+from interface import RobotFrame, PilotFrame, SnmsgFrame, ScenarioFrame, ScriptFrame, PrmgrpFrame
 from interface.resource import *
 from structure import Rom, RobotRAF, PilotBIN, SnmsgBIN, SndataBIN, EnlistBIN, AiunpBIN, ScriptBIN, PrmgrpBIN
 from widget import BackgroundFrame
@@ -43,6 +43,7 @@ class MainWindow(QMainWindow):
                     'pilots': self.roms['PILOT.BIN'].pilots,
                     'messages': self.roms['SNMSG.BIN'].messages},
                    ),
+            '剧本': (ScriptFrame, ('SCRIPT.BIN',),),
             '其他': (PrmgrpFrame, ('PRM_GRP.BIN',),),
         }
 
