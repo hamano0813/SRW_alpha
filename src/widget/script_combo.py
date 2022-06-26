@@ -11,7 +11,8 @@ from widget.abstract_widget import ControlWidget
 
 
 class ScriptModel(QAbstractTableModel):
-    def __init__(self, parent, columns: tuple[str, str, str, str, str], script_data: dict[str, tuple[str, str, str, str]]):
+    def __init__(self, parent, columns: tuple[str, str, str, str, str],
+                 script_data: dict[int, tuple[str, str, str, str, str]]):
         super(ScriptModel, self).__init__(parent)
         self.columns = columns
         self.script_data = script_data

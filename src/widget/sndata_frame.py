@@ -4,11 +4,11 @@
 from typing import Optional
 
 import win32clipboard
-from PySide6.QtCore import Qt, QAbstractTableModel, QSortFilterProxyModel, QModelIndex, QEvent, QRegularExpression, \
-    Signal
+from PySide6.QtCore import (Qt, QAbstractTableModel, QSortFilterProxyModel, QModelIndex, QEvent, QRegularExpression,
+                            Signal)
 from PySide6.QtGui import QMouseEvent, QCursor, QAction, QKeyEvent, QFont
 from PySide6.QtWidgets import (QTableView, QPushButton, QVBoxLayout, QFrame, QHBoxLayout, QAbstractButton,
-                               QStyleOptionHeader, QWidget, QStyle, QStylePainter, QMenu, QLineEdit, QApplication)
+                               QStyleOptionHeader, QWidget, QStyle, QStylePainter, QMenu, QLineEdit)
 
 from structure.generic import SEQUENCE
 from widget import ArrayTable, FontLabel
