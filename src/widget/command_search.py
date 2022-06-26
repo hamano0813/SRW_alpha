@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from PySide6.QtCore import Qt, QAbstractTableModel, QModelIndex, Signal
-from PySide6.QtGui import QMouseEvent
+from PySide6.QtGui import QMouseEvent, QFont
 from PySide6.QtWidgets import QDialog, QComboBox, QTableView, QLabel, QPushButton, QVBoxLayout, QGridLayout
 
 from widget.command.command_dialog import CommandExplain
@@ -37,10 +37,18 @@ class SearchModel(QAbstractTableModel):
                 return f'[{data:02X}]'
             if index.column() == 1:
                 return f'{data:04X}'
-            return data
+            return data.replace('\n', '')
         if role == Qt.TextAlignmentRole:
             if index.column() < 2:
-                return Qt.AlignCenter
+                return int(Qt.AlignCenter)
+        if role == Qt.FontRole:
+            font = QFont()
+            font.setFamilies(['Consolas', 'Yu Gothic UI', 'Wingdings'])
+            font.setPointSize(12)
+            if index.column() < 2:
+                font.setBold(True)
+            return font
+        return None
 
     def flags(self, index: QModelIndex):
         if not index.isValid():
@@ -68,7 +76,7 @@ class SearchTable(QTableView):
 
     def set_result(self, result: list):
         self.model().set_result(result)
-        self.resizeRowsToContents()
+        # self.resizeRowsToContents()
 
     def mouseDoubleClickEvent(self, event: QMouseEvent) -> None:
         index = self.indexAt(event.pos())
@@ -133,8 +141,8 @@ class CommandSearch(QDialog):
         main_layout.addWidget(self.search_table)
 
         self.setLayout(main_layout)
-        self.setWindowTitle('全局查询')
-        self.setFixedHeight(800)
+        self.setWindowTitle('全局查找')
+        self.setFixedHeight(600)
 
     def init_command(self):
         combo = QComboBox()

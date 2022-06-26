@@ -8,7 +8,7 @@ from PySide6.QtCore import Qt, QAbstractTableModel, QSortFilterProxyModel, QMode
     Signal
 from PySide6.QtGui import QMouseEvent, QCursor, QAction, QKeyEvent, QFont
 from PySide6.QtWidgets import (QTableView, QPushButton, QVBoxLayout, QFrame, QHBoxLayout, QAbstractButton,
-                               QStyleOptionHeader, QWidget, QStyle, QStylePainter, QMenu, QLineEdit)
+                               QStyleOptionHeader, QWidget, QStyle, QStylePainter, QMenu, QLineEdit, QApplication)
 
 from structure.generic import SEQUENCE
 from widget import ArrayTable, FontLabel
@@ -46,7 +46,7 @@ class StageModel(QAbstractTableModel):
     def data(self, index: QModelIndex, role: int = ...) -> any:
         command = self.commands[index.row()]
         if role == Qt.DisplayRole:
-            return self.explain.explain(command)
+            return self.explain.explain(command).replace('\n', '')
         if role == Qt.ToolTipRole:
             return f"Command:\t{command}".replace(", 'Data': '", "}\nSourceData:\t").replace("'}", "")
         if role == Qt.FontRole:
@@ -135,9 +135,11 @@ class StageTable(QTableView, ControlWidget):
         proxy = QSortFilterProxyModel(self)
         proxy.setSourceModel(model)
         self.setModel(proxy)
-        self.resizeRowsToContents()
-        self.resizeColumnsToContents()
         self.horizontalHeader().setSectionResizeMode(0, self.horizontalHeader().Stretch)
+        # for i in range(model.rowCount()):
+        #     QApplication.processEvents()
+        #     self.resizeRowToContents(i)
+
         self.data_set = data_set
 
         # noinspection PyUnresolvedReferences

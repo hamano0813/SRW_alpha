@@ -153,10 +153,11 @@ class ArrayTable(ControlWidget, QTableView):
         proxy.setSourceModel(array_model)
         self.setModel(proxy)
 
-        QApplication.processEvents()
         if self.kwargs.get('resizeColumns', True):
+            QApplication.processEvents()
             self.resizeColumnsToContents()
         if self.kwargs.get('resizeRows', True):
+            QApplication.processEvents()
             self.resizeRowsToContents()
         stretch_columns = self.kwargs.get('stretch', (0,))
         for column in stretch_columns:
