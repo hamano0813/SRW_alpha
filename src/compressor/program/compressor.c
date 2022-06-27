@@ -21,7 +21,7 @@ static PyObject* compressor_decompress(PyObject* self, PyObject* args)
 	int InputSize = (int)PyByteArray_Size(InputByteArray);
 	int InputIndex = 0;
 
-	int UnitCount;
+	unsigned int UnitCount;
 	UnitCount = Input[InputIndex++];
 	UnitCount += Input[InputIndex++] << 8;
 	UnitCount += Input[InputIndex++] << 16;
@@ -34,15 +34,23 @@ static PyObject* compressor_decompress(PyObject* self, PyObject* args)
 		return PyErr_NoMemory();
 	}
 
+    // Test
+    PyObject* PointerList = PyList_New(UnitCount);
+
 	for (int pointer_idx=0; pointer_idx< UnitCount; pointer_idx++)
 	{
 		Pointer[pointer_idx] = Input[InputIndex++];
-		Pointer[pointer_idx] += Input[InputIndex++] << 8;
-		Pointer[pointer_idx] += Input[InputIndex++] << 16;
-		Pointer[pointer_idx] += Input[InputIndex++] << 24;
+        Pointer[pointer_idx] += Input[InputIndex++] << 8;
+        Pointer[pointer_idx] += Input[InputIndex++] << 16;
+        Pointer[pointer_idx] += Input[InputIndex++] << 24;
+
+		// Test
+        PyObject* pointer = Py_BuildValue("i", Pointer[pointer_idx]);
+        PyList_SetItem(PointerList, pointer_idx, pointer);
+
 	}
 
-	return InputByteArray;
+	return PointerList;
 }
 
 static PyMethodDef compressorMethods[] =
