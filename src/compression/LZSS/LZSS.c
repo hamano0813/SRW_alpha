@@ -1,11 +1,9 @@
 #define PY_SSIZE_T_CLEAN
 #include <Python.h>
 
-#define SIZEOFF 0
-#define DATAOFF 8
 #define MAXEXPAND 0x12
 
-int32_t ReadInt(uint8_t *Buffer, int32_t Offset) //读取无符号整数
+int32_t ReadInt(uint8_t *Buffer, int32_t Offset)
 {
 	uint32_t Value;
 	Value = Buffer[Offset++];
@@ -15,7 +13,7 @@ int32_t ReadInt(uint8_t *Buffer, int32_t Offset) //读取无符号整数
 	return Value;
 }
 
-void WriteInt(uint8_t *Buffer, int32_t Offset, int32_t Value) //写入无符号整数
+void WriteInt(uint8_t *Buffer, int32_t Offset, int32_t Value)
 {
 	Buffer[Offset++] = Value & 0xFF;
 	Buffer[Offset++] = Value >> 8 & 0xFF;
@@ -42,8 +40,6 @@ static PyObject *LZSS_compress(PyObject *self, PyObject *args)
 	if (!OuBuf)
 		return PyErr_NoMemory();
 
-	WriteInt(OuBuf, SIZEOFF, InSize);
-
 	PyObject *OuByteArray = PyByteArray_FromStringAndSize(OuBuf, MaxSize);
 	free(OuBuf);
 	return OuByteArray;
@@ -52,7 +48,8 @@ static PyObject *LZSS_compress(PyObject *self, PyObject *args)
 static PyObject *LZSS_decompress(PyObject *self, PyObject *args)
 {
 	PyObject *InByteArray;
-	if (!PyArg_ParseTuple(args, "Y", &InByteArray))
+	uint32_t OuSize;
+	if (!PyArg_ParseTuple(args, "YI", &InByteArray, &OuSize))
 		return NULL;
 
 	uint8_t *InBuf;
@@ -60,18 +57,15 @@ static PyObject *LZSS_decompress(PyObject *self, PyObject *args)
 	if (!InBuf)
 		return NULL;
 
-	int32_t InSize = (uint32_t)PyByteArray_Size(InByteArray);
-	int32_t OuSize = ReadInt(InBuf, SIZEOFF);
-
 	uint8_t *OuBuf;
 	OuBuf = (uint8_t *)calloc(OuSize, sizeof(uint8_t));
 	if (!OuBuf)
 		return PyErr_NoMemory();
 
-	int32_t RdCur = DATAOFF;
-	int32_t WrCur = 0;
-
-	int8_t ZipCnt = 0;
+	uint32_t InSize = (uint32_t)PyByteArray_Size(InByteArray);
+	uint32_t RdCur = 0;
+	uint32_t WrCur = 0;
+	uint8_t ZipCnt = 0;
 	int16_t ZipIdx = 0;
 
 	while (RdCur < InSize)
@@ -85,7 +79,7 @@ static PyObject *LZSS_decompress(PyObject *self, PyObject *args)
 			{
 				ZipCnt = (InBuf[RdCur + 1] & 0xF) + MAXEXPAND - 0xF;
 				ZipIdx = (InBuf[RdCur + 1] & 0xF0) * 0x10 + InBuf[RdCur] + MAXEXPAND & 0xFFF;
-				if (ZipIdx > WrCur)
+				if ((uint16_t)ZipIdx > WrCur)
 					ZipIdx -= 0x1000;
 
 				for (int zip_idx = 0; zip_idx < ZipCnt; ++zip_idx)
