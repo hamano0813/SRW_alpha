@@ -4,8 +4,11 @@
     <content url="file://$MODULE_DIR$/resource">
       <sourceFolder url="file://$MODULE_DIR$/resource" isTestSource="false" />
     </content>
-    <content url="file://$MODULE_DIR$/src" />
-    <orderEntry type="jdk" jdkName="Python 3.10 (2)" jdkType="Python SDK" />
+    <content url="file://$MODULE_DIR$/src">
+      <sourceFolder url="file://$MODULE_DIR$/src/compression" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/test" isTestSource="true" />
+    </content>
+    <orderEntry type="jdk" jdkName="Python 3.10" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
 </module>
