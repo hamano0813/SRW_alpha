@@ -19,7 +19,7 @@ off = (cnt + 1) * 4
 ptrs = list(unpack_from('I' * cnt, o_data, 0x4))
 ptrs.append(len(o_data))
 
-
+bufs = []
 def test_decompress():
     buffer = bytearray()
     for u_idx in range(cnt):
@@ -27,6 +27,7 @@ def test_decompress():
         ou_size = unpack_from('I', buf, 0)[0]
         # noinspection PyUnresolvedReferences
         buffer += LZSS.decompress(buf[8:], ou_size)
+        bufs.append(buf[8:])
     return buffer
 
 start = time.time()
@@ -35,3 +36,4 @@ end = time.time()
 
 print(t_data == s_data)
 print(f'{end - start:.4f}')
+u_data = t_data[0:0x2C4]
