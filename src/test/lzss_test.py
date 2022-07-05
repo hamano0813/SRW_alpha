@@ -25,7 +25,6 @@ def test_decompress():
     buffer = bytearray()
     for u_idx in range(cnt):
         buf = o_data[off + ptrs[u_idx]: off + ptrs[u_idx + 1]]
-        ou_size = unpack_from('I', buf, 0)[0]
         # noinspection PyUnresolvedReferences
         decom = LZSS.decompress(buf[8:])
         buffer += decom
@@ -37,7 +36,6 @@ def test_decompress():
 def test_compress():
     for u_idx in range(cnt):
         buf = o_data[off + ptrs[u_idx]: off + ptrs[u_idx + 1]]
-        ou_size = unpack_from('I', buf, 0)[0]
         decom = LZSS.decompress(buf[8:])
         com = LZSS.compress(decom)
         print(buf[8:] == com, decom == LZSS.decompress(com))

@@ -41,9 +41,9 @@ static PyObject *LZSS_compress(PyObject *self, PyObject *args)
 			OutBuf[FlagCur] = 0;
 			FlagBit = 0;
 		}
-		WORD OffsetAdjust = (((RdCur + 0xFEE) / WinSize) * WinSize) - 0xFEE;
-		BYTE MatchCount = 0;
-		WORD MatchOffset = 0;
+		WORD matchAdj = (((RdCur + 0xFEE) / WinSize) * WinSize) - 0xFEE;
+		BYTE matchCnt = 0;
+		WORD matchCur = 0;
 		for (DWORD PreIndex = RdCur - 1; PreIndex > (RdCur - WinSize); PreIndex--)
 		{
 			BYTE match_idx =0;
@@ -58,16 +58,16 @@ static PyObject *LZSS_compress(PyObject *self, PyObject *args)
 					break;
 			}
 
-			if (match_idx > MatchCount)
+			if (match_idx > matchCnt)
 			{
-				MatchOffset = PreIndex - OffsetAdjust;
+				matchCur = PreIndex - matchAdj;
 
-				if (MatchOffset < 0)
+				if (matchCur < 0)
 				{
-					MatchOffset += WinSize;
+					matchCur += WinSize;
 				}
-				MatchCount = match_idx;
-				if (MatchCount == 0x12)
+				matchCnt = match_idx;
+				if (matchCnt == 0x12)
 				{
 					break;
 				}
@@ -78,30 +78,20 @@ static PyObject *LZSS_compress(PyObject *self, PyObject *args)
 			}
 		}
 
-		OutBuf[FlagCur] = (int8_t)(OutBuf[FlagCur] / 2);
 		FlagBit++;
-		if (MatchCount > 2)
+		if (matchCnt > 2)
 		{
-			// printf("%X\t%X\t%X\n", MatchOffset, MatchCount, num2);
-			OutBuf[WrCur] = (uint8_t)(MatchOffset % 0x100);
-			WrCur++;
-			OutBuf[WrCur] = (uint8_t)((((MatchOffset / 0x100) * 0x10) + MatchCount) - 3);
-			WrCur++;
-			RdCur = (RdCur + MatchCount) - 1;
+			OutBuf[WrCur++] = (BYTE)(matchCur % 0x100);
+			OutBuf[WrCur++] = (BYTE)(((matchCur / 0x100) * 0x10) + matchCnt - 3);
+			RdCur = (RdCur + matchCnt) - 1;
 		}
 		else
 		{
-			OutBuf[FlagCur] = (int8_t)(OutBuf[FlagCur] + 0x80);
-			OutBuf[WrCur] = InBuffer[RdCur];
-			WrCur++;
+			OutBuf[FlagCur] |= (1 << (FlagBit - 1));
+			OutBuf[WrCur++] = InBuffer[RdCur];
 		}
 	}
-	for (MatchValue = 1; MatchValue <= (8 - FlagBit); MatchValue++)
-	{
-		OutBuf[FlagCur] = (int8_t)(OutBuf[FlagCur] / 2);
-	}
 
-	// 将压缩完毕字节数组转为bytearray并释放申请的内存空间
 	PyObject *OuByteArray = PyByteArray_FromStringAndSize(OutBuf, WrCur);
 	free(OutBuf);
 
