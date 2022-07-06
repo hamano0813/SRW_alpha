@@ -31,7 +31,6 @@ static PyObject *LZSS_compress(PyObject *self, PyObject *args)
 	DWORD FlagCur;
 	DWORD WrCur = 0;
 	BYTE FlagBit = 8;
-	BYTE MatchValue;
 
 	for (DWORD RdCur = 0; RdCur < RdSize; RdCur++)
 	{
@@ -44,44 +43,34 @@ static PyObject *LZSS_compress(PyObject *self, PyObject *args)
 		WORD matchAdj = (((RdCur + 0xFEE) / WinSize) * WinSize) - 0xFEE;
 		BYTE matchCnt = 0;
 		WORD matchCur = 0;
-		for (DWORD PreIndex = RdCur - 1; PreIndex > (RdCur - WinSize); PreIndex--)
+		for (DWORD pre_idx = RdCur - 1; pre_idx > (DWORD)max((RdCur - WinSize), (-PreSize - THRESHOLD)); pre_idx--)
 		{
-			BYTE match_idx =0;
+			BYTE match_idx = 0;
 			for (match_idx; match_idx < (PreSize + 2); match_idx++)
 			{
-				MatchValue = 0;
-				if ((PreIndex + match_idx) >= 0)
-					MatchValue = InBuffer[PreIndex + match_idx];
-				if ((RdCur + match_idx) == RdSize)
-					break;
-				if (InBuffer[RdCur + match_idx] != MatchValue)
+				BYTE matchVal = 0;
+				if ((pre_idx + match_idx) >= 0)
+					matchVal = InBuffer[pre_idx + match_idx];
+				if (((RdCur + match_idx) == RdSize) || (InBuffer[RdCur + match_idx] != matchVal))
 					break;
 			}
-
 			if (match_idx > matchCnt)
 			{
-				matchCur = PreIndex - matchAdj;
-
+				matchCur = pre_idx - matchAdj;
 				if (matchCur < 0)
-				{
 					matchCur += WinSize;
-				}
 				matchCnt = match_idx;
-				if (matchCnt == 0x12)
-				{
+				if (matchCnt == (PreSize + THRESHOLD))
 					break;
-				}
 			}
 			if ((RdCur + match_idx) == RdSize)
-			{
 				break;
-			}
 		}
 
 		FlagBit++;
-		if (matchCnt > 2)
+		if (matchCnt > THRESHOLD)
 		{
-			OutBuf[WrCur++] = (BYTE)(matchCur % 0x100);
+			OutBuf[WrCur++] = (BYTE)(matchCur & 0xFF);
 			OutBuf[WrCur++] = (BYTE)(((matchCur / 0x100) * 0x10) + matchCnt - 3);
 			RdCur = (RdCur + matchCnt) - 1;
 		}

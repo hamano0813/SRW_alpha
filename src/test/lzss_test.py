@@ -38,7 +38,7 @@ def test_compress():
         buf = o_data[off + ptrs[u_idx]: off + ptrs[u_idx + 1]]
         decom = LZSS.decompress(buf[8:])
         com = LZSS.compress(decom)
-        print(buf[8:] == com, decom == LZSS.decompress(com))
+        print(u_idx, buf[8:] == com, decom == LZSS.decompress(com))
         # if u_idx == 31:
         #     with open('d:/a031.bin', 'wb') as f:
         #         f.write(LZSS.decompress(com, ou_size))
