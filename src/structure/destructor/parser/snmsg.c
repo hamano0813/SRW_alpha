@@ -5,56 +5,59 @@ typedef struct //文本列表
     CHAR msg[0x100]; //文本
 } SNMSG;
 
-static PyObject *SNMSG_parse(PyObject *self, PyObject *args)
+const char parse_doc[] = "parse(buffer: bytearray, extra: dict, trans: dict) -> dict";
+
+static PyObject *SNMSG_parse(PyObject *self, PyObject *args, PyObject *kwargs)
 {
-    PyObject *ByteArray;
+    PyObject *BufBytearray;
     PyObject *ExtraDict;
     PyObject *TransDict;
-    if (!PyArg_ParseTuple(args, "YOO", &ByteArray, &ExtraDict, &TransDict))
+    char *kw_list[] = {"buffer", "extra", "trans", NULL};
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "YOO", kw_list, &BufBytearray, &ExtraDict, &TransDict))
         return NULL;
-    BYTE *buffer;
-    buffer = PyByteArray_AsString(ByteArray);
-    if (!buffer)
+    CHAR *data_char;
+    data_char = PyByteArray_AsString(BufBytearray);
+    if (!data_char)
         return NULL;
 
-    Py_ssize_t count = (Py_ssize_t)(PyByteArray_Size(ByteArray) / sizeof(SNMSG));
+    DOUBLE msg_count = (DOUBLE)(PyByteArray_Size(BufBytearray) / sizeof(SNMSG));
 
-    SNMSG *snmsg;
-    snmsg = (SNMSG *)buffer;
+    SNMSG *snmsg_ptr;
+    snmsg_ptr = (SNMSG *)data_char;
 
-    PyObject *msgs_val = PyList_New(0);
+    PyObject *MsgList = PyList_New(0);
 
-    for (DOUBLE msg_idx = 0; msg_idx < count; msg_idx++)
+    for (DOUBLE msg_idx = 0; msg_idx < msg_count; msg_idx++)
     {
-        size_t msg_len = strlen((snmsg + msg_idx)->msg);
-        PyObject *msg_val = PyUnicode_Decode((snmsg + msg_idx)->msg, msg_len, codec, "replace");
+        size_t msg_len = strlen((snmsg_ptr + msg_idx)->msg);
+        PyObject *MsgStr = PyUnicode_Decode((snmsg_ptr + msg_idx)->msg, msg_len, codec, "replace");
 
-        msg_val = replace(msg_val, ExtraDict);
-        msg_val = replace(msg_val, TransDict);
+        MsgStr = replace(MsgStr, ExtraDict);
+        MsgStr = replace(MsgStr, TransDict);
 
-        PyObject *msg_dict = PyDict_New();
-        PyDict_SetItem(msg_dict, Py_BuildValue("s", "文本"), msg_val);
+        PyObject *MsgDict = PyDict_New();
+        PyDict_SetItem(MsgDict, Py_BuildValue("s", "文本"), MsgStr);
 
-        PyList_Append(msgs_val, msg_dict);
+        PyList_Append(MsgList, MsgDict);
     }
 
-    PyObject *output_dict = PyDict_New();
+    PyObject *DataDict = PyDict_New();
+    PyDict_SetItem(DataDict, Py_BuildValue("s", "文本列表"), MsgList);
 
-    PyDict_SetItem(output_dict, Py_BuildValue("s", "文本列表"), msgs_val);
-
-    return output_dict;
+    return DataDict;
 }
 
 static PyMethodDef SNMSGMethods[] =
     {
-        {"parse", SNMSG_parse, METH_VARARGS, "parse SNMSG.bin data."},
+        {"parse", (PyCFunction)SNMSG_parse, METH_VARARGS | METH_KEYWORDS, parse_doc},
         {NULL, NULL, 0, NULL}};
 
 static struct PyModuleDef SNMSG_module =
     {
         PyModuleDef_HEAD_INIT,
         "SNMSG",
-        "SNMSG.bin parser",
+        "SNMSG.bin Parser",
         -1,
         SNMSGMethods};
 

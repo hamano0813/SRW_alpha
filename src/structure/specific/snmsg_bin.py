@@ -2,9 +2,8 @@
 # -*- coding: utf-8 -*-
 
 from parameter import SNMSG_TEXT_EXTRA
-from structure.generic import Rom, Text, Sequence
-# noinspection PyUnresolvedReferences
 from structure.destructor import SNMSG
+from structure.generic import Rom, Text, Sequence
 
 SNMSG_STRUCTURE = {'文本': Text(0x0, 0x100, 'shiftjisx0213', SNMSG_TEXT_EXTRA)}
 
