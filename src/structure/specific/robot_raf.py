@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from parameter import HALF_TEXT_EXTRA
+from structure.destructor import ROBOT
 from structure.generic import Rom, Value, Text, Sequence
 
 WEAPON_STRUCTURE = {
@@ -70,6 +71,19 @@ class RobotRAF(Rom):
         self.structures = {
             '机体列表': Sequence(ROBOT_STRUCTURE, 0x0, 0x2C4, 0x1E6),
         }
+
+    def parse(self) -> bool:
+        if not self.buffer:
+            return False
+        self.data = ROBOT.parse(self.buffer, HALF_TEXT_EXTRA, dict())
+        return True
+
+    def build(self) -> bool:
+        if not self.data:
+            return False
+        for pname, data in self.data.items():
+            self.structures[pname].build(data, self.buffer)
+        return True
 
     def robots(self) -> dict[int, str]:
         if not self.data:

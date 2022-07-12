@@ -14,6 +14,10 @@ setuptools.setup(
             "compressor\\lzss.c",
         ]
         ),
+        setuptools.Extension("ROBOT", [
+            "parser\\util.c",
+            "parser\\robot.c",
+        ]),
         setuptools.Extension("SNMSG", [
             "parser\\util.c",
             "parser\\snmsg.c",

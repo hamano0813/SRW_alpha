@@ -2,7 +2,7 @@
 
 typedef struct //文本列表
 {
-    CHAR msg[0x100]; //文本
+    char 文本[0x100]; //文本
 } SNMSG;
 
 const char parse_doc[] = "parse(buffer: bytearray, extra: dict, trans: dict) -> dict";
@@ -16,22 +16,22 @@ static PyObject *SNMSG_parse(PyObject *self, PyObject *args, PyObject *kwargs)
 
     if (!PyArg_ParseTupleAndKeywords(args, kwargs, "YOO", kw_list, &BufBytearray, &ExtraDict, &TransDict))
         return NULL;
-    CHAR *data_char;
-    data_char = PyByteArray_AsString(BufBytearray);
-    if (!data_char)
+    unsigned char *data_byte;
+    data_byte = PyByteArray_AsString(BufBytearray);
+    if (!data_byte)
         return NULL;
 
-    DOUBLE msg_count = (DOUBLE)(PyByteArray_Size(BufBytearray) / sizeof(SNMSG));
+    unsigned int msg_count = (unsigned int)(PyByteArray_Size(BufBytearray) / sizeof(SNMSG));
 
     SNMSG *snmsg_ptr;
-    snmsg_ptr = (SNMSG *)data_char;
+    snmsg_ptr = (SNMSG *)data_byte;
 
     PyObject *MsgList = PyList_New(0);
 
-    for (DOUBLE msg_idx = 0; msg_idx < msg_count; msg_idx++)
+    for (unsigned int msg_idx = 0; msg_idx < msg_count; msg_idx++)
     {
-        size_t msg_len = strlen((snmsg_ptr + msg_idx)->msg);
-        PyObject *MsgStr = PyUnicode_Decode((snmsg_ptr + msg_idx)->msg, msg_len, codec, "replace");
+        size_t msg_len = strlen((snmsg_ptr + msg_idx)->文本);
+        PyObject *MsgStr = PyUnicode_Decode((snmsg_ptr + msg_idx)->文本, msg_len, codec, "replace");
 
         MsgStr = replace(MsgStr, ExtraDict);
         MsgStr = replace(MsgStr, TransDict);
