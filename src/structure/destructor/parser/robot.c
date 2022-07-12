@@ -70,6 +70,7 @@ typedef struct
 } ROBOT;
 
 const char parse_doc[] = "parse(buffer: bytearray, extra: dict, trans: dict) -> dict";
+const char build_doc[] = "build(data: dict, extra: dict, trans: dict) -> bytearray";
 
 static PyObject *ROBOT_parse(PyObject *self, PyObject *args, PyObject *kwargs)
 {
@@ -82,8 +83,7 @@ static PyObject *ROBOT_parse(PyObject *self, PyObject *args, PyObject *kwargs)
     UINT16 r_count = (UINT16)(PyByteArray_Size(BufByte) / sizeof(ROBOT));
     UINT8 w_count = 0x10;
 
-    ROBOT *机体列表;
-    机体列表 = (ROBOT *)PyByteArray_AsString(BufByte);
+    ROBOT *机体列表 = (ROBOT *)PyByteArray_AsString(BufByte);
 
     PyObject *RobotList = PyList_New(0);
 
@@ -170,13 +170,86 @@ static PyObject *ROBOT_build(PyObject *self, PyObject *args, PyObject *kwargs)
     if (!PyArg_ParseTupleAndKeywords(args, kwargs, "OOO", kw_list, &DataDict, &ExtraDict, &TransDict))
         return NULL;
 
-    UINT16 r_count = 0x1E6;
+    PyObject *RobotList = PyDict_GetItem(DataDict, Py_BuildValue("s", "机体列表"));
+    UINT16 r_count = PyList_Size(RobotList);
+    printf("%X\n", r_count);
     UINT8 w_count = 0x10;
+    ROBOT *机体列表 = (ROBOT *)calloc(r_count, sizeof(ROBOT));
+    
+    for (UINT16 r_idx = 0; r_idx < r_count; r_idx++)
+    {
+        PyObject *RobotDict = PyList_GetItem(RobotList, r_idx);
+
+        strcpy(机体列表[r_idx].机体, encode(PyDict_GetItem(RobotDict, Py_BuildValue("s", "机体")), ExtraDict, TransDict));
+        机体列表[r_idx].代码 = (UINT16)PyLong_AsLong(PyDict_GetItem(RobotDict, Py_BuildValue("s", "代码")));
+        机体列表[r_idx].移动类型 = (UINT8)PyLong_AsLong(PyDict_GetItem(RobotDict, Py_BuildValue("s", "移动类型")));
+        机体列表[r_idx].移动力 = (UINT8)PyLong_AsLong(PyDict_GetItem(RobotDict, Py_BuildValue("s", "移动力")));
+        机体列表[r_idx].ＨＰ = (UINT16)PyLong_AsLong(PyDict_GetItem(RobotDict, Py_BuildValue("s", "ＨＰ")));
+        机体列表[r_idx].ＥＮ = (UINT16)PyLong_AsLong(PyDict_GetItem(RobotDict, Py_BuildValue("s", "ＥＮ")));
+        机体列表[r_idx].运动性 = (UINT16)PyLong_AsLong(PyDict_GetItem(RobotDict, Py_BuildValue("s", "运动性")));
+        机体列表[r_idx].装甲 = (UINT16)PyLong_AsLong(PyDict_GetItem(RobotDict, Py_BuildValue("s", "装甲")));
+        机体列表[r_idx].限界 = (UINT16)PyLong_AsLong(PyDict_GetItem(RobotDict, Py_BuildValue("s", "限界")));
+        机体列表[r_idx].体积 = (UINT8)PyLong_AsLong(PyDict_GetItem(RobotDict, Py_BuildValue("s", "体积")));
+        机体列表[r_idx].芯片 = (UINT8)PyLong_AsLong(PyDict_GetItem(RobotDict, Py_BuildValue("s", "芯片")));
+        机体列表[r_idx].换乘系 = (UINT16)PyLong_AsLong(PyDict_GetItem(RobotDict, Py_BuildValue("s", "换乘系")));
+        机体列表[r_idx].特性 = (UINT32)PyLong_AsLong(PyDict_GetItem(RobotDict, Py_BuildValue("s", "特性")));
+        机体列表[r_idx].修理费 = (UINT16)PyLong_AsLong(PyDict_GetItem(RobotDict, Py_BuildValue("s", "修理费")));
+        机体列表[r_idx].资金 = (UINT16)PyLong_AsLong(PyDict_GetItem(RobotDict, Py_BuildValue("s", "资金")));
+        机体列表[r_idx].变形组号 = (UINT8)PyLong_AsLong(PyDict_GetItem(RobotDict, Py_BuildValue("s", "变形组号")));
+        机体列表[r_idx].变形序号 = (UINT8)PyLong_AsLong(PyDict_GetItem(RobotDict, Py_BuildValue("s", "变形序号")));
+        机体列表[r_idx].合体组号 = (UINT8)PyLong_AsLong(PyDict_GetItem(RobotDict, Py_BuildValue("s", "合体组号")));
+        机体列表[r_idx].合体序号 = (UINT8)PyLong_AsLong(PyDict_GetItem(RobotDict, Py_BuildValue("s", "合体序号")));
+        机体列表[r_idx].分离机体 = (UINT16)PyLong_AsLong(PyDict_GetItem(RobotDict, Py_BuildValue("s", "分离机体")));
+        机体列表[r_idx].合体数 = (UINT8)PyLong_AsLong(PyDict_GetItem(RobotDict, Py_BuildValue("s", "合体数")));
+        机体列表[r_idx].换装系统 = (UINT8)PyLong_AsLong(PyDict_GetItem(RobotDict, Py_BuildValue("s", "换装系统")));
+        机体列表[r_idx].机体BGM = (UINT8)PyLong_AsLong(PyDict_GetItem(RobotDict, Py_BuildValue("s", "机体BGM")));
+        机体列表[r_idx].空适应 = (UINT8)PyLong_AsLong(PyDict_GetItem(RobotDict, Py_BuildValue("s", "空适应")));
+        机体列表[r_idx].陆适应 = (UINT8)PyLong_AsLong(PyDict_GetItem(RobotDict, Py_BuildValue("s", "陆适应")));
+        机体列表[r_idx].海适应 = (UINT8)PyLong_AsLong(PyDict_GetItem(RobotDict, Py_BuildValue("s", "海适应")));
+        机体列表[r_idx].宇适应 = (UINT8)PyLong_AsLong(PyDict_GetItem(RobotDict, Py_BuildValue("s", "宇适应")));
+
+        PyObject *WeaponList = PyDict_GetItem(RobotDict, Py_BuildValue("s", "武器列表"));
+        for (UINT8 w_idx = 0; w_idx < w_count; w_idx++)
+        {
+            PyObject *WeaponDict = PyList_GetItem(WeaponList, w_idx);
+            机体列表[r_idx].武器列表[w_idx].代码 = (UINT8)PyLong_AsLong(PyDict_GetItem(WeaponDict, Py_BuildValue("s", "代码")));
+            机体列表[r_idx].武器列表[w_idx].新人类 = (UINT8)PyLong_AsLong(PyDict_GetItem(WeaponDict, Py_BuildValue("s", "新人类")));
+            机体列表[r_idx].武器列表[w_idx].圣战士 = (UINT8)PyLong_AsLong(PyDict_GetItem(WeaponDict, Py_BuildValue("s", "圣战士")));
+            机体列表[r_idx].武器列表[w_idx].气力 = (UINT8)PyLong_AsLong(PyDict_GetItem(WeaponDict, Py_BuildValue("s", "气力")));
+            机体列表[r_idx].武器列表[w_idx].改造类型 = (UINT8)PyLong_AsLong(PyDict_GetItem(WeaponDict, Py_BuildValue("s", "改造类型")));
+            机体列表[r_idx].武器列表[w_idx].近射程 = (UINT8)PyLong_AsLong(PyDict_GetItem(WeaponDict, Py_BuildValue("s", "近射程")));
+            机体列表[r_idx].武器列表[w_idx].远射程 = (UINT8)PyLong_AsLong(PyDict_GetItem(WeaponDict, Py_BuildValue("s", "远射程")));
+            机体列表[r_idx].武器列表[w_idx].地图武器分类 = (UINT8)PyLong_AsLong(PyDict_GetItem(WeaponDict, Py_BuildValue("s", "地图武器分类")));
+            机体列表[r_idx].武器列表[w_idx].着弹点指定型攻击半径 = (UINT8)PyLong_AsLong(PyDict_GetItem(WeaponDict, Py_BuildValue("s", "着弹点指定型攻击半径")));
+            机体列表[r_idx].武器列表[w_idx].攻击力 = (UINT16)PyLong_AsLong(PyDict_GetItem(WeaponDict, Py_BuildValue("s", "攻击力")));
+            机体列表[r_idx].武器列表[w_idx].分类 = (UINT8)PyLong_AsLong(PyDict_GetItem(WeaponDict, Py_BuildValue("s", "分类")));
+            机体列表[r_idx].武器列表[w_idx].属性 = (UINT8)PyLong_AsLong(PyDict_GetItem(WeaponDict, Py_BuildValue("s", "属性")));
+            机体列表[r_idx].武器列表[w_idx].改造追加 = (UINT8)PyLong_AsLong(PyDict_GetItem(WeaponDict, Py_BuildValue("s", "改造追加")));
+            strcpy(机体列表[r_idx].武器列表[w_idx].武器, encode(PyDict_GetItem(WeaponDict, Py_BuildValue("s", "武器")), ExtraDict, TransDict));
+            机体列表[r_idx].武器列表[w_idx].方向指定型范围 = (UINT8)PyLong_AsLong(PyDict_GetItem(WeaponDict, Py_BuildValue("s", "方向指定型范围")));
+            机体列表[r_idx].武器列表[w_idx].地图武器演出 = (UINT8)PyLong_AsLong(PyDict_GetItem(WeaponDict, Py_BuildValue("s", "地图武器演出")));
+            机体列表[r_idx].武器列表[w_idx].ＥＮ = (UINT8)PyLong_AsLong(PyDict_GetItem(WeaponDict, Py_BuildValue("s", "ＥＮ")));
+            机体列表[r_idx].武器列表[w_idx].命中 = (INT8)PyLong_AsLong(PyDict_GetItem(WeaponDict, Py_BuildValue("s", "命中")));
+            机体列表[r_idx].武器列表[w_idx].ＣＴ = (INT8)PyLong_AsLong(PyDict_GetItem(WeaponDict, Py_BuildValue("s", "ＣＴ")));
+            机体列表[r_idx].武器列表[w_idx].初期弹数 = (UINT8)PyLong_AsLong(PyDict_GetItem(WeaponDict, Py_BuildValue("s", "初期弹数")));
+            机体列表[r_idx].武器列表[w_idx].最大弹数 = (UINT8)PyLong_AsLong(PyDict_GetItem(WeaponDict, Py_BuildValue("s", "最大弹数")));
+            机体列表[r_idx].武器列表[w_idx].空适应 = (UINT8)PyLong_AsLong(PyDict_GetItem(WeaponDict, Py_BuildValue("s", "空适应")));
+            机体列表[r_idx].武器列表[w_idx].陆适应 = (UINT8)PyLong_AsLong(PyDict_GetItem(WeaponDict, Py_BuildValue("s", "陆适应")));
+            机体列表[r_idx].武器列表[w_idx].海适应 = (UINT8)PyLong_AsLong(PyDict_GetItem(WeaponDict, Py_BuildValue("s", "海适应")));
+            机体列表[r_idx].武器列表[w_idx].宇适应 = (UINT8)PyLong_AsLong(PyDict_GetItem(WeaponDict, Py_BuildValue("s", "宇适应")));
+        }
+
+        PyObject *BufByte = PyByteArray_FromStringAndSize((char *)机体列表, sizeof(ROBOT) * r_count);
+        free(机体列表);
+
+        return BufByte;
+    }
 }
 
 static PyMethodDef ROBOTMethods[] =
     {
         {"parse", (PyCFunction)ROBOT_parse, METH_VARARGS | METH_KEYWORDS, parse_doc},
+        {"build", (PyCFunction)ROBOT_build, METH_VARARGS | METH_KEYWORDS, build_doc},
         {NULL, NULL, 0, NULL}};
 
 static struct PyModuleDef ROBOT_module =

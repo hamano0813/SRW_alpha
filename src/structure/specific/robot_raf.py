@@ -81,8 +81,9 @@ class RobotRAF(Rom):
     def build(self) -> bool:
         if not self.data:
             return False
-        for pname, data in self.data.items():
-            self.structures[pname].build(data, self.buffer)
+        # for pname, data in self.data.items():
+        #     self.structures[pname].build(data, self.buffer)
+        self.buffer = ROBOT.build(self.data, {v: k for k, v in reversed(HALF_TEXT_EXTRA.items())}, dict())
         return True
 
     def robots(self) -> dict[int, str]:
