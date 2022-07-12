@@ -22,5 +22,9 @@ setuptools.setup(
             "parser\\util.c",
             "parser\\snmsg.c",
         ]),
+        setuptools.Extension("SNDATA", [
+            "parser\\util.c",
+            "parser\\sndata.c",
+        ]),
     ],
 )

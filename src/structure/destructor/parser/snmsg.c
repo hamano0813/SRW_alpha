@@ -5,9 +5,6 @@ typedef struct
     char 文本[0x100];
 } SNMSG;
 
-const char parse_doc[] = "parse(buf: bytearray, extra: dict, trans: dict) -> dict";
-const char build_doc[] = "build(data: dict, extra: dict, trans: dict) -> bytearray";
-
 static PyObject *SNMSG_parse(PyObject *self, PyObject *args, PyObject *kwargs)
 {
     PyObject *BufByte, *ExtraDict, *TransDict;
@@ -54,6 +51,9 @@ static PyObject *SNMSG_build(PyObject *self, PyObject *args, PyObject *kwargs)
 
     return BufByte;
 }
+
+const char parse_doc[] = "parse(buf: bytearray, extra: dict, trans: dict) -> dict";
+const char build_doc[] = "build(data: dict, extra: dict, trans: dict) -> bytearray";
 
 static PyMethodDef SNMSGMethods[] =
     {

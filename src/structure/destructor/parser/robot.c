@@ -69,9 +69,6 @@ typedef struct
     WEAPON 武器列表[0x10];
 } ROBOT;
 
-const char parse_doc[] = "parse(buffer: bytearray, extra: dict, trans: dict) -> dict";
-const char build_doc[] = "build(data: dict, extra: dict, trans: dict) -> bytearray";
-
 static PyObject *ROBOT_parse(PyObject *self, PyObject *args, PyObject *kwargs)
 {
     PyObject *BufByte, *ExtraDict, *TransDict;
@@ -243,6 +240,9 @@ static PyObject *ROBOT_build(PyObject *self, PyObject *args, PyObject *kwargs)
 
     return BufByte;
 }
+
+const char parse_doc[] = "parse(buf: bytearray, extra: dict, trans: dict) -> dict";
+const char build_doc[] = "build(data: dict, extra: dict, trans: dict) -> bytearray";
 
 static PyMethodDef ROBOTMethods[] =
     {
