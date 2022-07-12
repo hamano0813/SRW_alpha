@@ -21,6 +21,12 @@ class SnmsgBIN(Rom):
         self.data = SNMSG.parse(self.buffer, SNMSG_TEXT_EXTRA, dict())
         return True
 
+    def build(self) -> bool:
+        if not self.data:
+            return False
+        self.buffer = SNMSG.build(self.data, {v: k for k, v in reversed(SNMSG_TEXT_EXTRA.items())}, dict())
+        return True
+
     def messages(self):
         if not self.data:
             return dict()

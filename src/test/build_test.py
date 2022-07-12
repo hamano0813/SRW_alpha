@@ -51,4 +51,7 @@ if __name__ == '__main__':
 
         parse_time = parse_end - parse_start
         build_time = build_end - build_start
-        print(f'{r.__name__:<10s} {result:<12s}  parse time {parse_time:.3f}s, build time {build_time:.3f}s')
+        print(f'{r.__name__:<10s} {result:<12s}  '
+              f'parse time {parse_time:.3f}s, '
+              f'build time {build_time:.3f}s, '
+              f'total time {parse_time + build_time:.3f}s')
