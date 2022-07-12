@@ -172,10 +172,9 @@ static PyObject *ROBOT_build(PyObject *self, PyObject *args, PyObject *kwargs)
 
     PyObject *RobotList = PyDict_GetItem(DataDict, Py_BuildValue("s", "机体列表"));
     UINT16 r_count = PyList_Size(RobotList);
-    printf("%X\n", r_count);
     UINT8 w_count = 0x10;
     ROBOT *机体列表 = (ROBOT *)calloc(r_count, sizeof(ROBOT));
-    
+
     for (UINT16 r_idx = 0; r_idx < r_count; r_idx++)
     {
         PyObject *RobotDict = PyList_GetItem(RobotList, r_idx);
@@ -238,12 +237,11 @@ static PyObject *ROBOT_build(PyObject *self, PyObject *args, PyObject *kwargs)
             机体列表[r_idx].武器列表[w_idx].海适应 = (UINT8)PyLong_AsLong(PyDict_GetItem(WeaponDict, Py_BuildValue("s", "海适应")));
             机体列表[r_idx].武器列表[w_idx].宇适应 = (UINT8)PyLong_AsLong(PyDict_GetItem(WeaponDict, Py_BuildValue("s", "宇适应")));
         }
-
-        PyObject *BufByte = PyByteArray_FromStringAndSize((char *)机体列表, sizeof(ROBOT) * r_count);
-        free(机体列表);
-
-        return BufByte;
     }
+    PyObject *BufByte = PyByteArray_FromStringAndSize((char *)机体列表, sizeof(ROBOT) * r_count);
+    free(机体列表);
+
+    return BufByte;
 }
 
 static PyMethodDef ROBOTMethods[] =
