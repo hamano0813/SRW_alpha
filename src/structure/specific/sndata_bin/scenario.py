@@ -5,9 +5,9 @@ from structure.generic import Value, Sequence, SEQUENCE
 from structure.specific.sndata_bin.command import Command
 
 SCENARIO_STRUCTURE = {
-    'Index Quantity': Value(0x0, 0x4),
-    'Index Length': Value(0x4, 0x4),
-    'Indexes': Sequence({'Index': Value(0x0, 0x4)}, 0x8, 0x4, 0x0B),
+    'Count': Value(0x0, 0x4),
+    'Width': Value(0x4, 0x4),
+    'Blocks': Sequence({'Index': Value(0x0, 0x4)}, 0x8, 0x4, 0x10),
     'Commands': Command(0x48, 0x4000),
 }
 
@@ -21,7 +21,7 @@ class Scenario(Sequence):
             for command in scenario['Commands']:
                 if command['Code'] == 0x00:
                     block_idx = command['Param'][0]
-                    scenario['Indexes'][block_idx]['Index'] = command['Pos']
+                    scenario['Blocks'][block_idx]['Index'] = command['Pos']
             _buffer = bytearray([0xFF] * self.length)
             for key, data in scenario.items():
                 self.structures[key].build(data, _buffer)
