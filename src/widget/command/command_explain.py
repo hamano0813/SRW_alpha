@@ -40,7 +40,7 @@ class CommandExplain:
         self.w['场景事件'] = ParamVSpin('场景事件', 0, '02X', range=(0x0, 0xFF))
         self.w['场景点数'] = ParamVSpin('场景点数', 0, '02X', range=(0x0, 0xFF))
         self.w['敌方组号'] = ParamVSpin('敌方组号', 0, range=(0x0, 0xF))
-        self.w['敌方序号'] = ParamVSpin('敌方序号', 0, '04X', range=(0x8000, 0x809F))
+        self.w['敌方序号'] = ParamVSpin('敌方序号', 0, '02X', range=(0x0, 0x9F))
         self.w['演出代码'] = ParamVSpin('演出代码', 0, '02X', range=(0x0, 0x7F))
         self.w['X绝对坐标'] = ParamVSpin('X坐标', 1, range=(0x1, 0x30))
         self.w['Y绝对坐标'] = ParamVSpin('Y坐标', 1, range=(0x1, 0x30))
