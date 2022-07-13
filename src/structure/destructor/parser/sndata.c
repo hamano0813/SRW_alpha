@@ -84,16 +84,6 @@ static PyObject *SNDATA_parse(PyObject *self, PyObject *args, PyObject *kwargs)
             }
             PyDict_SetItem(CommandDict, Py_BuildValue("s", "Param"), ParamList);
 
-            char str[200];
-            memset(str, 0, 200);
-            char hex[5];
-            UINT16 *data = (UINT16 *)command;
-            for (UINT8 c_idx = 0; c_idx < 指令[0].count; c_idx++)
-            {
-                sprintf(hex, "%04X ", data[c_idx]);
-                strcat(str, hex);
-            }
-            PyDict_SetItem(CommandDict, Py_BuildValue("s", "Data"), Py_BuildValue("s", str));
             PyList_Append(CommandList, CommandDict);
             free(command);
             offset += length;

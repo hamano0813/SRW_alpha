@@ -154,7 +154,6 @@ class ArrayTable(ControlWidget, QTableView):
         self.setModel(proxy)
 
         if self.kwargs.get('resizeColumns', True):
-            QApplication.processEvents()
             self.resizeColumnsToContents()
         if self.kwargs.get('resizeRows', True):
             QApplication.processEvents()

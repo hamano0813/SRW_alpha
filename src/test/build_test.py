@@ -18,14 +18,14 @@ paths = {
 }
 
 roms = {
-    # 'ROBOT': RobotRAF,
-    # 'PILOT': PilotBIN,
-    # 'SNMSG': SnmsgBIN,
+    'ROBOT': RobotRAF,
+    'PILOT': PilotBIN,
+    'SNMSG': SnmsgBIN,
     'SNDATA': SndataBIN,
-    # 'ENLIST': EnlistBIN,
-    # 'AIUNP': AiunpBIN,
-    # 'SCRIPT': ScriptBIN,
-    # 'PRMGRP': PrmgrpBIN,
+    'ENLIST': EnlistBIN,
+    'AIUNP': AiunpBIN,
+    'SCRIPT': ScriptBIN,
+    'PRMGRP': PrmgrpBIN,
 }
 
 if __name__ == '__main__':

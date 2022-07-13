@@ -48,7 +48,9 @@ class StageModel(QAbstractTableModel):
         if role == Qt.DisplayRole:
             return self.explain.explain(command).replace('\n', '')
         if role == Qt.ToolTipRole:
-            return f"Command:\t{command}".replace(", 'Data': '", "}\nSourceData:\t").replace("'}", "")
+            return f"指令 步長 參數\n" \
+                   f"{command['Code']:02X}    {command['Count']:02X}    " \
+                   f"{' '.join(list(map(lambda x: f'{x:04X}', command['Param'])))}"
         if role == Qt.FontRole:
             font = QFont()
             font.setFamilies(['Consolas', 'Yu Gothic UI', 'Wingdings'])
@@ -136,9 +138,6 @@ class StageTable(QTableView, ControlWidget):
         proxy.setSourceModel(model)
         self.setModel(proxy)
         self.horizontalHeader().setSectionResizeMode(0, self.horizontalHeader().Stretch)
-        # for i in range(model.rowCount()):
-        #     QApplication.processEvents()
-        #     self.resizeRowToContents(i)
 
         self.data_set = data_set
 

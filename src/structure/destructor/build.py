@@ -12,8 +12,7 @@ setuptools.setup(
     ext_modules=[
         setuptools.Extension("LZSS", [
             "compressor\\lzss.c",
-        ]
-        ),
+        ]),
         setuptools.Extension("ROBOT", [
             "parser\\util.c",
             "parser\\robot.c",

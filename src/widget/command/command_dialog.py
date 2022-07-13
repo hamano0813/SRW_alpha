@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from struct import calcsize, pack, unpack
+from struct import calcsize
 
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (QDialog, QFormLayout, QDialogButtonBox, QComboBox, QPushButton, QVBoxLayout,
@@ -68,24 +68,7 @@ class CommandDialog(QDialog):
             command['Count'] = command['Param'][0] * 4 + 5
         else:
             command['Count'] = calcsize(Command.ARGV_FMT.get(code, '')) // 2 + 1
-        self.generate_data(command)
         return command
-
-    @staticmethod
-    def generate_data(command: dict) -> None:
-        fmt = Command.ARGV_FMT.get(command['Code'], None)
-        if fmt is None:
-            fmt = 'h' * (command['Param'][0] * 4 + 4)
-        p_buffer = pack(f'>{fmt}', *command['Param'])
-        p_buffer = Command.reverse_buffer(p_buffer)
-        length = len(p_buffer) + 2
-        command['Count'] = length // 2
-
-        c_buffer = bytearray(2)
-        c_buffer[0] = command['Code']
-        c_buffer[1] = command['Count']
-        c_buffer += p_buffer
-        command['Data'] = ' '.join([f'{d:04X}' for d in unpack('H' * command['Count'], c_buffer)])
 
     def explain_command(self) -> None:
         self.explain_text.setPlainText(self.explain.explain(self.command()))

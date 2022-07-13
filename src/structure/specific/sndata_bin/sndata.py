@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from structure.destructor import SNDATA
 from structure.generic import Rom
 from structure.specific.sndata_bin.scenario import Scenario, SCENARIO_STRUCTURE
-from structure.destructor import SNDATA
 
 
 class SndataBIN(Rom):
