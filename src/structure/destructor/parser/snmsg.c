@@ -1,9 +1,11 @@
 #include "parser.h"
 
+#pragma pack(1)
 typedef struct
 {
     char 文本[0x100];
 } SNMSG;
+#pragma pack()
 
 static PyObject *SNMSG_parse(PyObject *self, PyObject *args, PyObject *kwargs)
 {
@@ -37,7 +39,7 @@ static PyObject *SNMSG_build(PyObject *self, PyObject *args, PyObject *kwargs)
         return NULL;
 
     PyObject *MsgList = PyDict_GetItem(DataDict, Py_BuildValue("s", "文本列表"));
-    UINT32 m_count = PyList_Size(MsgList);
+    UINT32 m_count = (UINT32)PyList_Size(MsgList);
     SNMSG *文本列表 = (SNMSG *)calloc(m_count, sizeof(SNMSG));
 
     for (UINT32 m_idx = 0; m_idx < m_count; m_idx++)

@@ -1,5 +1,6 @@
 #include "parser.h"
 
+#pragma pack(1)
 typedef struct
 {
     UINT8 代码 : 4;
@@ -30,7 +31,6 @@ typedef struct
     UINT8 海适应;
     UINT8 宇适应;
 } WEAPON;
-
 typedef struct
 {
     char 机体[0x1A];
@@ -68,6 +68,7 @@ typedef struct
     UINT8 宇适应;
     WEAPON 武器列表[0x10];
 } ROBOT;
+#pragma pack()
 
 static PyObject *ROBOT_parse(PyObject *self, PyObject *args, PyObject *kwargs)
 {
@@ -168,7 +169,7 @@ static PyObject *ROBOT_build(PyObject *self, PyObject *args, PyObject *kwargs)
         return NULL;
 
     PyObject *RobotList = PyDict_GetItem(DataDict, Py_BuildValue("s", "机体列表"));
-    UINT16 r_count = PyList_Size(RobotList);
+    UINT16 r_count = (UINT16)PyList_Size(RobotList);
     UINT8 w_count = 0x10;
     ROBOT *机体列表 = (ROBOT *)calloc(r_count, sizeof(ROBOT));
 

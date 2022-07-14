@@ -5,27 +5,28 @@
 #define BP_LEN 0x4
 #define s_count 0x8C
 #define b_count 0xB
+#define c_size 0x4000
 
+#pragma pack(1)
 typedef struct
 {
     UINT8 code;
     UINT8 count;
     INT16 param[0];
 } COMMAND;
-
 typedef struct
 {
     UINT32 区块数量;
     UINT32 索引长度;
     UINT32 区块索引[BP_QTY];
-    char 指令数据[0x4000];
+    char 指令数据[c_size];
 } SCENARIO;
-
 typedef struct
 {
     UINT32 场景指针[SP_QTY];
     char 场景数据[0];
 } SNDATA;
+#pragma pack()
 
 static PyObject *SNDATA_parse(PyObject *self, PyObject *args, PyObject *kwargs)
 {
@@ -36,7 +37,7 @@ static PyObject *SNDATA_parse(PyObject *self, PyObject *args, PyObject *kwargs)
 
     SNDATA *场景设计 = (SNDATA *)PyByteArray_AsString(BufByte);
 
-    SCENARIO *场景 = 场景设计[0].场景数据;
+    SCENARIO *场景 = (SCENARIO *)场景设计[0].场景数据;
 
     PyObject *SnDict = PyDict_New();
 

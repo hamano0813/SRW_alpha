@@ -2,8 +2,6 @@
 #include <Python.h>
 #include <stdint.h>
 
-#pragma pack(1)
-
 #define codec "shiftjisx0213"
 
 PyObject *replace(PyObject *text, PyObject *dict);
