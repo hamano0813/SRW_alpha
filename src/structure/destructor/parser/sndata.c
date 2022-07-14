@@ -97,13 +97,48 @@ static PyObject *SNDATA_parse(PyObject *self, PyObject *args, PyObject *kwargs)
     return SnDict;
 }
 
+static PyObject *SNDATA_build(PyObject *self, PyObject *args, PyObject *kwargs)
+{
+    PyObject *DataDict;
+    char *kw_list[] = {"data", NULL};
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O", kw_list, &DataDict))
+        return NULL;
+
+    PyObject *SnList = PyDict_GetItem(DataDict, Py_BuildValue("s", "场景设计"));
+
+    SNDATA *场景设计 = (SNDATA *)malloc(sizeof(SNDATA) + sizeof(SCENARIO) * s_count);
+    memset(场景设计, 0xFF, sizeof(SNDATA) + sizeof(SCENARIO) * s_count);
+    memset(场景设计, 0x0, sizeof(SNDATA));
+
+    UINT32 p_offset = SP_QTY * BP_LEN;
+
+    for (UINT16 s_idx = 0; s_idx < s_count; s_idx++)
+    {
+        场景设计[0].场景指针[s_idx] == p_offset;
+
+        SCENARIO *场景 = (SCENARIO *)场景设计[0].场景数据;
+        PyObject *ScenarioDict = PyList_GetItem(SnList, s_idx);
+        场景[s_idx].区块数量 = BP_QTY;
+        场景[s_idx].索引长度 = BP_LEN;
+
+        PyObject *CommandList = PyDict_GetItem(ScenarioDict, Py_BuildValue("s", "Commands"));
+        UINT16 c_count = PyList_Size(CommandList);
+
+
+
+        p_offset += sizeof(SCENARIO);
+    }
+
+    free(场景设计);
+}
+
 const char parse_doc[] = "parse(buf: bytearray) -> dict";
 const char build_doc[] = "build(data: dict) -> bytearray";
 
 static PyMethodDef SNDATAMethods[] =
     {
         {"parse", (PyCFunction)SNDATA_parse, METH_VARARGS | METH_KEYWORDS, parse_doc},
-        //{"build", (PyCFunction)SNDATA_build, METH_VARARGS | METH_KEYWORDS, build_doc},
+        {"build", (PyCFunction)SNDATA_build, METH_VARARGS | METH_KEYWORDS, build_doc},
         {NULL, NULL, 0, NULL}};
 
 static struct PyModuleDef SNDATA_module =
