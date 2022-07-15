@@ -115,7 +115,7 @@ static PyObject *SNDATA_build(PyObject *self, PyObject *args, PyObject *kwargs)
 
     for (UINT16 s_idx = 0; s_idx < s_count; s_idx++)
     {
-        场景设计[0].场景指针[s_idx] == p_offset;
+        场景设计[0].场景指针[s_idx] = p_offset;
 
         SCENARIO *场景 = (SCENARIO *)场景设计[0].场景数据;
         PyObject *ScenarioDict = PyList_GetItem(SnList, s_idx);
@@ -123,14 +123,53 @@ static PyObject *SNDATA_build(PyObject *self, PyObject *args, PyObject *kwargs)
         场景[s_idx].索引长度 = BP_LEN;
 
         PyObject *CommandList = PyDict_GetItem(ScenarioDict, Py_BuildValue("s", "Commands"));
-        UINT16 c_count = PyList_Size(CommandList);
+        UINT16 c_count = (UINT16)PyList_Size(CommandList);
 
+        UINT32 s_offset = 0;
+        for (UINT16 c_idx = 0; c_idx < c_count; c_idx++)
+        {
+            PyObject *CommandDict = PyList_GetItem(CommandList, c_idx);
 
+            UINT8 code, count;
+            PyArg_Parse(PyDict_GetItem(CommandDict, Py_BuildValue("s", "Code")), "B", &code);
+            PyArg_Parse(PyDict_GetItem(CommandDict, Py_BuildValue("s", "Count")), "B", &count);
+            PyObject *ParamList = PyDict_GetItem(CommandDict, Py_BuildValue("s", "Param"));
 
+            if (code == 0x00)
+            {
+                UINT8 bp_idx;
+                PyArg_Parse(PyList_GetItem(ParamList, 0), "h", &bp_idx);
+                场景[s_idx].区块索引[bp_idx] = (UINT32)s_offset / 2;
+            }
+
+            场景[s_idx].指令数据[s_offset++] = code;
+            场景[s_idx].指令数据[s_offset++] = count;
+            if (code == 0x64)
+            {
+                UINT32 money;
+                PyArg_Parse(PyList_GetItem(ParamList, 0), "i", &money);
+                场景[s_idx].指令数据[s_offset++] = (money & 0xFF0000) >> 16;
+                场景[s_idx].指令数据[s_offset++] = (money & 0xFF000000) >> 24;
+                场景[s_idx].指令数据[s_offset++] = money & 0xFF;
+                场景[s_idx].指令数据[s_offset++] = (money & 0xFF00) >> 8;
+            }
+            else
+            {
+                for (UINT8 p_idx = 0; p_idx < (count - 1); p_idx++)
+                {
+                    INT16 param;
+                    PyArg_Parse(PyList_GetItem(ParamList, p_idx), "h", &param);
+                    场景[s_idx].指令数据[s_offset++] = param & 0xFF;
+                    场景[s_idx].指令数据[s_offset++] = (param & 0xFF00) >> 8;
+                }
+            }
+        }
         p_offset += sizeof(SCENARIO);
     }
-
+    场景设计[0].场景指针[s_count] = p_offset;
+    PyObject *BufByte = PyByteArray_FromStringAndSize((char *)场景设计, sizeof(SNDATA) + sizeof(SCENARIO) * s_count);
     free(场景设计);
+    return BufByte;
 }
 
 const char parse_doc[] = "parse(buf: bytearray) -> dict";

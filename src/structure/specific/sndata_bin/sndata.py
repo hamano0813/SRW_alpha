@@ -22,6 +22,5 @@ class SndataBIN(Rom):
     def build(self) -> bool:
         if not self.data:
             return False
-        for pname, data in self.data.items():
-            self.structures[pname].build(data, self.buffer)
+        self.buffer = SNDATA.build(self.data)
         return True
