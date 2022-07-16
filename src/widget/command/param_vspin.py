@@ -41,20 +41,20 @@ class ParamVSpin(QSpinBox, ParamWidget):
     def install(self, param: int = None) -> None:
         if param is not None:
             if self.name == "敌方序号":
-                return self.setValue(param + 0x8000)
+                return self.setValue(0x10000 + param)
             return self.setValue(param)
         return self.setValue(self.default)
 
     def data(self) -> int:
         if self.name == "敌方序号":
-            return self.value() - 0x8000
+            return self.value() - 0x10000
         return self.value()
 
     def explain(self, param: int) -> str:
         if self.mapping:
             return self.mapping.get(param, self.textFromValue(param)).replace('\u3000', '')
         if self.name == "敌方序号":
-            return self.textFromValue(param + 0x8000)
+            return self.textFromValue(0x10000 + param)
         return self.textFromValue(param)
 
     def new(self) -> Optional["ParamVSpin"]:

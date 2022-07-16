@@ -1,13 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from struct import calcsize
-
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (QDialog, QFormLayout, QDialogButtonBox, QComboBox, QPushButton, QVBoxLayout,
                                QPlainTextEdit, QLabel, QApplication, QHBoxLayout)
 
-from structure.specific.sndata_bin.command import Command
 from widget.command.command_explain import CommandExplain, EnumData
 from widget.command.param_widget import ParamWidget
 
@@ -66,8 +63,10 @@ class CommandDialog(QDialog):
         command['Param'] = [widget.data() for widget in self.widgets]
         if code == 0xB9:
             command['Count'] = command['Param'][0] * 4 + 5
+        elif code == 0x64:
+            command['Count'] = 2
         else:
-            command['Count'] = calcsize(Command.ARGV_FMT.get(code, '')) // 2 + 1
+            command['Count'] = len(command['Param']) + 1
         return command
 
     def explain_command(self) -> None:

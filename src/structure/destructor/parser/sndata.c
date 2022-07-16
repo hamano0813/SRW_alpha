@@ -36,16 +36,14 @@ static PyObject *SNDATA_parse(PyObject *self, PyObject *args, PyObject *kwargs)
         return NULL;
 
     SNDATA *场景设计 = (SNDATA *)PyByteArray_AsString(BufByte);
-
     SCENARIO *场景 = (SCENARIO *)场景设计[0].场景数据;
 
     PyObject *SnDict = PyDict_New();
-
     PyObject *SnList = PyList_New(0);
+
     for (UINT16 s_idx = 0; s_idx < s_count; s_idx++)
     {
         PyObject *ScenarioDict = PyDict_New();
-
         PyDict_SetItem(ScenarioDict, Py_BuildValue("s", "Count"), Py_BuildValue("I", 场景[s_idx].区块数量));
         PyDict_SetItem(ScenarioDict, Py_BuildValue("s", "Width"), Py_BuildValue("I", 场景[s_idx].索引长度));
 
@@ -63,7 +61,6 @@ static PyObject *SNDATA_parse(PyObject *self, PyObject *args, PyObject *kwargs)
         while (场景[s_idx].指令数据[offset] != -1)
         {
             UINT8 length = 场景[s_idx].指令数据[offset + 1] * 2;
-
             char *command = (char *)calloc(length, sizeof(char));
             memcpy(command, 场景[s_idx].指令数据 + offset, length);
             COMMAND *指令 = (COMMAND *)command;
@@ -75,9 +72,7 @@ static PyObject *SNDATA_parse(PyObject *self, PyObject *args, PyObject *kwargs)
 
             PyObject *ParamList = PyList_New(0);
             if (指令[0].code == 0x64)
-            {
                 PyList_Append(ParamList, Py_BuildValue("i", 指令[0].param[0] << 16 | (UINT16)指令[0].param[1]));
-            }
             else
             {
                 for (UINT8 p_idx = 0; p_idx < (指令[0].count - 1); p_idx++)
@@ -92,7 +87,6 @@ static PyObject *SNDATA_parse(PyObject *self, PyObject *args, PyObject *kwargs)
         PyDict_SetItem(ScenarioDict, Py_BuildValue("s", "Commands"), CommandList);
         PyList_Append(SnList, ScenarioDict);
     }
-
     PyDict_SetItem(SnDict, Py_BuildValue("s", "场景设计"), SnList);
 
     return SnDict;
@@ -112,29 +106,27 @@ static PyObject *SNDATA_build(PyObject *self, PyObject *args, PyObject *kwargs)
     memset(场景设计, 0x0, sizeof(SNDATA));
 
     UINT32 p_offset = SP_QTY * BP_LEN;
-
     for (UINT16 s_idx = 0; s_idx < s_count; s_idx++)
     {
         场景设计[0].场景指针[s_idx] = p_offset;
 
-        SCENARIO *场景 = (SCENARIO *)场景设计[0].场景数据;
         PyObject *ScenarioDict = PyList_GetItem(SnList, s_idx);
+
+        SCENARIO *场景 = (SCENARIO *)场景设计[0].场景数据;
         场景[s_idx].区块数量 = BP_QTY;
         场景[s_idx].索引长度 = BP_LEN;
 
         PyObject *CommandList = PyDict_GetItem(ScenarioDict, Py_BuildValue("s", "Commands"));
         UINT16 c_count = (UINT16)PyList_Size(CommandList);
-
         UINT32 s_offset = 0;
         for (UINT16 c_idx = 0; c_idx < c_count; c_idx++)
         {
             PyObject *CommandDict = PyList_GetItem(CommandList, c_idx);
-
             UINT8 code, count;
             PyArg_Parse(PyDict_GetItem(CommandDict, Py_BuildValue("s", "Code")), "B", &code);
             PyArg_Parse(PyDict_GetItem(CommandDict, Py_BuildValue("s", "Count")), "B", &count);
-            PyObject *ParamList = PyDict_GetItem(CommandDict, Py_BuildValue("s", "Param"));
 
+            PyObject *ParamList = PyDict_GetItem(CommandDict, Py_BuildValue("s", "Param"));
             if (code == 0x00)
             {
                 UINT8 bp_idx;
@@ -167,8 +159,10 @@ static PyObject *SNDATA_build(PyObject *self, PyObject *args, PyObject *kwargs)
         p_offset += sizeof(SCENARIO);
     }
     场景设计[0].场景指针[s_count] = p_offset;
+
     PyObject *BufByte = PyByteArray_FromStringAndSize((char *)场景设计, sizeof(SNDATA) + sizeof(SCENARIO) * s_count);
     free(场景设计);
+
     return BufByte;
 }
 
