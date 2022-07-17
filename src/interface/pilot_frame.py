@@ -55,7 +55,7 @@ class PilotFrame(BackgroundFrame):
                 '机师': TextLine(None, '机师', PILOT_STRUCTURE['机师']),
                 '全名': TextLine(None, '全名', PILOT_STRUCTURE['全名']),
                 '格斗': ValueSpin(None, '格斗', PILOT_STRUCTURE['格斗'], alignment=Qt.AlignRight),
-                '射击': ValueSpin(None, '射击', PILOT_STRUCTURE['射击'], alignment=Qt.AlignRight),
+                '射撃': ValueSpin(None, '射撃', PILOT_STRUCTURE['射撃'], alignment=Qt.AlignRight),
                 '回避': ValueSpin(None, '回避', PILOT_STRUCTURE['回避'], alignment=Qt.AlignRight),
                 '命中': ValueSpin(None, '命中', PILOT_STRUCTURE['命中'], alignment=Qt.AlignRight),
                 '反应': ValueSpin(None, '反应', PILOT_STRUCTURE['反应'], alignment=Qt.AlignRight),

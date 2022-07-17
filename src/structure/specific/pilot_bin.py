@@ -23,7 +23,7 @@ PILOT_STRUCTURE = {
     '全名': Text(0x4, 0x25, 'shiftjisx0213', HALF_TEXT_EXTRA),
     '机师': Text(0x29, 0xD, 'shiftjisx0213', HALF_TEXT_EXTRA),
     '格斗': Value(0x36, 0x1),
-    '射击': Value(0x37, 0x1),
+    '射撃': Value(0x37, 0x1),
     '回避': Value(0x38, 0x1),
     '命中': Value(0x39, 0x1),
     '反应': Value(0x3A, 0x1),

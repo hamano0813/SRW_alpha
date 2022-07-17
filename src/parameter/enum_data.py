@@ -751,7 +751,7 @@ class EnumDataTrans(QObject):
         self.ROBOT['换装系统'] = {0x0: 'V2ガンダム', 0x1: 'ヒュッケバインMK-Ⅲ', 0xFF: '一一'}
 
         self.WEAPON = dict()
-        self.WEAPON['分类'] = {0x0: '格斗', 0x1: '射击'}
+        self.WEAPON['分类'] = {0x0: '格斗', 0x1: '射撃'}
         self.WEAPON['改造类型'] = {0x0: '[A]', 0x1: '[B]', 0x2: '[C]', 0x3: '[D]'}
         self.WEAPON['地图武器分类'] = {0x0: '一一', 0x1: '方向指定型', 0x2: '自機中心型', 0x3: '着弾地点指定型'}
         self.WEAPON['属性'] = ['Ⓟ', 'Ⓑ', '切り払', 'ボトム射出', 'ビット類', '突貫', '敵味方識別']
