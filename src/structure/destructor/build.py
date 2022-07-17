@@ -25,5 +25,9 @@ setuptools.setup(
             "parser\\util.c",
             "parser\\sndata.c",
         ]),
+        setuptools.Extension("SCRIPT", [
+            "parser\\util.c",
+            "parser\\script.c",
+        ]),
     ],
 )
