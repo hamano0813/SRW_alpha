@@ -68,9 +68,6 @@ ROBOT_STRUCTURE = {
 class RobotRAF(Rom):
     def __init__(self):
         super(RobotRAF, self).__init__()
-        self.structures = {
-            '机体列表': Sequence(ROBOT_STRUCTURE, 0x0, 0x2C4, 0x1E6),
-        }
 
     def parse(self) -> bool:
         if not self.buffer:
