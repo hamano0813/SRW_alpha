@@ -4,7 +4,7 @@
 import time
 from struct import unpack_from
 
-from compression import LZSS
+from structure.destructor import LZSS
 
 o_path = r'..\..\resource\bin\jp\ROBOT.RAF'
 s_path = r'..\..\resource\bin\jp\UNCOMPRESS_ROBOT.RAF'
