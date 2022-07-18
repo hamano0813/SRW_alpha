@@ -86,11 +86,11 @@ class AiTable(ArrayTable):
         copy_action.triggered.connect(self.copy_range)
         paste_action = QAction('粘贴(V)', self)
         paste_action.triggered.connect(self.paste_range)
-        insert_acition = QAction('插入(I)', self)
-        insert_acition.triggered.connect(self.insert_row)
+        insert_action = QAction('插入(I)', self)
+        insert_action.triggered.connect(self.insert_row)
         remove_action = QAction('刪除(D)', self)
         remove_action.triggered.connect(self.remove_row)
-        right_click_menu.addActions([copy_action, paste_action, insert_acition, remove_action])
+        right_click_menu.addActions([copy_action, paste_action, insert_action, remove_action])
         right_click_menu.exec_(QCursor().pos())
 
     def insert_row(self) -> bool:

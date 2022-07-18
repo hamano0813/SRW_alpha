@@ -100,8 +100,13 @@ PyObject *SCRIPT_build(PyObject *self, PyObject *args, PyObject *kwargs)
             PyArg_Parse(PyDict_GetItem(CommandDict, Py_BuildValue("s", "指令码")), "H", &code);
             PyArg_Parse(PyDict_GetItem(CommandDict, Py_BuildValue("s", "参数一")), "H", &param1);
             PyArg_Parse(PyDict_GetItem(CommandDict, Py_BuildValue("s", "参数二")), "H", &param2);
-            PyArg_Parse(PyDict_GetItem(CommandDict, Py_BuildValue("s", "扩展字节")), "H", &expand);
-
+            // PyArg_Parse(PyDict_GetItem(CommandDict, Py_BuildValue("s", "扩展字节")), "H", &expand);
+            char *str = encode(PyDict_GetItem(CommandDict, Py_BuildValue("s", "扩展文本")), ExtraDict, TransDict);
+            expand = strlen(str);
+            if (expand > 1)
+                expand += 1;
+            else
+                PyArg_Parse(PyDict_GetItem(CommandDict, Py_BuildValue("s", "扩展字节")), "H", &expand);
             buffer[c_offset++] = code & 0xFF;
             buffer[c_offset++] = code >> 8 & 0xFF;
             buffer[c_offset++] = param1 & 0xFF;
@@ -112,7 +117,6 @@ PyObject *SCRIPT_build(PyObject *self, PyObject *args, PyObject *kwargs)
             buffer[c_offset++] = expand >> 8 & 0xFF;
             if (expand > 0)
             {
-                char *str = encode(PyDict_GetItem(CommandDict, Py_BuildValue("s", "扩展文本")), ExtraDict, TransDict);
                 memcpy(buffer + c_offset, str, expand - 1);
                 buffer[c_offset + expand] = 0;
                 c_offset += expand;

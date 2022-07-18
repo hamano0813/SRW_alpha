@@ -15,7 +15,9 @@ from widget.range_combo import RangeCombo
 from widget.scenario_combo import ScenarioCombo
 from widget.script_combo import ScriptCombo
 from widget.sndata_frame import StageFrame
+from widget.script_table import ScriptTable
 from widget.text_line import TextLine
 from widget.text_multi import TextMulti
 from widget.transpose_table import TransposeTable
 from widget.value_spin import ValueSpin
+from widget.hex_spin import HexSpin
