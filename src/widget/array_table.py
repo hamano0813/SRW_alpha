@@ -44,7 +44,7 @@ class ArrayModel(QAbstractTableModel):
 
     def data(self, index: QModelIndex, role: int = ...) -> any:
         column_name = tuple(self.columns.keys())[index.column()]
-        data = self.data_sequence[index.row()][column_name]
+        data = self.data_sequence[index.row()].get(column_name, 0)
         if role == Qt.DisplayRole:
             return self.columns[column_name].display(data)
         if role == Qt.TextAlignmentRole:

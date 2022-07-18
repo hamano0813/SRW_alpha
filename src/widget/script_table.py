@@ -3,7 +3,7 @@
 
 from PySide6.QtCore import Qt, QModelIndex
 from PySide6.QtGui import QAction, QCursor, QKeyEvent
-from PySide6.QtWidgets import QMenu
+from PySide6.QtWidgets import QMenu, QApplication
 
 from structure.generic import SEQUENCE
 from widget.array_table import ArrayModel, ArrayTable
@@ -69,6 +69,9 @@ class ScriptModel(ArrayModel):
         if role == Qt.TextAlignmentRole:
             if index.column() == 4:
                 return int(Qt.AlignTop)
+        if role == Qt.DisplayRole:
+            if index.column() == 5:
+                return create_annotation(self.data_sequence[index.row()])
         return super(ScriptModel, self).data(index, role)
 
     def setData(self, index: QModelIndex, data: int | str, role: int = ...) -> bool:
@@ -89,6 +92,11 @@ class ScriptModel(ArrayModel):
                 self.history.append((index, previos_data))
             return True
         return False
+
+    def flags(self, index: QModelIndex):
+        if index.column() == 5:
+            return Qt.ItemIsEnabled | Qt.ItemIsSelectable
+        return super(ScriptModel, self).flags(index)
 
     def insert_order(self, row: int):
         self.beginInsertRows(QModelIndex(), row, row)
@@ -113,18 +121,14 @@ class ScriptTable(ArrayTable):
 
     def install(self, data_set: dict[str, int | str | SEQUENCE]) -> bool:
         array_model = ScriptModel(self, self.columns)
-        sequence = data_set.get(self.data_name, list())
-        for order in sequence:
-            order["释义"] = create_annotation(order)
-        array_model.install(sequence)
+        array_model.install(data_set.get(self.data_name, list()))
         proxy = self.generate_proxy()
         proxy.setSourceModel(array_model)
         self.setModel(proxy)
 
-        if self.kwargs.get('resizeColumns', True):
-            self.resizeColumnsToContents()
         if self.kwargs.get('resizeRows', True):
             self.resizeRowsToContents()
+            QApplication.processEvents()
         stretch_columns = self.kwargs.get('stretch', (0,))
         for column in stretch_columns:
             self.horizontalHeader().setSectionResizeMode(column, self.horizontalHeader().Stretch)
