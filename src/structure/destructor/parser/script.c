@@ -86,7 +86,7 @@ PyObject *SCRIPT_build(PyObject *self, PyObject *args, PyObject *kwargs)
         PyObject *ScreenDict = PyList_GetItem(ScreenList, p_idx);
         PyObject *CommandList = PyDict_GetItem(ScreenDict, Py_BuildValue("s", "指令列表"));
 
-        UINT32 c_count = PyList_Size(CommandList);
+        UINT32 c_count = (UINT32)PyList_Size(CommandList);
 
         buffer[c_offset++] = c_count & 0xFF;
         buffer[c_offset++] = c_count >> 8 & 0xFF;

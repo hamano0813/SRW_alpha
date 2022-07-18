@@ -5,7 +5,7 @@ block_cipher = None
 
 
 a = Analysis(
-    ['release\\SRWα.py'],
+    ['src\\SRWα.py'],
     pathex=[],
     binaries=[],
     datas=[('./src/event.txt', './')],
