@@ -100,9 +100,8 @@ PyObject *SCRIPT_build(PyObject *self, PyObject *args, PyObject *kwargs)
             PyArg_Parse(PyDict_GetItem(CommandDict, Py_BuildValue("s", "指令码")), "H", &code);
             PyArg_Parse(PyDict_GetItem(CommandDict, Py_BuildValue("s", "参数一")), "H", &param1);
             PyArg_Parse(PyDict_GetItem(CommandDict, Py_BuildValue("s", "参数二")), "H", &param2);
-            // PyArg_Parse(PyDict_GetItem(CommandDict, Py_BuildValue("s", "扩展字节")), "H", &expand);
             char *str = encode(PyDict_GetItem(CommandDict, Py_BuildValue("s", "扩展文本")), ExtraDict, TransDict);
-            expand = strlen(str);
+            expand = (UINT16)strlen(str);
             if (expand > 1)
                 expand += 1;
             else

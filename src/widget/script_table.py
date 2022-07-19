@@ -66,35 +66,13 @@ class ScriptModel(ArrayModel):
         return f"{section:>4d}"
 
     def data(self, index: QModelIndex, role: int = ...) -> any:
-        if role == Qt.TextAlignmentRole:
-            if index.column() == 4:
-                return int(Qt.AlignTop)
         if role == Qt.DisplayRole:
-            if index.column() == 5:
+            if index.column() == 4:
                 return create_annotation(self.data_sequence[index.row()])
         return super(ScriptModel, self).data(index, role)
 
-    def setData(self, index: QModelIndex, data: int | str, role: int = ...) -> bool:
-        if not index.isValid():
-            return False
-        column_name = tuple(self.columns.keys())[index.column()]
-        previos_data = self.data_sequence[index.row()][column_name]
-        if role == Qt.EditRole:
-            _data = self.data_sequence[index.row()][column_name] = data
-            self.data_sequence[index.row()]['释义'] = create_annotation(self.data_sequence[index.row()])
-            if not _data == previos_data:
-                self.history.append((index, previos_data))
-            return True
-        if role == Qt.UserRole:
-            _data = self.data_sequence[index.row()][column_name] = self.columns[column_name].interpret(data)
-            self.data_sequence[index.row()]['释义'] = create_annotation(self.data_sequence[index.row()])
-            if not _data == previos_data:
-                self.history.append((index, previos_data))
-            return True
-        return False
-
     def flags(self, index: QModelIndex):
-        if index.column() == 5:
+        if index.column() == 4:
             return Qt.ItemIsEnabled | Qt.ItemIsSelectable
         return super(ScriptModel, self).flags(index)
 
@@ -118,6 +96,7 @@ class ScriptTable(ArrayTable):
         self.customContextMenuRequested.connect(self.right_menu)
         self.alignment = self.kwargs.get('alignment', Qt.AlignVCenter)
         self.horizontalHeader().setProperty('language', 'zh')
+        self.setWordWrap(False)
 
     def install(self, data_set: dict[str, int | str | SEQUENCE]) -> bool:
         array_model = ScriptModel(self, self.columns)

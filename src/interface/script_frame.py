@@ -27,12 +27,12 @@ class ScriptFrame(BackgroundFrame):
             '指令码': HexSpin(None, '指令码', Value(0x0, 0x2), alignment=Qt.AlignRight),
             '参数一': HexSpin(None, '参数一', Value(0x0, 0x2), alignment=Qt.AlignRight),
             '参数二': HexSpin(None, '参数二', Value(0x0, 0x2), alignment=Qt.AlignRight),
-            '扩展字节': ValueSpin(None, '扩展字节', Value(0x0, 0x2), alignment=Qt.AlignRight),
-            '扩展文本': TextMulti(None, '扩展文本', Text(0x0, 0xFF, "shiftjisx0213"), alignment=Qt.AlignTop),
+            '扩展文本': TextLine(None, '扩展文本', Text(0x0, 0xFF, "shiftjisx0213")),
             '释义': TextLine(None, '释义', Text(0x0, 0xFF, "gb18030")),
-        }, sortable=False, stretch=(4, 5),)
+        }, sortable=False, stretch=(3, ),)
 
         self['指令列表'].setObjectName("OrderList")
+        self['指令列表'].horizontalHeader().setDefaultSectionSize(40)
 
         main_layout = QVBoxLayout()
         main_layout.addLayout(script)
@@ -61,6 +61,7 @@ class ScriptFrame(BackgroundFrame):
         self['剧本列表'].install(self.rom.data)
         self['脚本列表'].currentIndexChanged[int].connect(self.control_scenario)
         self.original_data = deepcopy(self.rom.data)
+        self['指令列表'].setColumnWidth(4, 300)
 
     def build(self):
         self.rom.build()

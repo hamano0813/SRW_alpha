@@ -242,7 +242,8 @@ class MainWindow(QMainWindow):
             'CheckCombo QLineEdit {padding: 0px 5px 0px 5px;}',
             'QAbstractItemView TextMulti {padding-top: -2px;}',
             '#MessageList::item {padding-top: 3px;padding-left: 3px;}',
-            '#OrderList::item {padding-top: 3px;padding-left: 3px;}',
+            '#OrderList::item {padding-top: 2px;padding-left: 0px;}',
+            '#OrderList TextLine {padding-top: -1px;}',
             '#Corner::section {padding-top: 5px;padding-left: 5px;}',
             '#ENLIST::section {padding: -1px -15px 0px 0px;}',
             '* {font: 10pt "Yu Gothic UI Semibold";}'
