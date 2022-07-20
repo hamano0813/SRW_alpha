@@ -14,43 +14,87 @@ def create_annotation(order: dict) -> str:
     param1 = order["参数一"]
     param2 = order["参数二"]
     if code == 0x0002:
-        return f'设置场景背景[{param2:02X}]'
+        return f'顕示背景[{param2:02X}]'
+    elif code == 0x0008:
+        if param1 == 13:
+            return '特效 停止屏幕振動'
+        elif param1 == 19:
+            return f'特效 在{param2}ms時間内調整屏幕顔色RGB'
+        elif param1 == 20:
+            return f'特效 持續調整屏幕顔色RGB'
+        elif param1 == 22:
+            return f'特效 復位屏幕顔色RGB'
+        elif param1 == 24:
+            exp_str = order["扩展文本"].split(" ")[0]
+            return f'特效 屏幕振動一次 幅度[{exp_str}]'
+    elif code == 0x0009:
+        if param1 == 24:
+            exp_str = order["扩展文本"].split(" ")[0]
+            return f'特效 屏幕持續振動 幅度[{exp_str}]'
     elif code == 0x0010:
-        return '右侧人物说话' if param1 == 0x0004 else '左侧人物说话'
+        return '右側説話' if param1 == 0x0004 else '左側説話'
+    elif code == 0x0020:
+        if param1 == 1:
+            return f'播放一次音效[{param2:04X}]'
+        elif param1 == 3:
+            return f'持續播放音效[{param2:04X}]'
+        elif param1 == 4:
+            return f'停止播放音效'
+    elif code == 0x0021:
+        if param1 == 1:
+            return f'播放一次音效[{param2:04X}]並跟隨特效'
+        if param1 == 3:
+            return f'持續播放音效[{param2:04X}]並跟隨特效'
     elif code == 0x0210:
-        return '对话框'
+        return '提問'
     elif code == 0x0040:
         if param1 == 0x0004:
-            return '显示当前所在位置地图及控制闪烁光标'
+            exp = [int(i) for i in order["扩展文本"].split(" ")]
+            return f'顕示地図[{param2}] 文字坐標({exp[0]},{exp[1]}) 文字裁取({exp[4]},{exp[5]},{exp[2]},{exp[3]}) 箭頭坐標({exp[6]},{exp[7]})'
     elif code == 0x0004:
         temp = param1 & 0x000F
         if temp == 0x0004:
-            return f'将人物[{param2:04X}]立绘[{(param1 & 0x00F0) >> 4:X}]放到右侧'
+            return f'右側顕示立繪[{param2}]表情[{(param1 & 0x00F0) >> 4}]'
         elif temp == 0x0008:
-            return f'将人物[{param2:04X}]立绘[{(param1 & 0x00F0) >> 4:X}]放到左侧'
+            return f'左側顕示立繪[{param2}]表情[{(param1 & 0x00F0) >> 4}]'
         elif temp == 0x0001:
-            return f'右侧人物立绘移除'
+            return f'右側立繪移除'
         elif temp == 0x0002:
-            return f'左侧人物立绘移除'
+            return f'左側立繪移除'
         elif temp == 0x0003:
-            return f'两侧人物立绘移除'
-        return f'本场景出现的人物立绘编号声明（十进制）'
+            return f'兩側立繪移除'
+        exp_str = ",".join([i for i in order["扩展文本"].split(" ") if i])
+        return f'劇情使用的立繪編號({exp_str})'
     elif code == 0x0080:
-        return f'菜单选项，共[{param1 + 1}]个选项'
+        return f'選單，共[{param1 + 1}]個選擇項'
     elif code == 0x0100:
-        temp = param1
-        if temp == 0x0004:
-            return '场景开始'
-        elif temp == 0x0005:
-            return '场景结束'
-        elif temp == 0x0006:
-            return '根据主角不同跳转行号'
+        if param1 == 0x0001:
+            return f'跳轉第{int(order["扩展文本"].strip())}行'
+        elif param1 == 0x0004:
+            return '幕間劇情開始'
+        elif param1 == 0x0005:
+            return '幕間劇情結束'
+        elif param1 == 0x0006:
+            return '根據主人公跳轉不同行號'
         else:
-            return f'根据选项跳转行，共{param1}个行号'
-    elif code == 0x2000:
-        return '操作数值'
+            exp = [int(i) for i in order["扩展文本"].split(" ") if i]
+            return ",".join([f'第{i + 1}項則跳轉第{exp[i]}行' for i in range(param1)])
+    elif code == 0x0400:
+        if param1 == 0x0001:
+            return f'播放背景音樂[{param2}]'
+        if param1 == 0x0002:
+            return '停止背景音樂'
+    elif code == 0x0401:
+        return '停止全部音樂'
     elif code == 0x1000:
         return '触发事件'
+    elif code == 0x2000:
+        return '操作数值'
+    elif code == 0x4000:
+        if param1 == 0x0001:
+            return "判斷超級係或真實係"
+        if param2 == 0x0002:
+            return "判斷主人公頭像"
     return ""
 
 

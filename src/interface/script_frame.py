@@ -61,7 +61,7 @@ class ScriptFrame(BackgroundFrame):
         self['剧本列表'].install(self.rom.data)
         self['脚本列表'].currentIndexChanged[int].connect(self.control_scenario)
         self.original_data = deepcopy(self.rom.data)
-        self['指令列表'].setColumnWidth(4, 300)
+        self['指令列表'].setColumnWidth(4, 450)
 
     def build(self):
         self.rom.build()

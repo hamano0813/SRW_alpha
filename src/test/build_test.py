@@ -18,14 +18,14 @@ paths = {
 }
 
 roms = {
-    'ROBOT': RobotRAF,
-    'PILOT': PilotBIN,
-    'SNMSG': SnmsgBIN,
-    'SNDATA': SndataBIN,
-    'ENLIST': EnlistBIN,
-    'AIUNP': AiunpBIN,
+    # 'ROBOT': RobotRAF,
+    # 'PILOT': PilotBIN,
+    # 'SNMSG': SnmsgBIN,
+    # 'SNDATA': SndataBIN,
+    # 'ENLIST': EnlistBIN,
+    # 'AIUNP': AiunpBIN,
     'SCRIPT': ScriptBIN,
-    'PRMGRP': PrmgrpBIN,
+    # 'PRMGRP': PrmgrpBIN,
 }
 
 if __name__ == '__main__':
@@ -55,3 +55,9 @@ if __name__ == '__main__':
               f'parse time {parse_time:.3f}s, '
               f'build time {build_time:.3f}s, '
               f'total time {parse_time + build_time:.3f}s')
+
+        for si, s in enumerate(rom.data['剧本列表']):
+            for ci, c in enumerate(s['指令列表']):
+                if c['指令码'] == 0x4000:
+                    print(hex(si), ci, *c.values(), sep='\t')
+                    # print(hex(si), ci + 1, s['指令列表'][ci + 1])
