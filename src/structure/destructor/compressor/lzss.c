@@ -8,26 +8,32 @@
 
 #define MAXSIZE 0x8000
 #define THRESHOLD 2
-#define PREBUFBIT 4
-#define WINBUFBIT 12
+#define PBIT 4
+#define WBIT 12
+#define PSIZE (1 << PBIT)
+#define WSIZE (1 << WBIT)
+
+unsigned int read_size(unsigned char *buf)
+{
+	return (unsigned int)(buf[0] | buf[1] << 8 | buf[2] << 16 | buf[3] << 24);
+}
+void write_size(unsigned char *buf, unsigned int size)
+{
+	buf[0] = (size >> 24) & 0xFF;
+	buf[1] = (size >> 16) & 0xFF;
+	buf[2] = (size >> 8) & 0xFF;
+	buf[3] = size & 0xFF;
+}
 
 static PyObject *LZSS_compress(PyObject *self, PyObject *args)
 {
-	PyObject *InByteArray;
-	if (!PyArg_ParseTuple(args, "Y", &InByteArray))
+	PyObject *InByte;
+	if (!PyArg_ParseTuple(args, "Y", &InByte))
 		return NULL;
-	CHAR *InBuffer;
-	InBuffer = PyByteArray_AsString(InByteArray);
-	if (!InBuffer)
-		return NULL;
-	CHAR *OutBuf;
-	OutBuf = (BYTE *)calloc(MAXSIZE, sizeof(BYTE));
-	if (!OutBuf)
-		return PyErr_NoMemory();
+	unsigned char *i_buf = PyByteArray_AsString(InByte);
+	unsigned char *o_buf = (unsigned char *)calloc(MAXSIZE, sizeof(char));
 
-	const BYTE PreSize = (1 << PREBUFBIT);
-	const WORD WinSize = (1 << WINBUFBIT);
-	const DOUBLE RdSize = (DOUBLE)PyByteArray_Size(InByteArray);
+	const DOUBLE RdSize = (DOUBLE)PyByteArray_Size(InByte);
 
 	DOUBLE FlagCur;
 	DOUBLE WrCur = 0;
@@ -38,30 +44,30 @@ static PyObject *LZSS_compress(PyObject *self, PyObject *args)
 		if (FlagBit == 8)
 		{
 			FlagCur = WrCur++;
-			OutBuf[FlagCur] = 0;
+			o_buf[FlagCur] = 0;
 			FlagBit = 0;
 		}
-		WORD matchAdj = (((RdCur + 0xFEE) / WinSize) * WinSize) - 0xFEE;
+		WORD matchAdj = (((RdCur + 0xFEE) / WSIZE) * WSIZE) - 0xFEE;
 		BYTE matchCnt = 0;
 		WORD matchCur = 0;
-		for (DOUBLE pre_idx = RdCur - 1; pre_idx > (DOUBLE)max((RdCur - WinSize), (-PreSize - THRESHOLD)); pre_idx--)
+		for (DOUBLE pre_idx = RdCur - 1; pre_idx > (DOUBLE)max((RdCur - WSIZE), (-PSIZE - THRESHOLD)); pre_idx--)
 		{
 			BYTE match_idx = 0;
-			for (match_idx; match_idx < (PreSize + 2); match_idx++)
+			for (match_idx; match_idx < (PSIZE + 2); match_idx++)
 			{
 				BYTE matchVal = 0;
 				if ((pre_idx + match_idx) >= 0)
-					matchVal = InBuffer[pre_idx + match_idx];
-				if (((RdCur + match_idx) == RdSize) || (InBuffer[RdCur + match_idx] != matchVal))
+					matchVal = i_buf[pre_idx + match_idx];
+				if (((RdCur + match_idx) == RdSize) || (i_buf[RdCur + match_idx] != matchVal))
 					break;
 			}
 			if (match_idx > matchCnt)
 			{
 				matchCur = pre_idx - matchAdj;
 				if (matchCur < 0)
-					matchCur += WinSize;
+					matchCur += WSIZE;
 				matchCnt = match_idx;
-				if (matchCnt == (PreSize + THRESHOLD))
+				if (matchCnt == (PSIZE + THRESHOLD))
 					break;
 			}
 			if ((RdCur + match_idx) == RdSize)
@@ -71,73 +77,66 @@ static PyObject *LZSS_compress(PyObject *self, PyObject *args)
 		FlagBit++;
 		if (matchCnt > THRESHOLD)
 		{
-			OutBuf[WrCur++] = (BYTE)(matchCur & 0xFF);
-			OutBuf[WrCur++] = (BYTE)(((matchCur / 0x100) * 0x10) + matchCnt - 3);
+			o_buf[WrCur++] = (BYTE)(matchCur & 0xFF);
+			o_buf[WrCur++] = (BYTE)(((matchCur / 0x100) * 0x10) + matchCnt - 3);
 			RdCur = (RdCur + matchCnt) - 1;
 		}
 		else
 		{
-			OutBuf[FlagCur] |= (1 << (FlagBit - 1));
-			OutBuf[WrCur++] = InBuffer[RdCur];
+			o_buf[FlagCur] |= (1 << (FlagBit - 1));
+			o_buf[WrCur++] = i_buf[RdCur];
 		}
 	}
 
-	PyObject *OuByteArray = PyByteArray_FromStringAndSize(OutBuf, WrCur);
-	free(OutBuf);
+	PyObject *OuByteArray = PyByteArray_FromStringAndSize(o_buf, WrCur);
+	free(o_buf);
 
 	return OuByteArray;
 }
 
 static PyObject *LZSS_decompress(PyObject *self, PyObject *args)
 {
-	PyObject *InByteArray;
-	if (!PyArg_ParseTuple(args, "Y", &InByteArray))
+	PyObject *InByte;
+	if (!PyArg_ParseTuple(args, "Y", &InByte))
 		return NULL;
-	CHAR *InBuf;
-	InBuf = PyByteArray_AsString(InByteArray);
-	if (!InBuf)
-		return NULL;
-	CHAR *OutBuf;
-	OutBuf = (BYTE *)calloc(MAXSIZE, sizeof(BYTE));
-	if (!OutBuf)
-		return PyErr_NoMemory();
+	unsigned char *i_buf = PyByteArray_AsString(InByte);
+	const unsigned int i_size = (size_t)PyByteArray_Size(InByte);
+	const unsigned int o_size = read_size(i_buf);
+	unsigned char *o_buf = (unsigned char *)calloc(o_size, sizeof(unsigned char));
 
-	const BYTE PreSize = (1 << PREBUFBIT);
-	const WORD WinSize = (1 << WINBUFBIT);
-	const DOUBLE RdSize = (DOUBLE)PyByteArray_Size(InByteArray);
-	DOUBLE RdCur = 0;
-	DOUBLE WrCur = 0;
+	unsigned int i_cur = 8;
+	unsigned int o_cur = 0;
 
-	while (RdCur < RdSize)
+	while (i_cur < i_size)
 	{
-		BYTE flagBits = InBuf[RdCur++];
-		for (BYTE bit_idx = 0; bit_idx < CHAR_BIT; bit_idx++)
+		char f_bits = i_buf[i_cur++];
+		for (char f_idx = 0; f_idx < CHAR_BIT; f_idx++)
 		{
-			if (flagBits & (1 << bit_idx))
-				OutBuf[WrCur++] = InBuf[RdCur++];
+			if (f_bits & (1 << f_idx))
+				o_buf[o_cur++] = i_buf[i_cur++];
 			else
 			{
-				BYTE matchCnt = (InBuf[RdCur + 1] & (PreSize - 1)) + 1 + THRESHOLD;
-				WORD matchCur = (InBuf[RdCur + 1] >> PREBUFBIT << CHAR_BIT | InBuf[RdCur]) + PreSize + THRESHOLD & (WinSize - 1);
-				if (matchCur > WrCur)
-					matchCur -= WinSize;
+				char m_cnt = (i_buf[i_cur + 1] & (PSIZE - 1)) + THRESHOLD + 1;
+				short m_cur = (i_buf[i_cur + 1] >> PBIT << CHAR_BIT | i_buf[i_cur]) + PSIZE + THRESHOLD & (WSIZE - 1);
+				if (m_cur > o_cur)
+					m_cur -= WSIZE;
 
-				for (int match_idx = 0; match_idx < matchCnt; match_idx++, matchCur++)
+				for (char m_idx = 0; m_idx < m_cnt; m_idx++, m_cur++)
 				{
-					if (matchCur < 0)
-						OutBuf[WrCur++] = 0;
+					if (m_cur < 0)
+						o_buf[o_cur++] = 0;
 					else
-						OutBuf[WrCur++] = OutBuf[matchCur];
+						o_buf[o_cur++] = o_buf[m_cur];
 				}
-				RdCur += 2;
+				i_cur += 2;
 			}
-			if (RdCur >= RdSize)
+			if (i_cur >= i_size)
 				break;
 		}
 	}
-	PyObject *OutByteArray = PyByteArray_FromStringAndSize(OutBuf, WrCur);
-	free(OutBuf);
-	return OutByteArray;
+	PyObject *OutByte = PyByteArray_FromStringAndSize(o_buf, o_size);
+	free(o_buf);
+	return OutByte;
 }
 
 static PyMethodDef LZSSMethods[] =
