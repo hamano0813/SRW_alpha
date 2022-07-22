@@ -1,17 +1,12 @@
 #define PY_SSIZE_T_CLEAN
 #include <Python.h>
 
-#define CHAR unsigned char
-#define BYTE char
-#define WORD short
-#define DOUBLE int
-
-#define MAXSIZE 0x8000
 #define THRESHOLD 2
 #define PBIT 4
 #define WBIT 12
 #define PSIZE (1 << PBIT)
 #define WSIZE (1 << WBIT)
+#define HEAD 8
 
 unsigned int read_size(unsigned char *buf)
 {
@@ -19,79 +14,85 @@ unsigned int read_size(unsigned char *buf)
 }
 void write_size(unsigned char *buf, unsigned int size)
 {
-	buf[0] = (size >> 24) & 0xFF;
-	buf[1] = (size >> 16) & 0xFF;
-	buf[2] = (size >> 8) & 0xFF;
-	buf[3] = size & 0xFF;
+	buf[0] = size & 0xFF;
+	buf[1] = (size >> 8) & 0xFF;
+	buf[2] = (size >> 16) & 0xFF;
+	buf[3] = (size >> 24) & 0xFF;
 }
+
+#define CHAR unsigned char
+#define BYTE char
+#define WORD short
+#define DOUBLE int
+
+#define MAXSIZE 0x8000
+#define PREBUFBIT 4
+#define WINBUFBIT 12
 
 static PyObject *LZSS_compress(PyObject *self, PyObject *args)
 {
 	PyObject *InByte;
 	if (!PyArg_ParseTuple(args, "Y", &InByte))
 		return NULL;
+
 	unsigned char *i_buf = PyByteArray_AsString(InByte);
-	unsigned char *o_buf = (unsigned char *)calloc(MAXSIZE, sizeof(char));
+	const unsigned int i_size = (unsigned int)PyByteArray_Size(InByte);
+	const unsigned int m_size = HEAD + i_size + i_size / 8 + 1;
+	unsigned char *w_buf = (unsigned char *)calloc(m_size, sizeof(unsigned char));
 
-	const DOUBLE RdSize = (DOUBLE)PyByteArray_Size(InByte);
+	short f_cur;
+	short w_cur = 8;
+	char f_idx = 8;
 
-	DOUBLE FlagCur;
-	DOUBLE WrCur = 0;
-	BYTE FlagBit = 8;
-
-	for (DOUBLE RdCur = 0; RdCur < RdSize; RdCur++)
+	write_size(w_buf, i_size);
+	for (short r_cur = 0; r_cur < i_size; r_cur++)
 	{
-		if (FlagBit == 8)
+		if (f_idx == 8)
 		{
-			FlagCur = WrCur++;
-			o_buf[FlagCur] = 0;
-			FlagBit = 0;
+			f_cur = w_cur++;
+			f_idx = 0;
 		}
-		WORD matchAdj = (((RdCur + 0xFEE) / WSIZE) * WSIZE) - 0xFEE;
-		BYTE matchCnt = 0;
-		WORD matchCur = 0;
-		for (DOUBLE pre_idx = RdCur - 1; pre_idx > (DOUBLE)max((RdCur - WSIZE), (-PSIZE - THRESHOLD)); pre_idx--)
+		char m_cnt = THRESHOLD;
+		int m_cur;
+		for (short p_idx = r_cur - 1; p_idx > (short)max((r_cur - WSIZE), 0); p_idx--)
 		{
-			BYTE match_idx = 0;
-			for (match_idx; match_idx < (PSIZE + 2); match_idx++)
+			char m_idx = 0;
+			for (m_idx; m_idx < (PSIZE + 2); m_idx++)
 			{
-				BYTE matchVal = 0;
-				if ((pre_idx + match_idx) >= 0)
-					matchVal = i_buf[pre_idx + match_idx];
-				if (((RdCur + match_idx) == RdSize) || (i_buf[RdCur + match_idx] != matchVal))
+				char m_val = 0;
+				if ((p_idx + m_idx) >= 0)
+					m_val = i_buf[p_idx + m_idx];
+				if (((r_cur + m_idx) == i_size) || (i_buf[r_cur + m_idx] != m_val))
 					break;
 			}
-			if (match_idx > matchCnt)
+			if (m_idx > m_cnt)
 			{
-				matchCur = pre_idx - matchAdj;
-				if (matchCur < 0)
-					matchCur += WSIZE;
-				matchCnt = match_idx;
-				if (matchCnt == (PSIZE + THRESHOLD))
+				m_cur = p_idx - PSIZE - THRESHOLD & 0xFFF;
+				m_cnt = m_idx;
+				if (m_cnt == (PSIZE + THRESHOLD))
 					break;
 			}
-			if ((RdCur + match_idx) == RdSize)
+			if ((r_cur + m_idx) == i_size)
 				break;
 		}
-
-		FlagBit++;
-		if (matchCnt > THRESHOLD)
+		f_idx++;
+		if (m_cnt > THRESHOLD)
 		{
-			o_buf[WrCur++] = (BYTE)(matchCur & 0xFF);
-			o_buf[WrCur++] = (BYTE)(((matchCur / 0x100) * 0x10) + matchCnt - 3);
-			RdCur = (RdCur + matchCnt) - 1;
+			w_buf[w_cur++] = m_cur & ((1 << CHAR_BIT) - 1);
+			w_buf[w_cur++] = m_cur >> CHAR_BIT << PBIT | (m_cnt - THRESHOLD - 1);
+			r_cur = (r_cur + m_cnt) - 1;
 		}
 		else
 		{
-			o_buf[FlagCur] |= (1 << (FlagBit - 1));
-			o_buf[WrCur++] = i_buf[RdCur];
+			w_buf[f_cur] |= (1 << (f_idx - 1));
+			w_buf[w_cur++] = i_buf[r_cur];
 		}
 	}
 
-	PyObject *OuByteArray = PyByteArray_FromStringAndSize(o_buf, WrCur);
-	free(o_buf);
+	PyObject *OutByte = PyByteArray_FromStringAndSize(w_buf, w_cur);
+	free(w_buf);
 
-	return OuByteArray;
+	return OutByte;
 }
 
 static PyObject *LZSS_decompress(PyObject *self, PyObject *args)
@@ -99,43 +100,44 @@ static PyObject *LZSS_decompress(PyObject *self, PyObject *args)
 	PyObject *InByte;
 	if (!PyArg_ParseTuple(args, "Y", &InByte))
 		return NULL;
-	unsigned char *i_buf = PyByteArray_AsString(InByte);
-	const unsigned int i_size = (size_t)PyByteArray_Size(InByte);
-	const unsigned int o_size = read_size(i_buf);
-	unsigned char *o_buf = (unsigned char *)calloc(o_size, sizeof(unsigned char));
 
-	unsigned int i_cur = 8;
-	unsigned int o_cur = 0;
+	unsigned char *r_buf = PyByteArray_AsString(InByte);
+	const unsigned int r_size = (size_t)PyByteArray_Size(InByte);
+	const unsigned int w_size = read_size(r_buf);
+	unsigned char *w_buf = (unsigned char *)calloc(w_size, sizeof(unsigned char));
 
-	while (i_cur < i_size)
+	unsigned int r_cur = 8;
+	unsigned int w_cur = 0;
+
+	while (r_cur < r_size)
 	{
-		char f_bits = i_buf[i_cur++];
+		char f_bits = r_buf[r_cur++];
 		for (char f_idx = 0; f_idx < CHAR_BIT; f_idx++)
 		{
 			if (f_bits & (1 << f_idx))
-				o_buf[o_cur++] = i_buf[i_cur++];
+				w_buf[w_cur++] = r_buf[r_cur++];
 			else
 			{
-				char m_cnt = (i_buf[i_cur + 1] & (PSIZE - 1)) + THRESHOLD + 1;
-				short m_cur = (i_buf[i_cur + 1] >> PBIT << CHAR_BIT | i_buf[i_cur]) + PSIZE + THRESHOLD & (WSIZE - 1);
-				if (m_cur > o_cur)
+				char m_cnt = (r_buf[r_cur + 1] & (PSIZE - 1)) + THRESHOLD + 1;
+				short m_cur = (r_buf[r_cur + 1] >> PBIT << CHAR_BIT | r_buf[r_cur]) + PSIZE + THRESHOLD & (WSIZE - 1);
+				if (m_cur > w_cur)
 					m_cur -= WSIZE;
 
 				for (char m_idx = 0; m_idx < m_cnt; m_idx++, m_cur++)
 				{
 					if (m_cur < 0)
-						o_buf[o_cur++] = 0;
+						w_buf[w_cur++] = 0;
 					else
-						o_buf[o_cur++] = o_buf[m_cur];
+						w_buf[w_cur++] = w_buf[m_cur];
 				}
-				i_cur += 2;
+				r_cur += 2;
 			}
-			if (i_cur >= i_size)
+			if (r_cur >= r_size)
 				break;
 		}
 	}
-	PyObject *OutByte = PyByteArray_FromStringAndSize(o_buf, o_size);
-	free(o_buf);
+	PyObject *OutByte = PyByteArray_FromStringAndSize(w_buf, w_size);
+	free(w_buf);
 	return OutByte;
 }
 
