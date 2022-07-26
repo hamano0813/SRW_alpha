@@ -101,7 +101,7 @@ ptrs.append(len(o_data))
 
 def test_decompress():
     buffer = bytearray()
-    for u_idx in range(1):
+    for u_idx in range(cnt):
         buf = o_data[off + ptrs[u_idx]: off + ptrs[u_idx + 1]]
         # noinspection PyUnresolvedReferences
         decom = LZSS.decompress(buf)
@@ -113,21 +113,15 @@ def test_decompress():
 
 def test_compress():
     for u_idx in range(cnt):
-        buf = o_data[off + ptrs[u_idx]: off + ptrs[u_idx + 1]]
-        decom = LZSS.decompress(buf)
-        com = LZSS.compress(decom)
-        print(u_idx, buf == com, LZSS.decompress(com) == s_data[0x2C4 * u_idx: 0x2C4 * (u_idx + 1)])
-        # diff_print(buf, com)
-        with open(f'd:/1/{u_idx:03d}m.bin', 'wb') as mf:
-            mf.write(com)
-        with open(f'd:/1/{u_idx:03d}o.bin', 'wb') as of:
-            of.write(buf)
-        with open(f'd:/1/{u_idx:03d}s.bin', 'wb') as sf:
-            sf.write(decom)
+        s_buf = s_data[0x2C4 * u_idx: 0x2C4 * (u_idx + 1)]
+        com = LZSS.compress(s_buf)
+        # print(u_idx, com == o_data[off + ptrs[u_idx]: off + ptrs[u_idx + 1]])
+        # buf = o_data[off + ptrs[u_idx]: off + ptrs[u_idx + 1]]
+        # print(u_idx, buf == com, LZSS.decompress(com) == s_data[0x2C4 * u_idx: 0x2C4 * (u_idx + 1)])
 
 
 start = time.time()
-test_compress()
+# test_compress()
 test_decompress()
 end = time.time()
 

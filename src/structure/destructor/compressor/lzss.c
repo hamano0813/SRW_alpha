@@ -1,12 +1,12 @@
 #define PY_SSIZE_T_CLEAN
 #include <Python.h>
-#include <stdbool.h>
 
 #define THRESHOLD 2
 #define PBIT 4
 #define WBIT 12
 #define PSIZE (1 << PBIT)
 #define WSIZE (1 << WBIT)
+#define BSIZE (WSIZE - PSIZE - THRESHOLD)
 #define HEAD 8
 
 unsigned int read_size(unsigned char *buf)
@@ -21,14 +21,28 @@ void write_size(unsigned char *buf, unsigned int size)
 	buf[3] = (size >> 24) & 0xFF;
 }
 
-#pragma pack(1)
-typedef struct
+int adj_cur(unsigned char *buf, int r_cur, int cur, char cnt)
 {
-	bool match;
-	short m_cur : 12;
-	unsigned char m_cnt : 4;
-} NODE;
-#pragma pack()
+	for (char idx = 0; idx < cnt; idx++)
+		if (buf[r_cur + idx] != 0)
+			return max(BSIZE - idx, cur);
+	return cur;
+}
+
+int find_match(unsigned char *buf, int r_cur, int cur, char cnt)
+{
+	cur = adj_cur(buf, r_cur, cur, cnt);
+	for (; cur < r_cur; cur++)
+	{
+		char idx = 0;
+		for (; idx < cnt; idx++)
+			if (buf[cur + idx] != buf[r_cur + idx])
+				break;
+		if (idx == cnt)
+			return cur;
+	}
+	return -1;
+}
 
 static PyObject *LZSS_compress(PyObject *self, PyObject *args)
 {
@@ -36,63 +50,57 @@ static PyObject *LZSS_compress(PyObject *self, PyObject *args)
 	if (!PyArg_ParseTuple(args, "Y", &InByte))
 		return NULL;
 
-	char *i_buf = PyByteArray_AsString(InByte);
 	const int i_size = (int)PyByteArray_Size(InByte);
-	const int m_size = HEAD + i_size + i_size / 8 + 1;
+	const int m_size = HEAD + i_size + i_size / CHAR_BIT + 1;
+
+	unsigned char temp[BSIZE] = {0};
+	PyObject *TempByte = PyByteArray_FromStringAndSize(temp, BSIZE);
+	PyObject *RdByte = PyByteArray_Concat(TempByte, InByte);
+
+	unsigned char *r_buf = PyByteArray_AsString(RdByte);
+	const int r_size = (int)PyByteArray_Size(RdByte);
 	char *w_buf = (char *)calloc(m_size, sizeof(char));
-
-	int f_cur;
-	int w_cur = 8;
-	char f_idx = CHAR_BIT;
-
 	write_size(w_buf, i_size);
-	for (int r_cur = 0; r_cur < i_size; r_cur++)
+
+	char f_bit = CHAR_BIT;
+	int f_cur = 0;
+	int r_cur = BSIZE;
+	int w_cur = HEAD;
+
+	while (r_cur < r_size)
 	{
-		if (f_idx == CHAR_BIT)
+		if (f_bit == CHAR_BIT)
 		{
 			f_cur = w_cur++;
-			f_idx = 0;
+			f_bit = 0;
 		}
 		char m_cnt = THRESHOLD;
-		int m_cur;
-		for (int p_idx = r_cur - 1; p_idx > max(r_cur - WSIZE, -THRESHOLD); p_idx--)
+		int m_cur = 0;
+
+		int cur = min(r_cur - BSIZE, i_size - PSIZE - THRESHOLD);
+		for (char cnt = PSIZE + THRESHOLD; cnt > THRESHOLD; cnt--)
 		{
-			char m_idx = 0;
-			for (m_idx; m_idx < (PSIZE + THRESHOLD); m_idx++)
+			if (r_cur + cnt <= r_size)
+				m_cur = find_match(r_buf, r_cur, cur, cnt);
+			if (m_cur > 0)
 			{
-				char m_val = 0;
-				if ((p_idx + m_idx) >= 0)
-					m_val = i_buf[p_idx + m_idx];
-				if (((r_cur + m_idx) == i_size) || (i_buf[r_cur + m_idx] != m_val))
-					break;
-			}
-			if (m_idx > m_cnt)
-			{
-				m_cur = p_idx - PSIZE - THRESHOLD & 0xFFF;
-				m_cnt = m_idx;
-				if (m_cnt == (PSIZE + THRESHOLD))
-					break;
-			}
-			if ((r_cur + m_idx) == i_size)
+				m_cnt = cnt;
 				break;
+			}
 		}
-		f_idx++;
+
 		if (m_cnt > THRESHOLD)
 		{
-			int s_val = 0;
-			for (char s_idx = 0; s_idx < m_cnt; s_idx++)
-				s_val += i_buf[r_cur + s_idx];
-			if (s_val == 0)
-				m_cur = r_cur & 0xFFF;
-			w_buf[w_cur++] = m_cur & ((1 << CHAR_BIT) - 1);
-			w_buf[w_cur++] = m_cur >> CHAR_BIT << PBIT | (m_cnt - THRESHOLD - 1);
-			r_cur = (r_cur + m_cnt) - 1;
+			w_buf[w_cur++] = m_cur & 0xFF;
+			w_buf[w_cur++] = (m_cur >> 4 & 0xF0 | m_cnt - THRESHOLD - 1);
+			r_cur += m_cnt;
 		}
 		else
 		{
-			w_buf[f_cur] |= (1 << (f_idx - 1));
-			w_buf[w_cur++] = i_buf[r_cur];
+			w_buf[w_cur++] = r_buf[r_cur++];
+			w_buf[f_cur] |= 1 << f_bit;
 		}
+		f_bit++;
 	}
 
 	PyObject *OutByte = PyByteArray_FromStringAndSize(w_buf, w_cur);
@@ -134,7 +142,7 @@ static PyObject *LZSS_decompress(PyObject *self, PyObject *args)
 					/*if (m_cur < 0)
 						w_buf[w_cur++] = 0;
 					else*/
-						w_buf[w_cur++] = w_buf[(unsigned short)m_cur & (WSIZE - 1)];
+					w_buf[w_cur++] = w_buf[(unsigned short)m_cur & (WSIZE - 1)];
 				}
 				r_cur += 2;
 			}
@@ -157,7 +165,7 @@ static struct PyModuleDef LZSS_module =
 	{
 		PyModuleDef_HEAD_INIT,
 		"LZSS",
-		"special LZSS compression algorithm for スパロボット大戦α",
+		"LZSS compression algorithm for スパロボット大戦α",
 		-1,
 		LZSSMethods};
 
